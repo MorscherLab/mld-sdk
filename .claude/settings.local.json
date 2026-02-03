@@ -44,7 +44,8 @@
       "Bash(curl:*)",
       "Bash(agent-browser get:*)",
       "Bash(NODE_ENV=production npm run build:ci:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(python quick_validate.py:*)"
     ]
   }
 }

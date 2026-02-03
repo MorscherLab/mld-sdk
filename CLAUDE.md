@@ -59,7 +59,7 @@ Tests run automatically on push to main and PRs. Release workflow triggers on `v
 
 | Directory | Contents |
 |-----------|----------|
-| `components/` | 29 Vue 3 components (base inputs, forms, feedback, layout, well plates) |
+| `components/` | 32 Vue 3 components (base inputs, forms, feedback, layout, well plates) |
 | `composables/` | `useApi`, `useAuth`, `usePasskey`, `useTheme`, `useToast`, `usePlatformContext`, `useForm`, `useAsync`, `useWellPlateEditor` |
 | `stores/` | `useAuthStore` (auth state), `useSettingsStore` (app settings) |
 | `types/` | TypeScript definitions for all components and platform types |
@@ -152,4 +152,20 @@ if (!auth.isAuthenticated.value) {
 
 ## Version Coordination
 
-Both packages share the same version number. Current: 0.2.0
+Both packages share the same version number. Current: 0.3.0
+
+## Documentation Sync
+
+**Keep these in sync when adding components or changing APIs:**
+- This file (`CLAUDE.md`) - update component counts, composable lists
+- Skill at `~/.claude/skills/mld-sdk-plugin/` - update reference docs
+
+### Current Component List (32)
+
+**Base Inputs:** BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader
+
+**Layout:** AppTopBar, AppSidebar, CollapsibleCard, FormField, Skeleton
+
+**Feedback:** AlertBox, ToastNotification, IconButton, ThemeToggle, SettingsButton
+
+**Lab/Domain:** WellPlate, PlateMapEditor, SampleLegend, ExperimentTimeline, SampleSelector, GroupAssigner, GroupingModal

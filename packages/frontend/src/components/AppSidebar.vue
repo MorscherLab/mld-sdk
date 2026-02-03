@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
 import type { SidebarItem } from '../types'
+
+const router = useRouter()
 
 interface Props {
   items: readonly SidebarItem[]
@@ -28,10 +30,17 @@ const emit = defineEmits<{
 
 const sidebarWidth = computed(() => props.collapsed ? props.collapsedWidth : props.width)
 
-function handleItemClick(item: SidebarItem) {
-  if (!item.disabled) {
-    emit('select', item)
+function handleItemClick(item: SidebarItem, event?: MouseEvent) {
+  if (item.disabled) return
+
+  if (item.to && event) {
+    event.preventDefault()
+    router.push(item.to)
+  } else if (item.href) {
+    // Let default behavior handle external links
   }
+
+  emit('select', item)
 }
 
 function isActive(item: SidebarItem): boolean {
@@ -96,54 +105,24 @@ function getItemClasses(item: SidebarItem, isParent = false) {
 
           <!-- Children -->
           <div v-if="!props.collapsed" class="space-y-0.5">
-            <RouterLink
+            <a
               v-for="child in item.children"
               :key="child.id"
-              :to="child.to || '/'"
+              :href="child.to || child.href || '#'"
               :class="getItemClasses(child)"
-              @click="handleItemClick(child)"
+              @click="(e) => handleItemClick(child, e)"
             >
               <span class="flex-1 truncate">{{ child.label }}</span>
-            </RouterLink>
+            </a>
           </div>
         </div>
 
         <!-- Item without children: render as clickable link -->
-        <RouterLink
-          v-else-if="item.to"
-          :to="item.to"
-          :class="getItemClasses(item)"
-          @click="handleItemClick(item)"
-        >
-          <!-- Icon slot or default icon -->
-          <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
-            <slot :name="`icon-${item.id}`" :item="item">
-              {{ item.icon }}
-            </slot>
-          </span>
-
-          <!-- Label (hidden when collapsed) -->
-          <span
-            v-if="!props.collapsed"
-            class="flex-1 truncate"
-          >
-            {{ item.label }}
-          </span>
-
-          <!-- Badge -->
-          <span
-            v-if="!props.collapsed && item.badge !== undefined"
-            class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
-          >
-            {{ item.badge }}
-          </span>
-        </RouterLink>
-
         <a
-          v-else-if="item.href"
-          :href="item.href"
+          v-else
+          :href="item.to || item.href || '#'"
           :class="getItemClasses(item)"
-          @click="handleItemClick(item)"
+          @click="(e) => handleItemClick(item, e)"
         >
           <!-- Icon slot or default icon -->
           <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
@@ -168,37 +147,6 @@ function getItemClasses(item: SidebarItem, isParent = false) {
             {{ item.badge }}
           </span>
         </a>
-
-        <button
-          v-else
-          type="button"
-          :class="getItemClasses(item)"
-          :disabled="item.disabled"
-          @click="handleItemClick(item)"
-        >
-          <!-- Icon slot or default icon -->
-          <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
-            <slot :name="`icon-${item.id}`" :item="item">
-              {{ item.icon }}
-            </slot>
-          </span>
-
-          <!-- Label (hidden when collapsed) -->
-          <span
-            v-if="!props.collapsed"
-            class="flex-1 truncate"
-          >
-            {{ item.label }}
-          </span>
-
-          <!-- Badge -->
-          <span
-            v-if="!props.collapsed && item.badge !== undefined"
-            class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
-          >
-            {{ item.badge }}
-          </span>
-        </button>
       </template>
     </nav>
 
