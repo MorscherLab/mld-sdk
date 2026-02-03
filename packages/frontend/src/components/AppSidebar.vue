@@ -96,27 +96,100 @@ function getItemClasses(item: SidebarItem, isParent = false) {
 
           <!-- Children -->
           <div v-if="!props.collapsed" class="space-y-0.5">
-            <component
-              :is="child.to ? RouterLink : child.href ? 'a' : 'button'"
-              v-for="child in item.children"
-              :key="child.id"
-              :to="child.to"
-              :href="child.href"
-              :class="getItemClasses(child)"
-              :disabled="child.disabled"
-              @click="handleItemClick(child)"
-            >
-              <span class="flex-1 truncate">{{ child.label }}</span>
-            </component>
+            <template v-for="child in item.children" :key="child.id">
+              <RouterLink
+                v-if="child.to"
+                :to="child.to"
+                :class="getItemClasses(child)"
+                @click="handleItemClick(child)"
+              >
+                <span class="flex-1 truncate">{{ child.label }}</span>
+              </RouterLink>
+              <a
+                v-else-if="child.href"
+                :href="child.href"
+                :class="getItemClasses(child)"
+                @click="handleItemClick(child)"
+              >
+                <span class="flex-1 truncate">{{ child.label }}</span>
+              </a>
+              <button
+                v-else
+                type="button"
+                :class="getItemClasses(child)"
+                :disabled="child.disabled"
+                @click="handleItemClick(child)"
+              >
+                <span class="flex-1 truncate">{{ child.label }}</span>
+              </button>
+            </template>
           </div>
         </div>
 
         <!-- Item without children: render as clickable link -->
-        <component
-          v-else
-          :is="item.to ? RouterLink : item.href ? 'a' : 'button'"
+        <RouterLink
+          v-else-if="item.to"
           :to="item.to"
+          :class="getItemClasses(item)"
+          @click="handleItemClick(item)"
+        >
+          <!-- Icon slot or default icon -->
+          <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
+            <slot :name="`icon-${item.id}`" :item="item">
+              {{ item.icon }}
+            </slot>
+          </span>
+
+          <!-- Label (hidden when collapsed) -->
+          <span
+            v-if="!props.collapsed"
+            class="flex-1 truncate"
+          >
+            {{ item.label }}
+          </span>
+
+          <!-- Badge -->
+          <span
+            v-if="!props.collapsed && item.badge !== undefined"
+            class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
+          >
+            {{ item.badge }}
+          </span>
+        </RouterLink>
+
+        <a
+          v-else-if="item.href"
           :href="item.href"
+          :class="getItemClasses(item)"
+          @click="handleItemClick(item)"
+        >
+          <!-- Icon slot or default icon -->
+          <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
+            <slot :name="`icon-${item.id}`" :item="item">
+              {{ item.icon }}
+            </slot>
+          </span>
+
+          <!-- Label (hidden when collapsed) -->
+          <span
+            v-if="!props.collapsed"
+            class="flex-1 truncate"
+          >
+            {{ item.label }}
+          </span>
+
+          <!-- Badge -->
+          <span
+            v-if="!props.collapsed && item.badge !== undefined"
+            class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
+          >
+            {{ item.badge }}
+          </span>
+        </a>
+
+        <button
+          v-else
+          type="button"
           :class="getItemClasses(item)"
           :disabled="item.disabled"
           @click="handleItemClick(item)"
@@ -143,7 +216,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
           >
             {{ item.badge }}
           </span>
-        </component>
+        </button>
       </template>
     </nav>
 
