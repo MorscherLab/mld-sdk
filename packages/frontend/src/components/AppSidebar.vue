@@ -33,8 +33,12 @@ const sidebarWidth = computed(() => props.collapsed ? props.collapsedWidth : pro
 function handleItemClick(item: SidebarItem, event?: MouseEvent) {
   if (item.disabled) return
 
-  if (item.to && event) {
-    event.preventDefault()
+  if (item.to) {
+    // For internal routes, use router.push
+    if (event && item.href) {
+      // If there's also an href (shouldn't happen but just in case), prevent default
+      event.preventDefault()
+    }
     router.push(item.to)
   } else if (item.href) {
     // Let default behavior handle external links
