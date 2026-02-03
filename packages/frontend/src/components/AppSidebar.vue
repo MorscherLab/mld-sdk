@@ -58,6 +58,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
   return [
     'flex items-center gap-3 px-3 py-2 rounded-mld text-sm transition-colors duration-mld',
     'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mld-primary',
+    'w-full text-left', // For button elements to match anchor styling
     item.disabled
       ? 'text-text-muted cursor-not-allowed'
       : isActive(item)
@@ -105,24 +106,28 @@ function getItemClasses(item: SidebarItem, isParent = false) {
 
           <!-- Children -->
           <div v-if="!props.collapsed" class="space-y-0.5">
-            <a
+            <component
               v-for="child in item.children"
               :key="child.id"
-              :href="child.to ? '#' : (child.href || '#')"
+              :is="child.href ? 'a' : 'button'"
+              :href="child.href"
+              :type="child.href ? undefined : 'button'"
               :class="getItemClasses(child)"
-              @click="(e) => handleItemClick(child, e)"
+              @click="(e: MouseEvent) => handleItemClick(child, e)"
             >
               <span class="flex-1 truncate">{{ child.label }}</span>
-            </a>
+            </component>
           </div>
         </div>
 
         <!-- Item without children: render as clickable link -->
-        <a
+        <component
           v-else
-          :href="item.to ? '#' : (item.href || '#')"
+          :is="item.href ? 'a' : 'button'"
+          :href="item.href"
+          :type="item.href ? undefined : 'button'"
           :class="getItemClasses(item)"
-          @click="(e) => handleItemClick(item, e)"
+          @click="(e: MouseEvent) => handleItemClick(item, e)"
         >
           <!-- Icon slot or default icon -->
           <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
@@ -146,7 +151,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
           >
             {{ item.badge }}
           </span>
-        </a>
+        </component>
       </template>
     </nav>
 
