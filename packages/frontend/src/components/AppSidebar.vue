@@ -108,7 +108,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
                 :class="getItemClasses(child)"
                 @click="handleItemClick(child, $event)"
               >
-                <span class="flex-1 truncate">{{ child.label }}</span>
+                <span class="flex-1 truncate text-left">{{ child.label }}</span>
               </a>
               <button
                 v-else
@@ -116,7 +116,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
                 :class="getItemClasses(child)"
                 @click="handleItemClick(child)"
               >
-                <span class="flex-1 truncate">{{ child.label }}</span>
+                <span class="flex-1 truncate text-left">{{ child.label }}</span>
               </button>
             </template>
           </div>
