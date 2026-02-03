@@ -96,33 +96,15 @@ function getItemClasses(item: SidebarItem, isParent = false) {
 
           <!-- Children -->
           <div v-if="!props.collapsed" class="space-y-0.5">
-            <template v-for="child in item.children" :key="child.id">
-              <RouterLink
-                v-if="child.to"
-                :to="child.to"
-                :class="getItemClasses(child)"
-                @click="handleItemClick(child)"
-              >
-                <span class="flex-1 truncate">{{ child.label }}</span>
-              </RouterLink>
-              <a
-                v-else-if="child.href"
-                :href="child.href"
-                :class="getItemClasses(child)"
-                @click="handleItemClick(child)"
-              >
-                <span class="flex-1 truncate">{{ child.label }}</span>
-              </a>
-              <button
-                v-else
-                type="button"
-                :class="getItemClasses(child)"
-                :disabled="child.disabled"
-                @click="handleItemClick(child)"
-              >
-                <span class="flex-1 truncate">{{ child.label }}</span>
-              </button>
-            </template>
+            <RouterLink
+              v-for="child in item.children"
+              :key="child.id"
+              :to="child.to || '/'"
+              :class="getItemClasses(child)"
+              @click="handleItemClick(child)"
+            >
+              <span class="flex-1 truncate">{{ child.label }}</span>
+            </RouterLink>
           </div>
         </div>
 
