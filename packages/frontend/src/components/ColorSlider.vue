@@ -52,9 +52,9 @@ const thresholds = computed(() => props.thresholds ?? defaultThresholds)
 
 const sizeConfig = computed(() => {
   switch (props.size) {
-    case 'sm': return { track: 'h-1', thumb: 16, badge: 'w-8 h-5 text-xs', label: 'text-[10px]' }
-    case 'lg': return { track: 'h-2', thumb: 22, badge: 'w-12 h-7 text-sm', label: 'text-xs' }
-    default: return { track: 'h-1.5', thumb: 18, badge: 'w-10 h-6 text-xs', label: 'text-[10px]' }
+    case 'sm': return { track: 'h-1', thumb: 16, badgeSize: '24px', fontSize: '11px', label: 'text-[10px]' }
+    case 'lg': return { track: 'h-2', thumb: 22, badgeSize: '32px', fontSize: '14px', label: 'text-xs' }
+    default: return { track: 'h-1.5', thumb: 18, badgeSize: '28px', fontSize: '12px', label: 'text-[10px]' }
   }
 })
 
@@ -134,8 +134,13 @@ function handleInput(event: Event) {
       <!-- Value badge -->
       <div
         v-if="showValue"
-        :class="['flex items-center justify-center rounded font-bold', sizeConfig.badge]"
-        :style="valueBadgeStyle"
+        class="flex items-center justify-center rounded font-bold"
+        :style="{
+          ...valueBadgeStyle,
+          minWidth: sizeConfig.badgeSize,
+          height: sizeConfig.badgeSize,
+          fontSize: sizeConfig.fontSize,
+        }"
       >
         {{ currentValue }}
       </div>

@@ -1,12 +1,110 @@
 /* BaseModal Component Styles */
 
+/* Modal Backdrop */
+.mld-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.mld-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+/* Modal Container */
+.mld-modal__container {
+  position: relative;
+  width: 100%;
+  background-color: var(--bg-card);
+  border-radius: var(--mld-radius-lg);
+  box-shadow: var(--mld-shadow-lg);
+  overflow: hidden;
+}
+
+.mld-modal__container--sm {
+  max-width: 24rem;
+}
+
+.mld-modal__container--md {
+  max-width: 28rem;
+}
+
+.mld-modal__container--lg {
+  max-width: 32rem;
+}
+
+.mld-modal__container--xl {
+  max-width: 36rem;
+}
+
+.mld-modal__container--full {
+  max-width: 56rem;
+}
+
+/* Modal Header */
+.mld-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mld-modal__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mld-modal__close {
+  padding: 0.25rem;
+  border-radius: var(--mld-radius-sm);
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--mld-transition), background-color var(--mld-transition);
+}
+
+.mld-modal__close:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+}
+
+.mld-modal__close-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
+}
+
+/* Modal Body */
+.mld-modal__body {
+  padding: 1rem 1.5rem;
+}
+
+/* Modal Footer */
+.mld-modal__footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+/* Transitions */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.2s ease;
 }
 
-.modal-enter-active > div:last-child,
-.modal-leave-active > div:last-child {
+.modal-enter-active .mld-modal__container,
+.modal-leave-active .mld-modal__container {
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
@@ -15,8 +113,8 @@
   opacity: 0;
 }
 
-.modal-enter-from > div:last-child,
-.modal-leave-to > div:last-child {
+.modal-enter-from .mld-modal__container,
+.modal-leave-to .mld-modal__container {
   transform: scale(0.95);
   opacity: 0;
 }

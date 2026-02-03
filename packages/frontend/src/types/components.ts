@@ -109,6 +109,7 @@ export interface TopBarTabOption {
 export type WellPlateFormat = 6 | 12 | 24 | 48 | 54 | 96 | 384
 export type WellState = 'empty' | 'filled' | 'selected' | 'disabled'
 export type WellPlateSelectionMode = 'none' | 'single' | 'multiple' | 'rectangle' | 'drag'
+export type WellPlateSize = 'sm' | 'md' | 'lg' | 'xl' | 'fill'
 export type WellShape = 'circle' | 'rounded'
 
 export interface Well {
@@ -171,3 +172,20 @@ export interface ProtocolStep {
   parameters?: Record<string, unknown>
   order: number
 }
+
+// Sample Selector types
+export interface SampleGroup {
+  name: string
+  color: string
+  samples: string[]
+}
+
+// Group Assigner types
+export interface GroupItem {
+  name: string
+  color: string
+  count: number
+}
+
+// FileUploader types
+export type FileUploaderMode = 'file' | 'folder'

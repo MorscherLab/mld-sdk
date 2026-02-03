@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **SampleSelector** - Hierarchical sample grouping component with:
+  - Select All checkbox with indeterminate state
+  - Auto-group by naming patterns (path levels)
+  - CSV metadata grouping via GroupingModal
+  - Color picker for groups
+  - New group creation
+- **GroupingModal** - Modal for CSV-based metadata grouping with:
+  - Drag-and-drop CSV upload
+  - Sample column and group column selectors
+  - Column reordering
+  - Data preview table
+  - Sample match validation
+- **GroupAssigner** - Drag-and-drop group assignment for comparisons with:
+  - Two customizable drop zones (e.g., Control vs Treatment)
+  - Draggable group pills with color indicators
+  - Minimum group validation
+  - Clear all functionality
+- **FileUploader folder mode** - Added `mode` prop ('file' | 'folder') for folder selection
+- **CollapsibleCard enhancements** - Added icon badge and toggle switch support:
+  - `icon`, `iconColor`, `iconBg` props for icon badges
+  - `showToggle`, `toggleValue` props for inline toggle switches
+- **GitHub Pages deployment** - Automated showcase deployment to `morscherlab.github.io/mld-sdk`
+- **Showcase enhancements** - Added demo helper components (CodeBlock, DemoSection, PropsTable, EventsTable)
+- New types: `SampleGroup`, `GroupItem`, `FileUploaderMode`
+
 ## [0.2.0] - 2025-02-03
 
 ### Changed

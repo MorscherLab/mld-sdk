@@ -7,7 +7,7 @@ const route = useRoute()
 const collapsed = ref(false)
 const searchQuery = ref('')
 
-const sidebarItems: SidebarItem[] = [
+const sidebarItems: readonly SidebarItem[] = [
   { id: 'overview', label: 'Overview', to: '/' },
   {
     id: 'buttons',
@@ -67,14 +67,20 @@ const sidebarItems: SidebarItem[] = [
       { id: 'experiment-timeline', label: 'ExperimentTimeline', to: '/experiment-timeline' },
     ],
   },
+  {
+    id: 'sample-management',
+    label: 'Sample Management',
+    children: [
+      { id: 'sample-selector', label: 'SampleSelector', to: '/sample-selector' },
+      { id: 'group-assigner', label: 'GroupAssigner', to: '/group-assigner' },
+    ],
+  },
 ]
 
 const activeId = computed(() => {
   const name = route.name as string
   return name === 'overview' ? 'overview' : name
 })
-
-const contentMargin = computed(() => collapsed.value ? 'calc(64px + 32px)' : 'calc(220px + 32px)')
 
 const filteredSidebarItems = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
@@ -102,12 +108,14 @@ const filteredSidebarItems = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-bg-primary">
-    <!-- Fixed Floating TopBar - full width, on top -->
+  <div class="h-screen flex flex-col bg-bg-primary overflow-hidden">
+    <!-- Fixed TopBar -->
     <AppTopBar
       plugin-name="MLD SDK"
       title="Component Showcase"
       :show-logo="true"
+      variant="default"
+      class="flex-shrink-0"
     >
       <template #actions>
         <BaseInput
@@ -120,23 +128,23 @@ const filteredSidebarItems = computed(() => {
       </template>
     </AppTopBar>
 
-    <!-- Fixed Floating Sidebar - starts below topbar -->
-    <AppSidebar
-      :items="filteredSidebarItems"
-      :active-id="activeId"
-      v-model:collapsed="collapsed"
-      floating
-      width="220px"
-      top-offset="88px"
-    />
+    <!-- Content area with sidebar -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Fixed Sidebar with internal scroll -->
+      <AppSidebar
+        :items="filteredSidebarItems"
+        :active-id="activeId"
+        v-model:collapsed="collapsed"
+        :floating="false"
+        width="220px"
+        class="flex-shrink-0"
+      />
 
-    <!-- Main content area -->
-    <main
-      :style="{ marginLeft: contentMargin }"
-      class="pt-24 pr-8 pb-8 transition-[margin] duration-200"
-    >
-      <router-view />
-    </main>
+      <!-- Scrollable main content -->
+      <main class="flex-1 overflow-y-auto p-8">
+        <router-view />
+      </main>
+    </div>
 
     <!-- Toast container -->
     <ToastNotification />

@@ -152,6 +152,17 @@ const routes: RouteRecordRaw[] = [
     name: 'experiment-timeline',
     component: () => import('./pages/ExperimentTimelinePage.vue'),
   },
+  // Sample Management Components
+  {
+    path: '/sample-selector',
+    name: 'sample-selector',
+    component: () => import('./pages/SampleSelectorPage.vue'),
+  },
+  {
+    path: '/group-assigner',
+    name: 'group-assigner',
+    component: () => import('./pages/GroupAssignerPage.vue'),
+  },
 ]
 
 const router = createRouter({

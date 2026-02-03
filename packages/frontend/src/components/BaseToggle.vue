@@ -21,6 +21,13 @@ function toggle() {
     emit('update:modelValue', !props.modelValue)
   }
 }
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === ' ' || event.key === 'Enter') {
+    event.preventDefault()
+    toggle()
+  }
+}
 </script>
 
 <template>
@@ -33,6 +40,7 @@ function toggle() {
   >
     <div
       role="switch"
+      :tabindex="disabled ? -1 : 0"
       :aria-checked="modelValue"
       :aria-label="label || 'Toggle'"
       :class="[
@@ -40,6 +48,7 @@ function toggle() {
         `mld-toggle__track--${size}`,
         modelValue ? 'mld-toggle__track--on' : 'mld-toggle__track--off',
       ]"
+      @keydown="handleKeydown"
     >
       <span
         :class="[

@@ -40,3 +40,8 @@ export { default as WellPlate } from './WellPlate.vue'
 export { default as SampleLegend } from './SampleLegend.vue'
 export { default as PlateMapEditor } from './PlateMapEditor.vue'
 export { default as ExperimentTimeline } from './ExperimentTimeline.vue'
+
+// Sample management components
+export { default as SampleSelector } from './SampleSelector.vue'
+export { default as GroupingModal } from './GroupingModal.vue'
+export { default as GroupAssigner } from './GroupAssigner.vue'

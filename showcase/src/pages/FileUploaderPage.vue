@@ -6,6 +6,7 @@ const sizes = ['sm', 'md', 'lg'] as const
 
 const uploadedFiles = ref<File[]>([])
 const imageFiles = ref<File[]>([])
+const folderFiles = ref<File[]>([])
 
 function handleUpload(files: File[]) {
   uploadedFiles.value = files
@@ -15,6 +16,11 @@ function handleUpload(files: File[]) {
 function handleImageUpload(files: File[]) {
   imageFiles.value = files
   console.log('Images:', files)
+}
+
+function handleFolderUpload(files: File[]) {
+  folderFiles.value = files
+  console.log('Folder files:', files)
 }
 
 function handleError(message: string) {
@@ -28,6 +34,7 @@ function handleError(message: string) {
     <h1 class="text-3xl font-bold text-text-primary mb-2">FileUploader</h1>
     <p class="text-text-secondary mb-8">
       A drag-and-drop file upload component with file type and size validation.
+      Supports both file and folder selection modes.
     </p>
 
     <!-- Basic Usage -->
@@ -37,6 +44,24 @@ function handleError(message: string) {
         <FileUploader @upload="handleUpload" @error="handleError" />
         <p v-if="uploadedFiles.length" class="text-sm text-text-secondary">
           Uploaded: {{ uploadedFiles.map(f => f.name).join(', ') }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Folder Mode -->
+    <div class="demo-section">
+      <h3>Folder Mode</h3>
+      <p class="text-sm text-text-secondary mb-4">
+        Select entire folders to upload all files within. Uses webkitdirectory for folder selection.
+      </p>
+      <div class="max-w-md space-y-2">
+        <FileUploader
+          mode="folder"
+          @upload="handleFolderUpload"
+          @error="handleError"
+        />
+        <p v-if="folderFiles.length" class="text-sm text-text-secondary">
+          Selected {{ folderFiles.length }} file(s) from folder
         </p>
       </div>
     </div>
@@ -104,6 +129,12 @@ function handleError(message: string) {
         </thead>
         <tbody>
           <tr>
+            <td><code>mode</code></td>
+            <td><code>'file' | 'folder'</code></td>
+            <td><code>'file'</code></td>
+            <td>Selection mode - file or folder</td>
+          </tr>
+          <tr>
             <td><code>accept</code></td>
             <td><code>string</code></td>
             <td>-</td>
@@ -166,11 +197,19 @@ function handleError(message: string) {
     <!-- Code Example -->
     <div class="demo-section">
       <h3>Usage</h3>
-      <pre class="code-block">&lt;FileUploader
+      <pre class="code-block">&lt;!-- File mode (default) --&gt;
+&lt;FileUploader
   accept=".csv,.xlsx"
   multiple
   :max-size="10 * 1024 * 1024"
   @upload="handleUpload"
+  @error="handleError"
+/&gt;
+
+&lt;!-- Folder mode --&gt;
+&lt;FileUploader
+  mode="folder"
+  @upload="handleFolderUpload"
   @error="handleError"
 /&gt;</pre>
     </div>

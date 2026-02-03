@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import type { WellPlateFormat, WellPlateSelectionMode, Well, HeatmapConfig, WellShape } from '../types'
+import type { WellPlateFormat, WellPlateSelectionMode, WellPlateSize, Well, HeatmapConfig, WellShape } from '../types'
 
 interface Props {
   modelValue?: string[]
@@ -15,8 +15,7 @@ interface Props {
   zoom?: number
   disabled?: boolean
   readonly?: boolean
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-  fillContainer?: boolean
+  size?: WellPlateSize
   wellShape?: WellShape
 }
 
@@ -38,7 +37,6 @@ const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   readonly: false,
   size: 'md',
-  fillContainer: false,
   wellShape: 'rounded',
 })
 
@@ -52,6 +50,7 @@ const emit = defineEmits<{
 }>()
 
 const plateRef = ref<HTMLElement | null>(null)
+const tableRef = ref<HTMLElement | null>(null)
 const isDragging = ref(false)
 const dragStart = ref<{ row: number; col: number } | null>(null)
 const dragEnd = ref<{ row: number; col: number } | null>(null)
@@ -121,25 +120,18 @@ const dragSelectedWells = computed(() => {
 
 // Size presets with pixel values for reliable sizing
 const sizeConfig = computed(() => {
-  if (props.fillContainer) {
-    return {
-      cellWidth: '100%',
-      cellHeight: '32px',
-      headerWidth: '40px',
-      headerHeight: '32px',
-      text: 'text-xs',
-      spacing: 'border-spacing-1',
-    }
-  }
   // Use pixel values to avoid Tailwind class generation issues
   const sizes = {
-    sm: { cellWidth: '40px', cellHeight: '40px', headerWidth: '32px', headerHeight: '32px', text: 'text-[10px]', spacing: 'border-spacing-0.5' },
-    md: { cellWidth: '56px', cellHeight: '32px', headerWidth: '32px', headerHeight: '24px', text: 'text-xs', spacing: 'border-spacing-1' },
-    lg: { cellWidth: '80px', cellHeight: '40px', headerWidth: '40px', headerHeight: '32px', text: 'text-sm', spacing: 'border-spacing-1' },
-    xl: { cellWidth: '96px', cellHeight: '48px', headerWidth: '48px', headerHeight: '40px', text: 'text-base', spacing: 'border-spacing-1.5' },
+    sm: { cellWidth: '40px', cellHeight: '40px', headerWidth: '32px', headerHeight: '32px', text: 'text-[10px]', gap: '2px' },
+    md: { cellWidth: '56px', cellHeight: '32px', headerWidth: '32px', headerHeight: '24px', text: 'text-xs', gap: '3px' },
+    lg: { cellWidth: '80px', cellHeight: '40px', headerWidth: '40px', headerHeight: '32px', text: 'text-sm', gap: '4px' },
+    xl: { cellWidth: '96px', cellHeight: '48px', headerWidth: '48px', headerHeight: '40px', text: 'text-base', gap: '4px' },
+    fill: { cellWidth: '100%', cellHeight: '32px', headerWidth: '32px', headerHeight: '24px', text: 'text-xs', gap: '2px' },
   }
   return sizes[props.size]
 })
+
+const isFillMode = computed(() => props.size === 'fill')
 
 // Sample type colors (matching MSExpDesigner)
 const defaultSampleTypeColors: Record<string, { bg: string; border: string }> = {
@@ -384,42 +376,43 @@ onUnmounted(() => {
 })
 
 const containerStyle = computed(() =>
-  props.fillContainer ? {} : {
+  isFillMode.value ? {} : {
     transform: `scale(${props.zoom})`,
     transformOrigin: 'top left',
   }
 )
 
-const tableClass = computed(() => {
-  return [
-    'border-separate',
-    sizeConfig.value.spacing,
-    props.fillContainer ? 'w-full table-fixed' : '',
-  ].join(' ')
-})
+const tableStyle = computed(() => ({
+  borderCollapse: 'separate' as const,
+  borderSpacing: sizeConfig.value.gap,
+  ...(isFillMode.value ? { width: '100%', tableLayout: 'fixed' as const } : {}),
+}))
 </script>
 
 <template>
   <div
     ref="plateRef"
-    :class="['select-none', fillContainer ? 'w-full' : 'inline-block']"
+    :class="['mld-well-plate', isFillMode ? 'mld-well-plate--fill' : 'mld-well-plate--inline']"
     :style="containerStyle"
   >
-    <div class="overflow-x-auto">
-      <table
-        role="grid"
-        :aria-label="`${format}-well plate`"
-        :class="tableClass"
-      >
+    <div class="mld-well-plate__scroll">
+      <div class="mld-well-plate__content">
+        <table
+          ref="tableRef"
+          class="mld-well-plate__table"
+          role="grid"
+          :aria-label="`${props.format}-well plate`"
+          :style="tableStyle"
+        >
         <!-- Column headers -->
-        <thead v-if="showLabels">
+        <thead v-if="props.showLabels">
           <tr>
             <th :style="{ width: sizeConfig.headerWidth, height: sizeConfig.headerHeight }"></th>
             <th
               v-for="col in colLabels"
               :key="col"
               :class="[sizeConfig.text, 'font-medium text-center']"
-              :style="{ width: fillContainer ? 'auto' : sizeConfig.cellWidth, height: sizeConfig.headerHeight }"
+              :style="{ height: sizeConfig.headerHeight }"
               style="color: var(--text-muted)"
             >
               {{ col }}
@@ -430,7 +423,7 @@ const tableClass = computed(() => {
           <tr v-for="(row, rowIndex) in wellGrid" :key="rowIndex" role="row">
             <!-- Row header -->
             <td
-              v-if="showLabels"
+              v-if="props.showLabels"
               :class="[sizeConfig.text, 'font-medium text-center align-middle']"
               :style="{ width: sizeConfig.headerWidth, height: sizeConfig.cellHeight, minWidth: sizeConfig.headerWidth, minHeight: sizeConfig.cellHeight, color: 'var(--text-muted)' }"
             >
@@ -444,14 +437,15 @@ const tableClass = computed(() => {
                 tabindex="0"
                 :aria-label="`Well ${well.id}${well.sampleType ? `, Sample type: ${well.sampleType}` : ''}${well.value !== undefined ? `, Value: ${well.value}` : ''}`"
                 :aria-selected="isSelected(well.id)"
-                :aria-disabled="disabled || well.state === 'disabled'"
-                :draggable="selectionMode === 'drag' && !!well.sampleType"
+                :aria-disabled="props.disabled || well.state === 'disabled'"
+                :draggable="props.selectionMode === 'drag' && !!well.sampleType"
                 :class="getWellClasses(well)"
                 :style="{
-                  width: fillContainer ? '100%' : sizeConfig.cellWidth,
+                  width: isFillMode ? '100%' : sizeConfig.cellWidth,
                   height: sizeConfig.cellHeight,
-                  minWidth: fillContainer ? 'auto' : sizeConfig.cellWidth,
+                  minWidth: isFillMode ? '0' : sizeConfig.cellWidth,
                   minHeight: sizeConfig.cellHeight,
+                  boxSizing: 'border-box',
                   ...getWellStyle(well),
                 }"
                 :title="`${well.id}${well.sampleType ? `: ${well.sampleType}` : ''}`"
@@ -478,7 +472,7 @@ const tableClass = computed(() => {
                 </span>
                 <!-- Well ID -->
                 <span
-                  v-else-if="showWellIds"
+                  v-else-if="props.showWellIds"
                   :class="[sizeConfig.text, 'font-medium pointer-events-none']"
                   style="color: var(--text-primary)"
                 >
@@ -488,24 +482,25 @@ const tableClass = computed(() => {
             </td>
           </tr>
         </tbody>
-      </table>
-    </div>
+        </table>
 
-    <!-- Heatmap legend -->
-    <div
-      v-if="heatmap?.enabled && heatmap.showLegend"
-      class="mt-2 flex items-center gap-2"
-    >
-      <span class="text-xs" style="color: var(--text-muted)">{{ heatmap.min ?? 0 }}</span>
-      <div class="flex-1 h-3 rounded-sm overflow-hidden flex">
+        <!-- Heatmap legend (inside content wrapper to match table width) -->
         <div
-          v-for="(color, index) in (heatmap.colorScale === 'custom' && heatmap.customColors?.length ? heatmap.customColors : heatmapColors[heatmap.colorScale || 'viridis'])"
-          :key="index"
-          class="flex-1"
-          :style="{ backgroundColor: color }"
-        />
+          v-if="props.heatmap?.enabled && props.heatmap.showLegend"
+          class="mld-well-plate__legend"
+        >
+          <span class="mld-well-plate__legend-label">{{ props.heatmap.min ?? 0 }}</span>
+          <div class="mld-well-plate__legend-bar">
+            <div
+              v-for="(color, index) in (props.heatmap.colorScale === 'custom' && props.heatmap.customColors?.length ? props.heatmap.customColors : heatmapColors[props.heatmap.colorScale || 'viridis'])"
+              :key="index"
+              class="mld-well-plate__legend-segment"
+              :style="{ backgroundColor: color }"
+            />
+          </div>
+          <span class="mld-well-plate__legend-label">{{ props.heatmap.max ?? 1 }}</span>
+        </div>
       </div>
-      <span class="text-xs" style="color: var(--text-muted)">{{ heatmap.max ?? 1 }}</span>
     </div>
   </div>
 </template>

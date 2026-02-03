@@ -16,6 +16,15 @@
   overflow-x: auto;
 }
 
+.mld-well-plate__content {
+  display: inline-block;
+}
+
+.mld-well-plate--fill .mld-well-plate__content {
+  display: block;
+  width: 100%;
+}
+
 /* Table */
 .mld-well-plate__table {
   border-collapse: separate;
@@ -198,12 +207,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
 }
 
-.mld-well-plate__legend-min,
-.mld-well-plate__legend-max {
+.mld-well-plate__legend-label {
   font-size: 0.75rem;
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .mld-well-plate__legend-bar {
@@ -212,6 +222,7 @@
   border-radius: 0.125rem;
   overflow: hidden;
   display: flex;
+  min-width: 0;
 }
 
 .mld-well-plate__legend-segment {

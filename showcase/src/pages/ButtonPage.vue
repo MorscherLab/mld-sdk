@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { BaseButton, type ButtonVariant, type ButtonSize } from '@morscherlab/mld-sdk'
+import { PageHeader, DemoSection, PropsTable, EventsTable, CodeBlock, type PropDefinition, type EventDefinition } from '../components'
 
-const variants: ButtonVariant[] = ['primary', 'secondary', 'cta', 'danger', 'success', 'ghost']
-const sizes: ButtonSize[] = ['sm', 'md', 'lg']
+const variants: readonly ButtonVariant[] = ['primary', 'secondary', 'cta', 'danger', 'success', 'ghost']
+const sizes: readonly ButtonSize[] = ['sm', 'md', 'lg']
 
 const loadingVariant = ref<ButtonVariant | null>(null)
 
@@ -13,18 +14,37 @@ function simulateLoading(variant: ButtonVariant) {
     loadingVariant.value = null
   }, 2000)
 }
+
+const propDefinitions: readonly PropDefinition[] = [
+  { name: 'variant', type: 'ButtonVariant', default: "'primary'", description: 'Button style variant' },
+  { name: 'size', type: 'ButtonSize', default: "'md'", description: 'Button size' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disable the button' },
+  { name: 'loading', type: 'boolean', default: 'false', description: 'Show loading spinner' },
+  { name: 'type', type: "'button' | 'submit' | 'reset'", default: "'button'", description: 'HTML button type' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Expand to full container width' },
+]
+
+const eventDefinitions: readonly EventDefinition[] = [
+  { name: 'click', payload: 'MouseEvent', description: 'Emitted when button is clicked (not when disabled or loading)' },
+]
+
+const usageCode = `<BaseButton variant="primary" size="md">
+  Click me
+</BaseButton>
+
+<BaseButton variant="danger" :loading="isLoading" @click="handleClick">
+  Delete
+</BaseButton>`
 </script>
 
 <template>
   <div class="max-w-4xl">
-    <h1 class="text-3xl font-bold text-text-primary mb-2">BaseButton</h1>
-    <p class="text-text-secondary mb-8">
-      A versatile button component with multiple variants, sizes, and states.
-    </p>
+    <PageHeader
+      title="BaseButton"
+      description="A versatile button component with multiple variants, sizes, and states."
+    />
 
-    <!-- Variants -->
-    <div class="demo-section">
-      <h3>Variants</h3>
+    <DemoSection title="Variants">
       <div class="demo-grid">
         <BaseButton
           v-for="variant in variants"
@@ -34,11 +54,9 @@ function simulateLoading(variant: ButtonVariant) {
           {{ variant }}
         </BaseButton>
       </div>
-    </div>
+    </DemoSection>
 
-    <!-- Sizes -->
-    <div class="demo-section">
-      <h3>Sizes</h3>
+    <DemoSection title="Sizes">
       <div class="demo-grid">
         <BaseButton
           v-for="size in sizes"
@@ -48,12 +66,9 @@ function simulateLoading(variant: ButtonVariant) {
           Size {{ size }}
         </BaseButton>
       </div>
-    </div>
+    </DemoSection>
 
-    <!-- Loading State -->
-    <div class="demo-section">
-      <h3>Loading State</h3>
-      <p class="text-sm text-text-secondary mb-4">Click a button to see the loading state</p>
+    <DemoSection title="Loading State" description="Click a button to see the loading state">
       <div class="demo-grid">
         <BaseButton
           v-for="variant in variants"
@@ -65,11 +80,9 @@ function simulateLoading(variant: ButtonVariant) {
           {{ variant }}
         </BaseButton>
       </div>
-    </div>
+    </DemoSection>
 
-    <!-- Disabled State -->
-    <div class="demo-section">
-      <h3>Disabled State</h3>
+    <DemoSection title="Disabled State">
       <div class="demo-grid">
         <BaseButton
           v-for="variant in variants"
@@ -80,101 +93,25 @@ function simulateLoading(variant: ButtonVariant) {
           {{ variant }}
         </BaseButton>
       </div>
-    </div>
+    </DemoSection>
 
-    <!-- Full Width -->
-    <div class="demo-section">
-      <h3>Full Width</h3>
+    <DemoSection title="Full Width">
       <div class="space-y-3 max-w-md">
         <BaseButton variant="primary" full-width>Primary Full Width</BaseButton>
         <BaseButton variant="secondary" full-width>Secondary Full Width</BaseButton>
       </div>
-    </div>
+    </DemoSection>
 
-    <!-- Props Table -->
-    <div class="demo-section">
-      <h3>Props</h3>
-      <table class="props-table">
-        <thead>
-          <tr>
-            <th>Prop</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>variant</code></td>
-            <td><code>ButtonVariant</code></td>
-            <td><code>'primary'</code></td>
-            <td>Button style variant</td>
-          </tr>
-          <tr>
-            <td><code>size</code></td>
-            <td><code>ButtonSize</code></td>
-            <td><code>'md'</code></td>
-            <td>Button size</td>
-          </tr>
-          <tr>
-            <td><code>disabled</code></td>
-            <td><code>boolean</code></td>
-            <td><code>false</code></td>
-            <td>Disable the button</td>
-          </tr>
-          <tr>
-            <td><code>loading</code></td>
-            <td><code>boolean</code></td>
-            <td><code>false</code></td>
-            <td>Show loading spinner</td>
-          </tr>
-          <tr>
-            <td><code>type</code></td>
-            <td><code>'button' | 'submit' | 'reset'</code></td>
-            <td><code>'button'</code></td>
-            <td>HTML button type</td>
-          </tr>
-          <tr>
-            <td><code>fullWidth</code></td>
-            <td><code>boolean</code></td>
-            <td><code>false</code></td>
-            <td>Expand to full container width</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <DemoSection title="Props">
+      <PropsTable :props="propDefinitions" />
+    </DemoSection>
 
-    <!-- Events Table -->
-    <div class="demo-section">
-      <h3>Events</h3>
-      <table class="props-table">
-        <thead>
-          <tr>
-            <th>Event</th>
-            <th>Payload</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>click</code></td>
-            <td><code>MouseEvent</code></td>
-            <td>Emitted when button is clicked (not when disabled or loading)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <DemoSection title="Events">
+      <EventsTable :events="eventDefinitions" />
+    </DemoSection>
 
-    <!-- Code Example -->
-    <div class="demo-section">
-      <h3>Usage</h3>
-      <pre class="code-block">&lt;BaseButton variant="primary" size="md"&gt;
-  Click me
-&lt;/BaseButton&gt;
-
-&lt;BaseButton variant="danger" :loading="isLoading" @click="handleClick"&gt;
-  Delete
-&lt;/BaseButton&gt;</pre>
-    </div>
+    <DemoSection title="Usage">
+      <CodeBlock :code="usageCode" />
+    </DemoSection>
   </div>
 </template>

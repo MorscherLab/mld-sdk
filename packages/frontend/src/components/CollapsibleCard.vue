@@ -6,12 +6,23 @@ interface Props {
   subtitle?: string
   defaultOpen?: boolean
   disabled?: boolean
+  icon?: string
+  iconColor?: string
+  iconBg?: string
+  showToggle?: boolean
+  toggleValue?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   defaultOpen: false,
   disabled: false,
+  showToggle: false,
+  toggleValue: false,
 })
+
+const emit = defineEmits<{
+  'update:toggleValue': [value: boolean]
+}>()
 
 const isOpen = ref(props.defaultOpen)
 
@@ -21,16 +32,33 @@ const toggle = () => {
   }
 }
 
+const handleToggleClick = (event: Event) => {
+  event.stopPropagation()
+  emit('update:toggleValue', !props.toggleValue)
+}
+
 const headerClasses = computed(() => [
-  'flex items-center justify-between w-full px-4 py-3 text-left',
-  'bg-bg-card hover:bg-bg-hover transition-colors duration-mld',
-  'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mld-primary',
-  props.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+  'mld-collapsible-card__header',
+  props.disabled ? 'mld-collapsible-card__header--disabled' : '',
 ])
+
+const iconBgStyle = computed(() => {
+  if (!props.icon) return {}
+  return {
+    backgroundColor: props.iconBg || 'var(--color-primary-soft)',
+  }
+})
+
+const iconColorStyle = computed(() => {
+  if (!props.icon) return {}
+  return {
+    color: props.iconColor || 'var(--color-primary)',
+  }
+})
 </script>
 
 <template>
-  <div class="border border-border rounded-mld overflow-hidden bg-bg-card">
+  <div class="mld-collapsible-card">
     <button
       type="button"
       :class="headerClasses"
@@ -38,26 +66,73 @@ const headerClasses = computed(() => [
       :aria-expanded="isOpen"
       @click="toggle"
     >
-      <div>
-        <h3 class="text-sm font-medium text-text-primary">{{ title }}</h3>
-        <p v-if="subtitle" class="text-xs text-text-muted mt-0.5">{{ subtitle }}</p>
+      <div class="mld-collapsible-card__title-section">
+        <!-- Icon badge -->
+        <div v-if="icon" class="mld-collapsible-card__icon-badge" :style="iconBgStyle">
+          <svg
+            class="mld-collapsible-card__icon"
+            :style="iconColorStyle"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            v-html="icon"
+          />
+        </div>
+
+        <div class="mld-collapsible-card__titles">
+          <h3 class="mld-collapsible-card__title">{{ title }}</h3>
+          <p v-if="subtitle" class="mld-collapsible-card__subtitle">{{ subtitle }}</p>
+        </div>
       </div>
-      <svg
-        :class="[
-          'w-5 h-5 text-text-muted transition-transform duration-200',
-          isOpen ? 'rotate-180' : '',
-        ]"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
+
+      <div class="mld-collapsible-card__actions">
+        <!-- Toggle switch -->
+        <div
+          v-if="showToggle"
+          class="mld-collapsible-card__toggle"
+          @click="handleToggleClick"
+        >
+          <div
+            role="switch"
+            tabindex="0"
+            :aria-checked="toggleValue"
+            :class="[
+              'mld-collapsible-card__toggle-track',
+              toggleValue ? 'mld-collapsible-card__toggle-track--on' : '',
+            ]"
+            @keydown.enter.prevent="handleToggleClick"
+            @keydown.space.prevent="handleToggleClick"
+          >
+            <span
+              :class="[
+                'mld-collapsible-card__toggle-knob',
+                toggleValue ? 'mld-collapsible-card__toggle-knob--on' : '',
+              ]"
+            />
+          </div>
+        </div>
+
+        <!-- Chevron -->
+        <svg
+          :class="[
+            'mld-collapsible-card__chevron',
+            isOpen ? 'mld-collapsible-card__chevron--open' : '',
+          ]"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </button>
 
     <Transition name="collapse">
-      <div v-show="isOpen" class="border-t border-border">
-        <div class="px-4 py-3">
+      <div v-show="isOpen" class="mld-collapsible-card__body">
+        <div class="mld-collapsible-card__content">
           <slot />
         </div>
       </div>

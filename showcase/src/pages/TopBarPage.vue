@@ -65,7 +65,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
       </p>
       <div class="border border-border rounded-mld overflow-hidden">
         <AppTopBar
-          :floating="false"
+          variant="default"
           title="Admin Dashboard"
           subtitle="Manage users, plugins, and system configuration"
         >
@@ -89,7 +89,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
     <div class="demo-section">
       <h3>Basic with Title</h3>
       <div class="border border-border rounded-mld overflow-hidden">
-        <AppTopBar :floating="false" title="Page Title" />
+        <AppTopBar variant="default" title="Page Title" />
       </div>
     </div>
 
@@ -99,7 +99,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
       <p class="text-sm text-text-secondary mb-4">Click the plugin name to open the pages dropdown</p>
       <div class="border border-border rounded-mld">
         <AppTopBar
-          :floating="false"
+          variant="default"
           plugin-name="Analysis Plugin"
           title="Results"
           :pages="pages"
@@ -116,7 +116,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
       <h3>With Actions Slot</h3>
       <div class="border border-border rounded-mld overflow-hidden">
         <AppTopBar
-          :floating="false"
+          variant="default"
           plugin-name="Experiment Designer"
           title="New Experiment"
         >
@@ -132,7 +132,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
     <div class="demo-section">
       <h3>With Theme Toggle</h3>
       <div class="border border-border rounded-mld overflow-hidden">
-        <AppTopBar :floating="false" title="Dashboard">
+        <AppTopBar variant="default" title="Dashboard">
           <template #actions>
             <ThemeToggle size="sm" />
           </template>
@@ -144,7 +144,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
     <div class="demo-section">
       <h3>Custom Logo Slot</h3>
       <div class="border border-border rounded-mld overflow-hidden">
-        <AppTopBar :floating="false" title="Custom Logo Example">
+        <AppTopBar variant="default" title="Custom Logo Example">
           <template #logo>
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 bg-mld-cta rounded-full flex items-center justify-center">
@@ -167,7 +167,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
       <div class="bg-bg-primary p-4 rounded-mld">
         <div class="rounded-xl shadow-sm border border-border overflow-hidden">
           <AppTopBar
-            :floating="false"
+            variant="default"
             plugin-name="Analytics"
             title="Reports"
           >
@@ -187,7 +187,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
       </p>
       <div class="border border-border rounded-mld">
         <AppTopBar
-          :floating="false"
+          variant="default"
           plugin-name="Experiment"
           title="EXP-001"
           :tabs="tabs"
@@ -213,7 +213,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
       <div class="bg-bg-primary p-4 rounded-mld">
         <div class="rounded-xl shadow-sm border border-border">
           <AppTopBar
-            :floating="false"
+            variant="default"
             plugin-name="Dashboard"
             :tabs="tabs"
             :current-tab-id="currentTab"
@@ -234,7 +234,7 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
       <h3>Without Logo</h3>
       <div class="border border-border rounded-mld overflow-hidden">
         <AppTopBar
-          :floating="false"
+          variant="default"
           title="Minimal Header"
           :show-logo="false"
         />

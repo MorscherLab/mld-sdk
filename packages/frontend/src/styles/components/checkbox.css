@@ -9,7 +9,7 @@
 }
 
 .mld-checkbox--disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -45,6 +45,14 @@
 .mld-checkbox__box--checked {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
+}
+
+.mld-checkbox__native:focus-visible + .mld-checkbox__box {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+html.dark .mld-checkbox__native:focus-visible + .mld-checkbox__box {
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-primary);
 }
 
 .mld-checkbox__box--sm {

@@ -26,29 +26,28 @@ function handleChange(event: Event) {
   <label
     :class="[
       'mld-checkbox',
-      disabled ? 'mld-checkbox--disabled' : '',
+      props.disabled ? 'mld-checkbox--disabled' : '',
     ]"
   >
     <div class="mld-checkbox__input-wrapper">
       <input
         type="checkbox"
-        :checked="modelValue"
-        :disabled="disabled"
-        :aria-label="label || 'Checkbox'"
+        :checked="props.modelValue"
+        :disabled="props.disabled"
+        :aria-label="props.label || 'Checkbox'"
         class="mld-checkbox__native"
         @change="handleChange"
       />
       <div
         :class="[
           'mld-checkbox__box',
-          `mld-checkbox__box--${size}`,
-          modelValue ? 'mld-checkbox__box--checked' : '',
+          `mld-checkbox__box--${props.size}`,
+          props.modelValue ? 'mld-checkbox__box--checked' : '',
         ]"
-        @click.prevent="!disabled && $emit('update:modelValue', !modelValue)"
       >
         <svg
-          v-if="modelValue"
-          :class="['mld-checkbox__icon', `mld-checkbox__icon--${size}`]"
+          v-if="props.modelValue"
+          :class="['mld-checkbox__icon', `mld-checkbox__icon--${props.size}`]"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -58,8 +57,8 @@ function handleChange(event: Event) {
         </svg>
       </div>
     </div>
-    <span v-if="label" :class="['mld-checkbox__label', `mld-checkbox__label--${size}`]">
-      {{ label }}
+    <span v-if="props.label" :class="['mld-checkbox__label', `mld-checkbox__label--${props.size}`]">
+      {{ props.label }}
     </span>
   </label>
 </template>

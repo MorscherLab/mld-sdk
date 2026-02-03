@@ -35,3 +35,6 @@
 @import './components/toast.css';
 @import './components/toggle.css';
 @import './components/well-plate.css';
+@import './components/sample-selector.css';
+@import './components/grouping-modal.css';
+@import './components/group-assigner.css';

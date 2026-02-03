@@ -34,18 +34,18 @@ function handleInput(event: Event) {
 
 <template>
   <textarea
-    :value="modelValue"
-    :placeholder="placeholder"
-    :disabled="disabled"
-    :readonly="readonly"
-    :rows="rows"
-    :maxlength="maxlength"
+    :value="props.modelValue"
+    :placeholder="props.placeholder"
+    :disabled="props.disabled"
+    :readonly="props.readonly"
+    :rows="props.rows"
+    :maxlength="props.maxlength"
     :class="[
       'mld-textarea',
-      `mld-textarea--${size}`,
-      `mld-textarea--resize-${resize}`,
-      error ? 'mld-textarea--error' : '',
-      disabled ? 'mld-textarea--disabled' : '',
+      `mld-textarea--${props.size}`,
+      `mld-textarea--resize-${props.resize}`,
+      props.error ? 'mld-textarea--error' : '',
+      props.disabled ? 'mld-textarea--disabled' : '',
     ]"
     @input="handleInput"
     @focus="emit('focus', $event)"

@@ -9,7 +9,7 @@
 }
 
 .mld-toggle--disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -29,6 +29,18 @@
 
 .mld-toggle__track--on {
   background-color: var(--color-primary);
+}
+
+.mld-toggle__track:focus {
+  outline: none;
+}
+
+.mld-toggle__track:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+html.dark .mld-toggle__track:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-primary);
 }
 
 .mld-toggle__track--sm {

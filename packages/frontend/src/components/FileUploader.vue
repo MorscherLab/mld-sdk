@@ -7,12 +7,14 @@ interface Props {
   maxSize?: number
   disabled?: boolean
   size?: 'sm' | 'md' | 'lg'
+  mode?: 'file' | 'folder'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   multiple: false,
   disabled: false,
   size: 'md',
+  mode: 'file',
 })
 
 const emit = defineEmits<{
@@ -23,14 +25,9 @@ const emit = defineEmits<{
 const isDragOver = ref(false)
 const inputRef = ref<HTMLInputElement>()
 const selectedFiles = ref<File[]>([])
+const folderName = ref<string | null>(null)
 
-const sizeConfig = computed(() => {
-  switch (props.size) {
-    case 'sm': return { padding: 'py-4 px-4', icon: 'w-8 h-8', text: 'text-sm', subtext: 'text-xs' }
-    case 'lg': return { padding: 'py-10 px-8', icon: 'w-14 h-14', text: 'text-lg', subtext: 'text-base' }
-    default: return { padding: 'py-8 px-6', icon: 'w-12 h-12', text: 'text-base', subtext: 'text-sm' }
-  }
-})
+const isFolder = computed(() => props.mode === 'folder')
 
 const acceptLabel = computed(() => {
   if (!props.accept) return 'any file'
@@ -87,11 +84,15 @@ function validateFiles(files: FileList | File[]): File[] {
   return validFiles
 }
 
-function handleFiles(files: FileList | File[]) {
+function handleFiles(files: FileList | File[], folder?: string) {
   const validFiles = validateFiles(files)
   if (validFiles.length === 0) return
 
-  if (!props.multiple) {
+  if (isFolder.value) {
+    folderName.value = folder || extractFolderName(validFiles)
+    selectedFiles.value = validFiles
+    emit('upload', validFiles)
+  } else if (!props.multiple) {
     selectedFiles.value = [validFiles[0]]
     emit('upload', [validFiles[0]])
   } else {
@@ -100,13 +101,67 @@ function handleFiles(files: FileList | File[]) {
   }
 }
 
+function extractFolderName(files: File[]): string | null {
+  if (files.length === 0) return null
+  const firstPath = files[0].webkitRelativePath
+  if (firstPath) {
+    return firstPath.split('/')[0]
+  }
+  return null
+}
+
 function handleDrop(event: DragEvent) {
   event.preventDefault()
   isDragOver.value = false
   if (props.disabled) return
-  if (event.dataTransfer?.files) {
+
+  if (isFolder.value && event.dataTransfer?.items) {
+    handleFolderDrop(event.dataTransfer.items)
+  } else if (event.dataTransfer?.files) {
     handleFiles(event.dataTransfer.files)
   }
+}
+
+async function handleFolderDrop(items: DataTransferItemList) {
+  const files: File[] = []
+  let folderNameFromDrop: string | undefined
+
+  for (const item of Array.from(items)) {
+    const entry = item.webkitGetAsEntry?.()
+    if (entry?.isDirectory) {
+      folderNameFromDrop = entry.name
+      await readDirectory(entry as FileSystemDirectoryEntry, files)
+    } else if (entry?.isFile) {
+      const file = await getFile(entry as FileSystemFileEntry)
+      if (file) files.push(file)
+    }
+  }
+
+  if (files.length > 0) {
+    handleFiles(files, folderNameFromDrop)
+  }
+}
+
+async function readDirectory(directory: FileSystemDirectoryEntry, files: File[]): Promise<void> {
+  const reader = directory.createReader()
+  const entries = await new Promise<FileSystemEntry[]>((resolve) => {
+    reader.readEntries(resolve)
+  })
+
+  for (const entry of entries) {
+    if (entry.isFile) {
+      const file = await getFile(entry as FileSystemFileEntry)
+      if (file) files.push(file)
+    } else if (entry.isDirectory) {
+      await readDirectory(entry as FileSystemDirectoryEntry, files)
+    }
+  }
+}
+
+function getFile(entry: FileSystemFileEntry): Promise<File | null> {
+  return new Promise((resolve) => {
+    entry.file(resolve, () => resolve(null))
+  })
 }
 
 function handleDragOver(event: DragEvent) {
@@ -135,7 +190,15 @@ function openFilePicker() {
 }
 
 function removeFile(index: number) {
-  selectedFiles.value.splice(index, 1)
+  selectedFiles.value = selectedFiles.value.filter((_, i) => i !== index)
+  if (isFolder.value && selectedFiles.value.length === 0) {
+    folderName.value = null
+  }
+}
+
+function clearAll() {
+  selectedFiles.value = []
+  folderName.value = null
 }
 
 function formatFileSize(bytes: number): string {
@@ -173,14 +236,27 @@ function formatFileSize(bytes: number): string {
         ref="inputRef"
         type="file"
         :accept="accept"
-        :multiple="multiple"
+        :multiple="isFolder || multiple"
         :disabled="disabled"
+        :webkitdirectory="isFolder || undefined"
         class="mld-file-uploader__input"
         @change="handleInputChange"
       />
 
       <div class="mld-file-uploader__content">
+        <!-- Folder icon for folder mode -->
         <svg
+          v-if="isFolder"
+          :class="['mld-file-uploader__icon', `mld-file-uploader__icon--${size}`]"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+        </svg>
+        <!-- Cloud upload icon for file mode -->
+        <svg
+          v-else
           :class="['mld-file-uploader__icon', `mld-file-uploader__icon--${size}`]"
           fill="none"
           stroke="currentColor"
@@ -190,17 +266,46 @@ function formatFileSize(bytes: number): string {
         </svg>
 
         <p :class="['mld-file-uploader__text', `mld-file-uploader__text--${size}`]">
-          <span class="mld-file-uploader__highlight">Click to upload</span>
+          <span class="mld-file-uploader__highlight">{{ isFolder ? 'Click to select folder' : 'Click to upload' }}</span>
           <span> or drag and drop</span>
         </p>
 
         <p :class="['mld-file-uploader__hint', `mld-file-uploader__hint--${size}`]">
-          {{ acceptLabel }}{{ maxSizeLabel ? ` (max ${maxSizeLabel})` : '' }}
+          <template v-if="isFolder">
+            Select a folder to upload all files within
+          </template>
+          <template v-else>
+            {{ acceptLabel }}{{ maxSizeLabel ? ` (max ${maxSizeLabel})` : '' }}
+          </template>
         </p>
       </div>
     </div>
 
-    <ul v-if="selectedFiles.length > 0" class="mld-file-uploader__list">
+    <!-- Folder summary display -->
+    <div v-if="isFolder && folderName && selectedFiles.length > 0" class="mld-file-uploader__folder-summary">
+      <div class="mld-file-uploader__folder-info">
+        <svg class="mld-file-uploader__folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+        </svg>
+        <div class="mld-file-uploader__folder-details">
+          <span class="mld-file-uploader__folder-name">{{ folderName }}</span>
+          <span class="mld-file-uploader__folder-count">{{ selectedFiles.length }} file{{ selectedFiles.length !== 1 ? 's' : '' }}</span>
+        </div>
+      </div>
+      <button
+        type="button"
+        aria-label="Clear folder"
+        class="mld-file-uploader__file-remove"
+        @click.stop="clearAll"
+      >
+        <svg class="mld-file-uploader__file-remove-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- File list display (for non-folder mode) -->
+    <ul v-if="!isFolder && selectedFiles.length > 0" class="mld-file-uploader__list">
       <li
         v-for="(file, index) in selectedFiles"
         :key="`${file.name}-${index}`"

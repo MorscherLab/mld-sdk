@@ -1,7 +1,18 @@
 <script setup lang="ts">
-import { BaseButton, AlertBox } from '@morscherlab/mld-sdk'
+import { AlertBox } from '@morscherlab/mld-sdk'
 
-const components = [
+interface ComponentItem {
+  name: string
+  description: string
+  to: string
+}
+
+interface ComponentCategory {
+  category: string
+  items: ComponentItem[]
+}
+
+const components: readonly ComponentCategory[] = [
   {
     category: 'Form Components',
     items: [

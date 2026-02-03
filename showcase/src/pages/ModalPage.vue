@@ -5,10 +5,16 @@ import { BaseModal, BaseButton, FormField, BaseInput, type ModalSize } from '@mo
 const sizes: ModalSize[] = ['sm', 'md', 'lg', 'xl', 'full']
 
 const basicModal = ref(false)
-const sizeModal = ref<ModalSize | null>(null)
+const sizeModalOpen = ref(false)
+const sizeModalSize = ref<ModalSize>('md')
 const footerModal = ref(false)
 const nonClosableModal = ref(false)
 const formModal = ref(false)
+
+function openSizeModal(size: ModalSize) {
+  sizeModalSize.value = size
+  sizeModalOpen.value = true
+}
 
 const formName = ref('')
 const formEmail = ref('')
@@ -42,32 +48,27 @@ const formEmail = ref('')
           v-for="size in sizes"
           :key="size"
           variant="secondary"
-          @click="sizeModal = size"
+          @click="openSizeModal(size)"
         >
           {{ size.toUpperCase() }}
         </BaseButton>
       </div>
 
       <BaseModal
-        v-for="size in sizes"
-        :key="size"
-        v-model="sizeModal"
-        :title="`Size: ${size.toUpperCase()}`"
-        :size="size"
-        @update:model-value="(val) => !val && (sizeModal = null)"
+        v-model="sizeModalOpen"
+        :title="`Size: ${sizeModalSize.toUpperCase()}`"
+        :size="sizeModalSize"
       >
-        <template v-if="sizeModal === size">
-          <p class="text-text-secondary mb-4">
-            This modal has size <code class="text-mld-primary">{{ size }}</code>.
-          </p>
-          <div class="text-sm text-text-muted">
-            <p>sm: max-w-sm (384px)</p>
-            <p>md: max-w-md (448px)</p>
-            <p>lg: max-w-lg (512px)</p>
-            <p>xl: max-w-xl (576px)</p>
-            <p>full: max-w-4xl (896px)</p>
-          </div>
-        </template>
+        <p class="text-text-secondary mb-4">
+          This modal has size <code class="text-mld-primary">{{ sizeModalSize }}</code>.
+        </p>
+        <div class="text-sm text-text-muted">
+          <p>sm: max-w-sm (384px)</p>
+          <p>md: max-w-md (448px)</p>
+          <p>lg: max-w-lg (512px)</p>
+          <p>xl: max-w-xl (576px)</p>
+          <p>full: max-w-4xl (896px)</p>
+        </div>
       </BaseModal>
     </div>
 

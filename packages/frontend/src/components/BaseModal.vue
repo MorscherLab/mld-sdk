@@ -23,14 +23,6 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const sizeClasses: Record<ModalSize, string> = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-xl',
-  full: 'max-w-4xl',
-}
-
 function close() {
   if (props.closable) {
     emit('update:modelValue', false)
@@ -73,46 +65,46 @@ onUnmounted(() => {
     <Transition name="modal">
       <div
         v-if="modelValue"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        class="mld-modal"
         @click="handleOverlayClick"
       >
         <!-- Overlay -->
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+        <div class="mld-modal__overlay" />
 
         <!-- Modal -->
         <div
           :class="[
-            'relative w-full bg-bg-card rounded-mld-lg shadow-mld-lg overflow-hidden',
-            sizeClasses[size],
+            'mld-modal__container',
+            `mld-modal__container--${size}`,
           ]"
           role="dialog"
           aria-modal="true"
         >
           <!-- Header -->
-          <div v-if="title || closable" class="flex items-center justify-between px-6 py-4 border-b border-border">
-            <h3 v-if="title" class="text-lg font-semibold text-text-primary">
+          <div v-if="title || closable" class="mld-modal__header">
+            <h3 v-if="title" class="mld-modal__title">
               {{ title }}
             </h3>
             <button
               v-if="closable"
               type="button"
-              class="p-1 rounded-mld-sm text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
+              class="mld-modal__close"
               aria-label="Close modal"
               @click="close"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="mld-modal__close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           <!-- Body -->
-          <div class="px-6 py-4">
+          <div class="mld-modal__body">
             <slot />
           </div>
 
           <!-- Footer -->
-          <div v-if="$slots.footer" class="px-6 py-4 border-t border-border bg-bg-secondary">
+          <div v-if="$slots.footer" class="mld-modal__footer">
             <slot name="footer" />
           </div>
         </div>

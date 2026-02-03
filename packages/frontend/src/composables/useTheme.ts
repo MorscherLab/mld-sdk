@@ -7,8 +7,8 @@ export function useTheme() {
     isDark.value = !isDark.value
   }
 
-  function setTheme(dark: boolean) {
-    isDark.value = dark
+  function setTheme(theme: 'light' | 'dark') {
+    isDark.value = theme === 'dark'
   }
 
   watch(isDark, (dark) => {

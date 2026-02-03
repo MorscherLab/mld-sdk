@@ -23,7 +23,7 @@
 }
 
 .mld-radio-option--disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -92,11 +92,11 @@
   border-color: var(--color-primary);
 }
 
-.mld-radio-option__native:focus + .mld-radio-option__circle {
+.mld-radio-option__native:focus-visible + .mld-radio-option__circle {
   box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
 }
 
-html.dark .mld-radio-option__native:focus + .mld-radio-option__circle {
+html.dark .mld-radio-option__native:focus-visible + .mld-radio-option__circle {
   box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-primary);
 }
 

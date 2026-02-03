@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import type { SidebarItem } from '../types'
 
 interface Props {
-  items: SidebarItem[]
+  items: readonly SidebarItem[]
   activeId?: string
   collapsed?: boolean
   floating?: boolean
@@ -37,7 +38,14 @@ function isActive(item: SidebarItem): boolean {
   return item.id === props.activeId
 }
 
-function getItemClasses(item: SidebarItem) {
+function getItemClasses(item: SidebarItem, isParent = false) {
+  if (isParent) {
+    // Parent items with children are category headers - not clickable links
+    return [
+      'flex items-center gap-2 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider',
+      'text-text-muted select-none',
+    ]
+  }
   return [
     'flex items-center gap-3 px-3 py-2 rounded-mld text-sm transition-colors duration-mld',
     'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mld-primary',
@@ -54,13 +62,13 @@ function getItemClasses(item: SidebarItem) {
   <aside
     :style="{
       width: sidebarWidth,
-      ...(floating && topOffset ? { top: topOffset } : {}),
+      ...(props.floating && props.topOffset ? { top: props.topOffset } : {}),
     }"
     :class="[
-      'mld-sidebar flex flex-col transition-[width] duration-200 overflow-hidden',
-      floating
-        ? `mld-sidebar--floating fixed left-4 bottom-4 rounded-xl shadow-sm z-40 ${topOffset ? '' : 'top-4'}`
-        : 'h-screen sticky top-0',
+      'mld-sidebar flex flex-col transition-[width] duration-200',
+      props.floating
+        ? `mld-sidebar--floating fixed left-4 bottom-4 rounded-xl shadow-sm z-40 ${props.topOffset ? '' : 'top-4'}`
+        : 'h-full border-r border-border',
     ]"
   >
     <!-- Header slot -->
@@ -69,10 +77,44 @@ function getItemClasses(item: SidebarItem) {
     </div>
 
     <!-- Navigation items -->
-    <nav class="flex-1 overflow-y-auto p-3 space-y-1">
-      <template v-for="item in items" :key="item.id">
+    <nav class="flex-1 overflow-y-auto p-3 space-y-4">
+      <template v-for="item in props.items" :key="item.id">
+        <!-- Item with children: render as category header -->
+        <div v-if="item.children?.length" class="space-y-1">
+          <!-- Category header (not clickable) -->
+          <div
+            v-if="!props.collapsed"
+            :class="getItemClasses(item, true)"
+          >
+            <span v-if="item.icon" class="flex-shrink-0 w-4 h-4">
+              <slot :name="`icon-${item.id}`" :item="item">
+                {{ item.icon }}
+              </slot>
+            </span>
+            <span class="truncate">{{ item.label }}</span>
+          </div>
+
+          <!-- Children -->
+          <div v-if="!props.collapsed" class="space-y-0.5">
+            <component
+              :is="child.to ? RouterLink : child.href ? 'a' : 'button'"
+              v-for="child in item.children"
+              :key="child.id"
+              :to="child.to"
+              :href="child.href"
+              :class="getItemClasses(child)"
+              :disabled="child.disabled"
+              @click="handleItemClick(child)"
+            >
+              <span class="flex-1 truncate">{{ child.label }}</span>
+            </component>
+          </div>
+        </div>
+
+        <!-- Item without children: render as clickable link -->
         <component
-          :is="item.to ? 'router-link' : item.href ? 'a' : 'button'"
+          v-else
+          :is="item.to ? RouterLink : item.href ? 'a' : 'button'"
           :to="item.to"
           :href="item.href"
           :class="getItemClasses(item)"
@@ -88,7 +130,7 @@ function getItemClasses(item: SidebarItem) {
 
           <!-- Label (hidden when collapsed) -->
           <span
-            v-if="!collapsed"
+            v-if="!props.collapsed"
             class="flex-1 truncate"
           >
             {{ item.label }}
@@ -96,31 +138,12 @@ function getItemClasses(item: SidebarItem) {
 
           <!-- Badge -->
           <span
-            v-if="!collapsed && item.badge !== undefined"
+            v-if="!props.collapsed && item.badge !== undefined"
             class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
           >
             {{ item.badge }}
           </span>
         </component>
-
-        <!-- Children (only shown when not collapsed) -->
-        <div
-          v-if="!collapsed && item.children?.length"
-          class="ml-6 mt-1 space-y-1"
-        >
-          <component
-            :is="child.to ? 'router-link' : child.href ? 'a' : 'button'"
-            v-for="child in item.children"
-            :key="child.id"
-            :to="child.to"
-            :href="child.href"
-            :class="getItemClasses(child)"
-            :disabled="child.disabled"
-            @click="handleItemClick(child)"
-          >
-            <span class="flex-1 truncate text-sm">{{ child.label }}</span>
-          </component>
-        </div>
       </template>
     </nav>
 
@@ -133,11 +156,11 @@ function getItemClasses(item: SidebarItem) {
     <button
       type="button"
       class="p-3 border-t border-border text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
-      :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-      @click="emit('update:collapsed', !collapsed)"
+      :aria-label="props.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+      @click="emit('update:collapsed', !props.collapsed)"
     >
       <svg
-        :class="['w-5 h-5 mx-auto transition-transform', collapsed ? 'rotate-180' : '']"
+        :class="['w-5 h-5 mx-auto transition-transform', props.collapsed ? 'rotate-180' : '']"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

@@ -6,8 +6,7 @@ const editorState = ref<PlateMapEditorState | undefined>(undefined)
 const format = ref<WellPlateFormat>(96)
 const showToolbar = ref(true)
 const showSidebar = ref(true)
-const size = ref<'sm' | 'md' | 'lg'>('md')
-const fillContainer = ref(false)
+const size = ref<'sm' | 'md' | 'lg' | 'xl' | 'fill'>('md')
 
 const formatOptions = [
   { value: 6, label: '6-well' },
@@ -23,6 +22,8 @@ const sizeOptions = [
   { value: 'sm', label: 'Small' },
   { value: 'md', label: 'Medium' },
   { value: 'lg', label: 'Large' },
+  { value: 'xl', label: 'Extra Large' },
+  { value: 'fill', label: 'Fill Container' },
 ]
 
 function handlePlateAdd(plate: { id: string; name: string }) {
@@ -77,10 +78,6 @@ function handleRedo() {
           <BaseToggle v-model="showSidebar" size="sm" />
           <span class="text-sm text-text-secondary">Sidebar</span>
         </div>
-        <div class="flex items-center gap-2">
-          <BaseToggle v-model="fillContainer" size="sm" />
-          <span class="text-sm text-text-secondary">Fill Container</span>
-        </div>
       </div>
 
       <PlateMapEditor
@@ -89,7 +86,6 @@ function handleRedo() {
         :show-toolbar="showToolbar"
         :show-sidebar="showSidebar"
         :size="size"
-        :fill-container="fillContainer"
         @plate-add="handlePlateAdd"
         @plate-remove="handlePlateRemove"
         @sample-assign="handleSampleAssign"
@@ -207,15 +203,9 @@ function handleRedo() {
           </tr>
           <tr>
             <td><code>size</code></td>
-            <td><code>'sm' | 'md' | 'lg'</code></td>
+            <td><code>'sm' | 'md' | 'lg' | 'xl' | 'fill'</code></td>
             <td><code>'md'</code></td>
-            <td>Size preset</td>
-          </tr>
-          <tr>
-            <td><code>fillContainer</code></td>
-            <td><code>boolean</code></td>
-            <td><code>false</code></td>
-            <td>Make plate fill parent container width</td>
+            <td>Size preset. Use 'fill' to make plate fill parent container width.</td>
           </tr>
         </tbody>
       </table>

@@ -20,6 +20,7 @@ export type {
   WellPlateFormat,
   WellState,
   WellPlateSelectionMode,
+  WellPlateSize,
   WellShape,
   Well,
   HeatmapColorScale,
@@ -33,6 +34,10 @@ export type {
   ProtocolStepType,
   ProtocolStepStatus,
   ProtocolStep,
+  // Sample management types
+  SampleGroup,
+  GroupItem,
+  FileUploaderMode,
 } from './components'
 
 // Auth types

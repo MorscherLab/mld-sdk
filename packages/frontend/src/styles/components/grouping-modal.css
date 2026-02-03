@@ -1,0 +1,299 @@
+/* GroupingModal Component Styles */
+
+.mld-grouping-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Dropzone */
+.mld-grouping-modal__dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--mld-radius);
+  background-color: var(--bg-secondary);
+  cursor: pointer;
+  transition: border-color var(--mld-transition), background-color var(--mld-transition);
+}
+
+.mld-grouping-modal__dropzone:hover,
+.mld-grouping-modal__dropzone--dragover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+.mld-grouping-modal__file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.mld-grouping-modal__upload-icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.mld-grouping-modal__upload-text {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mld-grouping-modal__upload-highlight {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.mld-grouping-modal__upload-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+}
+
+/* Error */
+.mld-grouping-modal__error {
+  padding: 0.75rem;
+  border-radius: var(--mld-radius-sm);
+  background-color: var(--mld-error-soft);
+  color: var(--mld-error);
+  font-size: 0.875rem;
+}
+
+/* File info */
+.mld-grouping-modal__file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--mld-radius-sm);
+}
+
+.mld-grouping-modal__file-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.mld-grouping-modal__file-name {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mld-grouping-modal__file-clear {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mld-grouping-modal__file-clear:hover {
+  text-decoration: underline;
+}
+
+/* Config section */
+.mld-grouping-modal__config {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mld-grouping-modal__config-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.mld-grouping-modal__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.mld-grouping-modal__group-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mld-grouping-modal__selected-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.mld-grouping-modal__selected-column {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--mld-radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.mld-grouping-modal__column-name {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.mld-grouping-modal__column-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mld-grouping-modal__column-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--mld-radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--mld-transition), background-color var(--mld-transition);
+}
+
+.mld-grouping-modal__column-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+}
+
+.mld-grouping-modal__column-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.mld-grouping-modal__column-btn--remove:hover:not(:disabled) {
+  color: var(--mld-error);
+  background-color: var(--mld-error-soft);
+}
+
+/* Match status */
+.mld-grouping-modal__match-status {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--mld-radius-sm);
+}
+
+.mld-grouping-modal__match-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.mld-grouping-modal__match-count {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mld-grouping-modal__match-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.mld-grouping-modal__match-stat--matched .mld-grouping-modal__match-count {
+  color: var(--mld-success);
+}
+
+.mld-grouping-modal__match-stat--unmatched .mld-grouping-modal__match-count {
+  color: var(--mld-warning);
+}
+
+/* Preview */
+.mld-grouping-modal__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mld-grouping-modal__preview-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin: 0;
+}
+
+.mld-grouping-modal__table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--mld-radius-sm);
+}
+
+.mld-grouping-modal__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.mld-grouping-modal__th,
+.mld-grouping-modal__td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.mld-grouping-modal__th {
+  font-weight: 500;
+  color: var(--text-muted);
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mld-grouping-modal__td {
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mld-grouping-modal__table tbody tr:last-child .mld-grouping-modal__td {
+  border-bottom: none;
+}
+
+.mld-grouping-modal__th--sample,
+.mld-grouping-modal__td--sample {
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.mld-grouping-modal__th--group,
+.mld-grouping-modal__td--group {
+  background-color: rgba(168, 85, 247, 0.08);
+}
+
+.mld-grouping-modal__preview-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Footer */
+.mld-grouping-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}

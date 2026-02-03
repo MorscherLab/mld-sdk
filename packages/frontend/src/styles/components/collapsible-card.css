@@ -1,5 +1,155 @@
 /* CollapsibleCard Component Styles */
 
+.mld-collapsible-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--mld-radius);
+  overflow: hidden;
+  background-color: var(--bg-card);
+}
+
+.mld-collapsible-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  background-color: var(--bg-card);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--mld-transition);
+  gap: 1rem;
+}
+
+.mld-collapsible-card__header:hover {
+  background-color: var(--bg-hover);
+}
+
+.mld-collapsible-card__header:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.mld-collapsible-card__header--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mld-collapsible-card__title-section {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.75rem;
+  row-gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+
+.mld-collapsible-card__icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--mld-radius);
+  flex-shrink: 0;
+  grid-row: 1 / -1;
+  align-self: center;
+}
+
+.mld-collapsible-card__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.mld-collapsible-card__titles {
+  display: contents;
+}
+
+.mld-collapsible-card__title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mld-collapsible-card__subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.mld-collapsible-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.mld-collapsible-card__toggle {
+  display: flex;
+  align-items: center;
+}
+
+.mld-collapsible-card__toggle-track {
+  position: relative;
+  width: 2.25rem;
+  height: 1.25rem;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color var(--mld-transition), border-color var(--mld-transition);
+}
+
+.mld-collapsible-card__toggle-track:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-soft);
+}
+
+.mld-collapsible-card__toggle-track--on {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.mld-collapsible-card__toggle-knob {
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  background-color: white;
+  border-radius: 9999px;
+  transition: transform var(--mld-transition);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mld-collapsible-card__toggle-knob--on {
+  transform: translateX(1rem);
+}
+
+.mld-collapsible-card__chevron {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.mld-collapsible-card__chevron--open {
+  transform: rotate(180deg);
+}
+
+.mld-collapsible-card__body {
+  border-top: 1px solid var(--border-color);
+}
+
+.mld-collapsible-card__content {
+  padding: 0.75rem 1rem;
+}
+
+/* Collapse transition */
 .collapse-enter-active,
 .collapse-leave-active {
   transition: all 0.2s ease;

@@ -36,6 +36,10 @@ export {
   SampleLegend,
   PlateMapEditor,
   ExperimentTimeline,
+  // Sample management components
+  SampleSelector,
+  GroupingModal,
+  GroupAssigner,
 } from './components'
 
 // Composables
@@ -95,6 +99,10 @@ export type {
   ProtocolStepType,
   ProtocolStepStatus,
   ProtocolStep,
+  // Sample management types
+  SampleGroup,
+  GroupItem,
+  FileUploaderMode,
   // Auth types
   AuthConfig,
   UserInfo,

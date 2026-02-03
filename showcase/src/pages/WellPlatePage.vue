@@ -8,10 +8,9 @@ const selectionMode = ref<'none' | 'single' | 'multiple' | 'rectangle'>('rectang
 const showLabels = ref(true)
 const showWellIds = ref(false)
 const showSampleTypeIndicator = ref(true)
-const size = ref<'sm' | 'md' | 'lg'>('md')
+const size = ref<'sm' | 'md' | 'lg' | 'xl' | 'fill'>('md')
 const zoom = ref(1)
 const heatmapEnabled = ref(false)
-const fillContainer = ref(false)
 
 const formatOptions = [
   { value: 6, label: '6-well' },
@@ -42,6 +41,8 @@ const sizeOptions = [
   { value: 'sm', label: 'Small' },
   { value: 'md', label: 'Medium' },
   { value: 'lg', label: 'Large' },
+  { value: 'xl', label: 'Extra Large' },
+  { value: 'fill', label: 'Fill Container' },
 ]
 
 const sampleColors = {
@@ -49,6 +50,24 @@ const sampleColors = {
   treatment: '#10B981',
   blank: '#6B7280',
 }
+
+// Wells data for heatmap visualization examples (always has values)
+const heatmapWells = computed<Record<string, Partial<Well>>>(() => {
+  const wells: Record<string, Partial<Well>> = {}
+  const rows = 4
+  const cols = 6
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const id = `${String.fromCharCode(65 + r)}${c + 1}`
+      // Generate consistent heatmap values based on position
+      wells[id] = {
+        state: 'filled',
+        value: (r * cols + c) / (rows * cols - 1),
+      }
+    }
+  }
+  return wells
+})
 
 const demoWells = computed<Record<string, Partial<Well>>>(() => {
   const wells: Record<string, Partial<Well>> = {}
@@ -169,13 +188,9 @@ const dragDemoWells = ref<Record<string, Partial<Well>>>({
           <BaseToggle v-model="showSampleTypeIndicator" size="sm" />
           <span class="text-sm text-text-secondary">Show Type (S/B/Q)</span>
         </div>
-        <div class="flex items-center gap-2">
-          <BaseToggle v-model="fillContainer" size="sm" />
-          <span class="text-sm text-text-secondary">Fill Container</span>
-        </div>
       </div>
 
-      <div :class="fillContainer ? 'w-full max-w-2xl' : 'overflow-auto'">
+      <div :class="size === 'fill' ? 'w-full' : 'overflow-auto'">
         <WellPlate
           v-model="selectedWells"
           :format="format"
@@ -188,7 +203,6 @@ const dragDemoWells = ref<Record<string, Partial<Well>>>({
           :sample-colors="sampleColors"
           :zoom="zoom"
           :size="size"
-          :fill-container="fillContainer"
           :well-shape="wellShape"
           @well-click="handleWellClick"
           @context-menu="handleContextMenu"
@@ -218,14 +232,14 @@ const dragDemoWells = ref<Record<string, Partial<Well>>>({
     <div class="demo-section">
       <h3>Fill Container Mode</h3>
       <p class="text-sm text-text-secondary mb-4">
-        Use <code>fillContainer</code> to make the plate expand to fill its parent container width.
+        Use <code>size="fill"</code> to make the plate expand to fill its parent container width.
       </p>
       <div class="w-full max-w-lg p-4 bg-bg-secondary rounded-lg border border-border">
         <WellPlate
           :format="24"
           :wells="demoWells"
           selection-mode="none"
-          fill-container
+          size="fill"
           show-sample-type-indicator
         />
       </div>
@@ -242,7 +256,7 @@ const dragDemoWells = ref<Record<string, Partial<Well>>>({
           <p class="text-sm text-text-muted mb-2">Viridis</p>
           <WellPlate
             :format="24"
-            :wells="demoWells"
+            :wells="heatmapWells"
             :heatmap="{ enabled: true, colorScale: 'viridis', showLegend: true }"
             selection-mode="none"
             size="sm"
@@ -252,7 +266,7 @@ const dragDemoWells = ref<Record<string, Partial<Well>>>({
           <p class="text-sm text-text-muted mb-2">Plasma</p>
           <WellPlate
             :format="24"
-            :wells="demoWells"
+            :wells="heatmapWells"
             :heatmap="{ enabled: true, colorScale: 'plasma', showLegend: true }"
             selection-mode="none"
             size="sm"
@@ -324,15 +338,9 @@ const dragDemoWells = ref<Record<string, Partial<Well>>>({
           </tr>
           <tr>
             <td><code>size</code></td>
-            <td><code>'sm' | 'md' | 'lg'</code></td>
+            <td><code>'sm' | 'md' | 'lg' | 'xl' | 'fill'</code></td>
             <td><code>'md'</code></td>
-            <td>Well size preset</td>
-          </tr>
-          <tr>
-            <td><code>fillContainer</code></td>
-            <td><code>boolean</code></td>
-            <td><code>false</code></td>
-            <td>Make plate fill parent container width</td>
+            <td>Well size preset. Use 'fill' to make plate fill parent container width.</td>
           </tr>
           <tr>
             <td><code>showSampleTypeIndicator</code></td>

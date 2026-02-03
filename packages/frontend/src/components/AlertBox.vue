@@ -27,22 +27,22 @@ const iconPaths: Record<AlertType, string> = {
 <template>
   <div
     class="mld-alert"
-    :class="`mld-alert--${type}`"
+    :class="`mld-alert--${props.type}`"
     role="alert"
   >
     <svg
       class="mld-alert__icon"
-      :class="`mld-alert__icon--${type}`"
+      :class="`mld-alert__icon--${props.type}`"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
     >
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="iconPaths[type]" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="iconPaths[props.type]" />
     </svg>
 
     <div class="mld-alert__content">
-      <h4 v-if="title" class="mld-alert__title">
-        {{ title }}
+      <h4 v-if="props.title" class="mld-alert__title">
+        {{ props.title }}
       </h4>
       <div class="mld-alert__message">
         <slot />
@@ -50,7 +50,7 @@ const iconPaths: Record<AlertType, string> = {
     </div>
 
     <button
-      v-if="dismissible"
+      v-if="props.dismissible"
       type="button"
       class="mld-alert__dismiss"
       aria-label="Dismiss"

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { AlertBox, type AlertType } from '@morscherlab/mld-sdk'
-
-const alertTypes: AlertType[] = ['success', 'error', 'warning', 'info']
+import { AlertBox } from '@morscherlab/mld-sdk'
 
 const dismissedAlerts = ref<Set<string>>(new Set())
 

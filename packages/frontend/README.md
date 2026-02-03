@@ -94,9 +94,17 @@ async function handleSubmit() {
 - `ThemeToggle` - Light/dark mode toggle
 
 ### Layout Components
-- `CollapsibleCard` - Expandable card sections
+- `CollapsibleCard` - Expandable card sections with optional icon badge and toggle switch
 - `AppTopBar` - Application header with slots
 - `AppSidebar` - Sidebar navigation
+
+### File & Data Components
+- `FileUploader` - Drag-and-drop file upload with file/folder mode support
+
+### Sample Management Components
+- `SampleSelector` - Hierarchical sample grouping with auto-group and CSV metadata import
+- `GroupingModal` - Modal for CSV-based metadata grouping
+- `GroupAssigner` - Drag-and-drop group assignment for comparisons (e.g., Control vs Treatment)
 
 ## Composables
 
@@ -233,6 +241,11 @@ import type {
   Toast,
   TabItem,
   SelectOption,
+
+  // Sample Management
+  SampleGroup,      // { name, color, samples[] }
+  GroupItem,        // { name, color, count }
+  FileUploaderMode, // 'file' | 'folder'
 
   // Auth
   AuthConfig,

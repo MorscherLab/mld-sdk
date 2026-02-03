@@ -175,3 +175,49 @@
   width: 1rem;
   height: 1rem;
 }
+
+/* Folder summary */
+.mld-file-uploader__folder-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.mld-file-uploader__folder-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.mld-file-uploader__folder-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.mld-file-uploader__folder-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.mld-file-uploader__folder-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mld-file-uploader__folder-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

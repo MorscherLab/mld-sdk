@@ -77,6 +77,30 @@ import type { WellPlateFormat } from '@morscherlab/mld-sdk/types'
 
 ## Key Patterns
 
+### Frontend SDK CSS Rules
+
+**CRITICAL: Never use Tailwind utility classes directly in SDK components.**
+
+SDK components must use dedicated CSS classes with CSS variables to ensure they work regardless of the consumer's Tailwind configuration. Consumers may not have Tailwind, or may not configure content scanning to include SDK files.
+
+```vue
+<!-- BAD: Tailwind utilities won't work for SDK consumers -->
+<div class="fixed inset-0 z-50 flex items-center justify-center">
+
+<!-- GOOD: Dedicated CSS classes with variables -->
+<div class="mld-modal">
+```
+
+**CSS naming convention:** BEM with `mld-` prefix: `.mld-{component}__{element}--{modifier}`
+
+**Required CSS variables** (defined in `styles/variables.css`):
+- Colors: `--bg-primary`, `--bg-secondary`, `--bg-card`, `--bg-hover`, `--text-primary`, `--text-muted`, `--border-color`
+- Shadows: `--shadow-sm`, `--shadow`, `--shadow-md`, `--shadow-lg`
+- Radius: `--radius-sm`, `--radius`, `--radius-md`, `--radius-lg`
+- Aliases with `--mld-` prefix for backwards compatibility
+
+**After CSS changes:** Always rebuild SDK (`npm run build`) before testing in showcase.
+
 ### Python Plugin Structure
 ```python
 from mld_sdk import AnalysisPlugin, PluginMetadata, PluginCapabilities, PlatformContext

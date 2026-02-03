@@ -24,8 +24,7 @@ interface Props {
   showSidebar?: boolean
   allowAddPlates?: boolean
   allowAddSamples?: boolean
-  size?: 'sm' | 'md' | 'lg'
-  fillContainer?: boolean
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'fill'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -38,7 +37,6 @@ const props = withDefaults(defineProps<Props>(), {
   allowAddPlates: true,
   allowAddSamples: true,
   size: 'md',
-  fillContainer: false,
 })
 
 const emit = defineEmits<{
@@ -385,7 +383,6 @@ onUnmounted(() => {
         :wells="wellsData"
         :sample-colors="sampleColors"
         :size="size"
-        :fill-container="fillContainer"
         selection-mode="rectangle"
         show-sample-type-indicator
         @update:model-value="handleSelectionChange"
