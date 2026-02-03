@@ -1,6 +1,12 @@
-# @estrellaxd/mld-sdk
+# @morscherlab/mld-sdk (Frontend)
 
 Vue 3 SDK for MLD Platform plugin development. Provides reusable components, composables, stores, and types for building consistent, well-integrated plugins.
+
+> **Full Documentation:** See the [comprehensive docs](../../docs/index.md) for detailed API reference and guides.
+> - [API Reference](../../docs/frontend/api-reference.md)
+> - [Component Catalog](../../docs/frontend/components.md) - All 32 components with props/events
+> - [Composables Reference](../../docs/frontend/composables.md) - All 9 composables with examples
+> - [Theming Guide](../../docs/frontend/theming.md) - CSS variables and customization
 
 ## Installation
 

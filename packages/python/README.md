@@ -1,6 +1,11 @@
-# MLD SDK
+# MLD SDK (Python)
 
 SDK for building analysis plugins that integrate with the MLD platform.
+
+> **Full Documentation:** See the [comprehensive docs](../../docs/index.md) for detailed API reference and guides.
+> - [API Reference](../../docs/python/api-reference.md)
+> - [Plugin Development Guide](../../docs/python/plugin-guide.md)
+> - [Exception Handling](../../docs/python/exceptions.md)
 
 ## Installation
 

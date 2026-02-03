@@ -36,9 +36,29 @@ npm install @morscherlab/mld-sdk
 
 ## Documentation
 
-- [Python SDK Documentation](./packages/python/README.md)
-- [Frontend SDK Documentation](./packages/frontend/README.md)
-- [MLD Platform Documentation](https://github.com/MorscherLab/mld)
+### Comprehensive Docs
+
+- **[Getting Started Guide](./docs/getting-started.md)** - Installation and first plugin
+- **[Full Documentation](./docs/index.md)** - Complete SDK documentation
+
+### Python SDK
+- [API Reference](./docs/python/api-reference.md) - Complete Python API
+- [Plugin Development Guide](./docs/python/plugin-guide.md) - Lifecycle and patterns
+- [Exception Handling](./docs/python/exceptions.md) - Error handling
+
+### Frontend SDK
+- [API Reference](./docs/frontend/api-reference.md) - Complete Frontend API
+- [Component Catalog](./docs/frontend/components.md) - All 32 components
+- [Composables Reference](./docs/frontend/composables.md) - All 9 composables
+- [Theming Guide](./docs/frontend/theming.md) - CSS variables and customization
+
+### Integration
+- [Full-Stack Plugin Example](./docs/integration/fullstack-plugin.md) - Complete plugin with backend + frontend
+
+### Quick Links
+- [Python SDK README](./packages/python/README.md)
+- [Frontend SDK README](./packages/frontend/README.md)
+- [MLD Platform](https://github.com/MorscherLab/mld)
 
 ## Development
 
