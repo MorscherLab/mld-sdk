@@ -1,0 +1,6 @@
+/* MLD SDK Styles - Main entry point
+ * This file combines all SDK styles for proper bundling
+ */
+
+/* CSS Variables and base styles */
+@import './variables.css';

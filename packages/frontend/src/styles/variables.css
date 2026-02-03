@@ -1,0 +1,1063 @@
+/* MLD SDK CSS Variables & Utility Classes
+ * Import this file in your plugin's main CSS/entry point:
+ * @import '@estrellaxd/mld-sdk/styles';
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
+/* ==========================================================================
+   CSS Variables - Light Mode
+   ========================================================================== */
+:root {
+  /* Background colors */
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F1F5F9;
+  --bg-card: #FFFFFF;
+  --border-color: #E5E7EB;
+  --border-light: #F3F4F6;
+
+  /* Text colors */
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+
+  /* Brand colors */
+  --color-primary: #3B82F6;
+  --color-primary-hover: #2563EB;
+  --color-cta: #F97316;
+  --color-cta-hover: #EA580C;
+  --color-purple: #8B5CF6;
+
+  /* Scrollbar */
+  --scrollbar-track: #F3F4F6;
+  --scrollbar-thumb: #D1D5DB;
+  --scrollbar-hover: #9CA3AF;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  /* Semantic colors */
+  --mld-success: #10B981;
+  --mld-success-bg: rgba(16, 185, 129, 0.1);
+  --mld-error: #EF4444;
+  --mld-error-bg: rgba(239, 68, 68, 0.1);
+  --mld-warning: #F59E0B;
+  --mld-warning-bg: rgba(245, 158, 11, 0.1);
+  --mld-info: #3B82F6;
+  --mld-info-bg: rgba(59, 130, 246, 0.1);
+
+  /* Legacy aliases (for backwards compatibility) */
+  --mld-bg-primary: var(--bg-primary);
+  --mld-bg-secondary: var(--bg-secondary);
+  --mld-bg-card: var(--bg-card);
+  --mld-bg-hover: var(--bg-tertiary);
+  --mld-bg-input: var(--bg-secondary);
+  --mld-text-primary: var(--text-primary);
+  --mld-text-secondary: var(--text-secondary);
+  --mld-text-muted: var(--text-muted);
+  --mld-text-inverse: #FFFFFF;
+  --mld-border: var(--border-color);
+  --mld-border-focus: var(--color-primary);
+  --mld-shadow-sm: var(--shadow-sm);
+  --mld-shadow: var(--shadow);
+  --mld-shadow-md: var(--shadow-md);
+  --mld-transition: 150ms ease;
+}
+
+/* ==========================================================================
+   CSS Variables - Dark Mode
+   ========================================================================== */
+html.dark {
+  /* Background colors */
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #334155;
+  --bg-card: #1E293B;
+  --border-color: #334155;
+  --border-light: #1E293B;
+
+  /* Text colors */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+
+  /* Scrollbar */
+  --scrollbar-track: #1E293B;
+  --scrollbar-thumb: #475569;
+  --scrollbar-hover: #64748B;
+
+  /* Shadows - Dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+
+  /* Semantic colors - Dark mode */
+  --mld-success-bg: rgba(16, 185, 129, 0.15);
+  --mld-error-bg: rgba(239, 68, 68, 0.15);
+  --mld-warning-bg: rgba(245, 158, 11, 0.15);
+  --mld-info-bg: rgba(59, 130, 246, 0.15);
+
+  /* Legacy aliases */
+  --mld-text-inverse: #1E293B;
+  --mld-border-focus: #60A5FA;
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+html {
+  font-family: 'Fira Sans', system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+code, pre {
+  font-family: 'Fira Code', monospace;
+}
+
+/* ==========================================================================
+   Button Styles
+   ========================================================================== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-cta);
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-cta:hover {
+  background-color: var(--color-cta-hover);
+}
+
+.btn-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #10B981;
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #059669;
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #EF4444;
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #DC2626;
+}
+
+/* ==========================================================================
+   Card Styles
+   ========================================================================== */
+.card {
+  background-color: var(--bg-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.card-hover:hover {
+  box-shadow: var(--shadow);
+}
+
+/* Floating card layout pattern */
+.floating-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
+}
+
+/* ==========================================================================
+   Input Styles
+   ========================================================================== */
+.input-modern {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.input-modern:hover {
+  border-color: var(--color-primary);
+}
+
+.input-modern:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.input-modern::placeholder {
+  color: var(--text-muted);
+}
+
+/* Select styles */
+.select-modern {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.select-modern:hover {
+  border-color: var(--color-primary);
+}
+
+.select-modern:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Label styles */
+.label-modern {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.375rem;
+}
+
+/* ==========================================================================
+   Toggle Switch
+   ========================================================================== */
+.toggle-switch {
+  position: relative;
+  width: 2rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background-color: var(--bg-tertiary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-switch.active {
+  background-color: var(--color-primary);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch.active::after {
+  transform: translateX(1rem);
+}
+
+/* ==========================================================================
+   Checkbox Styles
+   ========================================================================== */
+.checkbox-modern {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.25rem;
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  appearance: none;
+  position: relative;
+}
+
+.checkbox-modern:hover {
+  border-color: var(--color-primary);
+}
+
+.checkbox-modern:checked {
+  background-color: #10B981;
+  border-color: #10B981;
+}
+
+.checkbox-modern:checked::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 5px;
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ==========================================================================
+   Scrollbar Styling
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+/* ==========================================================================
+   Score/Status Colors
+   ========================================================================== */
+.score-good { color: #22c55e; }
+.score-warning { color: #eab308; }
+.score-bad { color: #ef4444; }
+
+.score-bg-good { background-color: rgba(34, 197, 94, 0.15); }
+.score-bg-warning { background-color: rgba(234, 179, 8, 0.15); }
+.score-bg-bad { background-color: rgba(239, 68, 68, 0.15); }
+
+/* ==========================================================================
+   Alert/Badge Colors
+   ========================================================================== */
+.alert-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.alert-error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.alert-warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #F59E0B;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.alert-info {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* ==========================================================================
+   Page Transitions
+   ========================================================================== */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* ==========================================================================
+   Hover States
+   ========================================================================== */
+.hover-bg:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* ==========================================================================
+   MLD Utility Classes (for Tailwind v4 compatibility)
+   ========================================================================== */
+.rounded-mld {
+  border-radius: 0.5rem;
+}
+
+.rounded-mld-sm {
+  border-radius: 0.375rem;
+}
+
+.rounded-mld-lg {
+  border-radius: 0.75rem;
+}
+
+.bg-bg-hover {
+  background-color: var(--bg-tertiary);
+}
+
+.bg-bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-bg-input {
+  background-color: var(--bg-secondary);
+}
+
+.text-text-primary {
+  color: var(--text-primary);
+}
+
+.text-text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-text-muted {
+  color: var(--text-muted);
+}
+
+.border-border {
+  border-color: var(--border-color);
+}
+
+.bg-mld-primary {
+  background-color: #3B82F6;
+}
+
+.text-mld-primary {
+  color: var(--color-primary);
+}
+
+.border-mld-primary {
+  border-color: var(--color-primary);
+}
+
+.bg-mld-primary\/5 {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.hover\:border-mld-primary\/50:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Danger/error color utilities */
+.text-mld-danger {
+  color: var(--mld-error);
+}
+
+.bg-mld-danger {
+  background-color: var(--mld-error);
+}
+
+.hover\:text-mld-danger:hover {
+  color: var(--mld-error);
+}
+
+.hover\:bg-mld-danger\/10:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.hover\:bg-bg-hover:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.hover\:text-text-primary:hover {
+  color: var(--text-primary);
+}
+
+.duration-mld {
+  transition-duration: 150ms;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: ease;
+}
+
+/* ==========================================================================
+   Background Color Utilities (Tailwind v4 compatibility)
+   ========================================================================== */
+.bg-mld-primary-hover {
+  background-color: var(--color-primary-hover);
+}
+
+.hover\:bg-mld-primary-hover:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.hover\:bg-mld-primary:hover {
+  background-color: var(--color-primary);
+}
+
+.bg-mld-cta {
+  background-color: var(--color-cta);
+}
+
+.hover\:bg-mld-cta-hover:hover {
+  background-color: var(--color-cta-hover);
+}
+
+.bg-mld-success {
+  background-color: var(--mld-success);
+}
+
+.hover\:bg-mld-success-hover:hover {
+  background-color: #059669;
+}
+
+.hover\:bg-mld-danger-hover:hover {
+  background-color: #DC2626;
+}
+
+.bg-mld-primary\/10 {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.hover\:bg-mld-primary\/20:hover {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.bg-mld-info {
+  background-color: var(--mld-info);
+}
+
+.bg-mld-warning {
+  background-color: var(--mld-warning);
+}
+
+.bg-mld-error {
+  background-color: var(--mld-error);
+}
+
+/* ==========================================================================
+   Text Color Utilities (Tailwind v4 compatibility)
+   ========================================================================== */
+.text-mld-success {
+  color: var(--mld-success);
+}
+
+.text-mld-warning {
+  color: var(--mld-warning);
+}
+
+.text-mld-info {
+  color: var(--mld-info);
+}
+
+.text-mld-error {
+  color: var(--mld-error);
+}
+
+.hover\:text-mld-primary:hover {
+  color: var(--color-primary);
+}
+
+.text-mld-primary\/80 {
+  color: rgba(59, 130, 246, 0.8);
+}
+
+.hover\:text-mld-primary\/70:hover {
+  color: rgba(59, 130, 246, 0.7);
+}
+
+/* ==========================================================================
+   Border Color Utilities (Tailwind v4 compatibility)
+   ========================================================================== */
+.border-mld-danger {
+  border-color: var(--mld-error);
+}
+
+.border-mld-success {
+  border-color: var(--mld-success);
+}
+
+.border-mld-warning {
+  border-color: var(--mld-warning);
+}
+
+.border-mld-info {
+  border-color: var(--mld-info);
+}
+
+.hover\:border-mld-primary:hover {
+  border-color: var(--color-primary);
+}
+
+/* ==========================================================================
+   Focus & Ring Utilities (Tailwind v4 compatibility)
+   ========================================================================== */
+.focus\:ring-2:focus {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.focus\:ring-mld-primary:focus {
+  --tw-ring-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.focus\:ring-mld-danger:focus {
+  box-shadow: 0 0 0 2px var(--mld-error);
+}
+
+.focus\:ring-offset-2:focus {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-primary);
+}
+
+html.dark .focus\:ring-offset-2:focus {
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-primary);
+}
+
+.focus\:border-transparent:focus {
+  border-color: transparent;
+}
+
+.focus\:outline-none:focus {
+  outline: none;
+}
+
+.ring-1 {
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.ring-2 {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.ring-mld-primary {
+  --tw-ring-color: var(--color-primary);
+}
+
+/* ==========================================================================
+   Focus-within Utilities (Tailwind v4 compatibility)
+   ========================================================================== */
+.focus-within\:ring-2:focus-within {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.focus-within\:ring-mld-primary:focus-within {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.focus-within\:ring-mld-danger:focus-within {
+  box-shadow: 0 0 0 2px var(--mld-error);
+}
+
+.focus-within\:border-transparent:focus-within {
+  border-color: transparent;
+}
+
+/* ==========================================================================
+   Placeholder Utilities (Tailwind v4 compatibility)
+   ========================================================================== */
+.placeholder\:text-text-muted::placeholder {
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Core Layout Utilities (Tailwind v4 compatibility)
+   ========================================================================== */
+
+/* Flexbox */
+.flex {
+  display: flex;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+/* Gap */
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+/* Width/Height */
+.w-3 {
+  width: 0.75rem;
+}
+
+.w-4 {
+  width: 1rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.w-8 {
+  width: 2rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-3 {
+  height: 0.75rem;
+}
+
+.h-4 {
+  height: 1rem;
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
+.h-8 {
+  height: 2rem;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+/* Spacing */
+.p-3 {
+  padding: 0.75rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.mt-3 {
+  margin-top: 0.75rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.space-y-1 > * + * {
+  margin-top: 0.25rem;
+}
+
+/* Positioning */
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.top-4 {
+  top: 1rem;
+}
+
+.right-4 {
+  right: 1rem;
+}
+
+.left-4 {
+  left: 1rem;
+}
+
+.-bottom-2 {
+  bottom: -0.5rem;
+}
+
+.-translate-x-1\/2 {
+  transform: translateX(-50%);
+}
+
+.z-10 {
+  z-index: 10;
+}
+
+/* Overflow */
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+/* Text */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-white {
+  color: white;
+}
+
+/* Border */
+.rounded-sm {
+  border-radius: 0.125rem;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.border {
+  border-width: 1px;
+}
+
+.border-2 {
+  border-width: 2px;
+}
+
+.border-dashed {
+  border-style: dashed;
+}
+
+/* Cursor */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Opacity */
+.opacity-0 {
+  opacity: 0;
+}
+
+/* Pointer Events */
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.pointer-events-auto {
+  pointer-events: auto;
+}
+
+/* Transforms */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Animations */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Max Width */
+.max-w-sm {
+  max-width: 24rem;
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
