@@ -1,0 +1,525 @@
+/* ExperimentTimeline Component Styles */
+
+.mld-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.mld-timeline--horizontal {
+  flex-direction: row;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+/* Step item */
+.mld-timeline__step {
+  position: relative;
+}
+
+.mld-timeline--horizontal .mld-timeline__step {
+  flex-shrink: 0;
+}
+
+/* Connector line */
+.mld-timeline__connector {
+  position: absolute;
+  background-color: var(--border-color);
+}
+
+.mld-timeline--vertical .mld-timeline__connector {
+  left: 1rem;
+  top: 100%;
+  width: 2px;
+  height: 1rem;
+  transform: translateX(-50%);
+}
+
+.mld-timeline--horizontal .mld-timeline__connector {
+  top: 50%;
+  left: 100%;
+  height: 2px;
+  width: 2rem;
+  transform: translateY(-50%);
+}
+
+/* Step card */
+.mld-timeline__card {
+  position: relative;
+  border-radius: 0.5rem;
+  border-width: 2px;
+  border-style: solid;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.mld-timeline--horizontal .mld-timeline__card {
+  min-width: 180px;
+}
+
+.mld-timeline--vertical .mld-timeline__card {
+  width: 100%;
+}
+
+.mld-timeline__card--sm {
+  padding: 0.5rem;
+}
+
+.mld-timeline__card--md {
+  padding: 0.75rem;
+}
+
+.mld-timeline__card--lg {
+  padding: 1rem;
+}
+
+.mld-timeline__card--dragging {
+  opacity: 0.5;
+}
+
+.mld-timeline__card--drag-over {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-timeline__card--editable {
+  cursor: grab;
+}
+
+.mld-timeline__card--editable:active {
+  cursor: grabbing;
+}
+
+/* Status colors */
+.mld-timeline__card--pending {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+.mld-timeline__card--in-progress {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.mld-timeline__card--completed {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.6);
+}
+
+.mld-timeline__card--failed {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+.mld-timeline__card--skipped {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+/* Header */
+.mld-timeline__header {
+  display: flex;
+  align-items: center;
+}
+
+.mld-timeline__header--sm {
+  gap: 0.5rem;
+}
+
+.mld-timeline__header--md {
+  gap: 0.75rem;
+}
+
+.mld-timeline__header--lg {
+  gap: 1rem;
+}
+
+/* Icon */
+.mld-timeline__icon {
+  flex-shrink: 0;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mld-timeline__icon--sm {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.mld-timeline__icon--md {
+  width: 2rem;
+  height: 2rem;
+}
+
+.mld-timeline__icon--lg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.mld-timeline__icon svg {
+  stroke: currentColor;
+}
+
+.mld-timeline__icon--sm svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.mld-timeline__icon--md svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-timeline__icon--lg svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Status text colors */
+.mld-timeline__icon--pending {
+  color: var(--text-muted);
+}
+
+.mld-timeline__icon--in-progress {
+  color: #3b82f6;
+}
+
+.mld-timeline__icon--completed {
+  color: #10b981;
+}
+
+.mld-timeline__icon--failed {
+  color: #ef4444;
+}
+
+.mld-timeline__icon--skipped {
+  color: var(--text-muted);
+}
+
+/* Title and meta */
+.mld-timeline__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.mld-timeline__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mld-timeline__title {
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mld-timeline__title--sm {
+  font-size: 0.75rem;
+}
+
+.mld-timeline__title--md {
+  font-size: 0.875rem;
+}
+
+.mld-timeline__title--lg {
+  font-size: 1rem;
+}
+
+.mld-timeline__duration {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.mld-timeline__duration--sm {
+  font-size: 0.625rem;
+}
+
+.mld-timeline__type {
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.mld-timeline__type--sm {
+  font-size: 0.625rem;
+}
+
+.mld-timeline__type--md {
+  font-size: 0.75rem;
+}
+
+.mld-timeline__type--lg {
+  font-size: 0.75rem;
+}
+
+/* Expand indicator */
+.mld-timeline__expand-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.mld-timeline__expand-icon--expanded {
+  transform: rotate(180deg);
+}
+
+/* Remove button */
+.mld-timeline__remove-btn {
+  padding: 0.25rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.mld-timeline__remove-btn:hover {
+  color: var(--mld-error);
+}
+
+.mld-timeline__remove-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Expanded content */
+.mld-timeline__expanded {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(var(--border-color-rgb, 0, 0, 0), 0.5);
+}
+
+.mld-timeline__description {
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.mld-timeline__description--sm {
+  font-size: 0.75rem;
+}
+
+.mld-timeline__description--md {
+  font-size: 0.875rem;
+}
+
+.mld-timeline__parameters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mld-timeline__param {
+  display: flex;
+  justify-content: space-between;
+}
+
+.mld-timeline__param--sm {
+  font-size: 0.625rem;
+}
+
+.mld-timeline__param--md {
+  font-size: 0.75rem;
+}
+
+.mld-timeline__param-key {
+  color: var(--text-muted);
+}
+
+.mld-timeline__param-value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Status controls */
+.mld-timeline__status-controls {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.mld-timeline__status-btn {
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  color: var(--text-muted);
+}
+
+.mld-timeline__status-btn:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.mld-timeline__status-btn--active {
+  font-weight: 500;
+}
+
+.mld-timeline__status-btn--pending.mld-timeline__status-btn--active {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.mld-timeline__status-btn--in-progress.mld-timeline__status-btn--active {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.mld-timeline__status-btn--completed.mld-timeline__status-btn--active {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.mld-timeline__status-btn--failed.mld-timeline__status-btn--active {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.mld-timeline__status-btn--skipped.mld-timeline__status-btn--active {
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+}
+
+/* Add step button (inline) */
+.mld-timeline__add-inline {
+  position: absolute;
+  left: 1rem;
+  bottom: -0.5rem;
+  transform: translateX(-50%);
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  z-index: 10;
+}
+
+.mld-timeline__step:hover .mld-timeline__add-inline,
+.mld-timeline__add-inline:focus {
+  opacity: 1;
+}
+
+.mld-timeline__add-inline:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.mld-timeline__add-inline svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Spacer */
+.mld-timeline__spacer--vertical {
+  height: 1rem;
+}
+
+.mld-timeline__spacer--horizontal {
+  width: 2rem;
+}
+
+/* Empty state */
+.mld-timeline__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.mld-timeline__empty-content {
+  text-align: center;
+}
+
+.mld-timeline__empty-text {
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.mld-timeline__empty-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.mld-timeline__empty-btn:hover {
+  opacity: 0.9;
+}
+
+/* Add step button (end) */
+.mld-timeline__add-end {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 0.5rem;
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.mld-timeline__add-end--sm {
+  padding: 0.5rem;
+}
+
+.mld-timeline__add-end--md {
+  padding: 0.75rem;
+}
+
+.mld-timeline__add-end--lg {
+  padding: 1rem;
+}
+
+.mld-timeline--horizontal .mld-timeline__add-end {
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.mld-timeline--vertical .mld-timeline__add-end {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.mld-timeline__add-end:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.mld-timeline__add-end svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-timeline__add-end-text--sm {
+  font-size: 0.75rem;
+}
+
+.mld-timeline__add-end-text--md {
+  font-size: 0.875rem;
+}
+
+.mld-timeline__add-end-text--lg {
+  font-size: 1rem;
+}

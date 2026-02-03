@@ -1,0 +1,50 @@
+/* ThemeToggle Component Styles */
+
+.mld-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.mld-theme-toggle:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.mld-theme-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-theme-toggle--sm {
+  padding: 0.375rem;
+}
+
+.mld-theme-toggle--md {
+  padding: 0.5rem;
+}
+
+.mld-theme-toggle--lg {
+  padding: 0.75rem;
+}
+
+.mld-theme-toggle__icon--sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-theme-toggle__icon--md {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.mld-theme-toggle__icon--lg {
+  width: 1.5rem;
+  height: 1.5rem;
+}

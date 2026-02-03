@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { RadioOption } from '../types'
 
 interface Props {
@@ -21,15 +20,6 @@ const emit = defineEmits<{
   'update:modelValue': [value: string | number]
 }>()
 
-const sizeConfig = computed(() => {
-  // Visual radio sizes with wrapper for touch targets
-  switch (props.size) {
-    case 'sm': return { radio: 'w-4 h-4', wrapper: 'w-8 h-8', dot: 'w-2 h-2', text: 'text-sm', desc: 'text-xs' }
-    case 'lg': return { radio: 'w-6 h-6', wrapper: 'w-10 h-10', dot: 'w-3 h-3', text: 'text-base', desc: 'text-sm' }
-    default: return { radio: 'w-5 h-5', wrapper: 'w-9 h-9', dot: 'w-2.5 h-2.5', text: 'text-sm', desc: 'text-xs' }
-  }
-})
-
 function handleChange(value: string | number) {
   emit('update:modelValue', value)
 }
@@ -37,21 +27,18 @@ function handleChange(value: string | number) {
 
 <template>
   <div
-    :class="[
-      'flex gap-4',
-      direction === 'horizontal' ? 'flex-row flex-wrap' : 'flex-col',
-    ]"
+    :class="['mld-radio-group', `mld-radio-group--${direction}`]"
     role="radiogroup"
   >
     <label
       v-for="option in options"
       :key="String(option.value)"
       :class="[
-        'inline-flex items-start gap-1 cursor-pointer select-none',
-        (disabled || option.disabled) ? 'opacity-50 cursor-not-allowed' : '',
+        'mld-radio-option',
+        (disabled || option.disabled) ? 'mld-radio-option--disabled' : '',
       ]"
     >
-      <div :class="['relative shrink-0 flex items-center justify-center -ml-1', sizeConfig.wrapper]">
+      <div :class="['mld-radio-option__input-wrapper', `mld-radio-option__input-wrapper--${size}`]">
         <input
           type="radio"
           :name="name"
@@ -59,33 +46,30 @@ function handleChange(value: string | number) {
           :checked="modelValue === option.value"
           :disabled="disabled || option.disabled"
           :aria-describedby="option.description ? `${name}-${option.value}-desc` : undefined"
-          class="sr-only peer"
+          class="mld-radio-option__native"
           @change="handleChange(option.value)"
         />
         <div
           :class="[
-            sizeConfig.radio,
-            'rounded-full border transition-colors duration-mld flex items-center justify-center',
-            'peer-focus:ring-2 peer-focus:ring-mld-primary peer-focus:ring-offset-2 peer-focus:ring-offset-bg-primary',
-            modelValue === option.value
-              ? 'border-mld-primary bg-bg-input'
-              : 'border-border bg-bg-input',
+            'mld-radio-option__circle',
+            `mld-radio-option__circle--${size}`,
+            modelValue === option.value ? 'mld-radio-option__circle--checked' : '',
           ]"
         >
           <div
             v-if="modelValue === option.value"
-            :class="[sizeConfig.dot, 'rounded-full bg-mld-primary']"
+            :class="['mld-radio-option__dot', `mld-radio-option__dot--${size}`]"
           />
         </div>
       </div>
-      <div class="flex flex-col pt-1.5">
-        <span :class="['text-text-primary', sizeConfig.text]">
+      <div class="mld-radio-option__content">
+        <span :class="['mld-radio-option__label', `mld-radio-option__label--${size}`]">
           {{ option.label }}
         </span>
         <span
           v-if="option.description"
           :id="`${name}-${option.value}-desc`"
-          :class="['text-text-muted', sizeConfig.desc]"
+          :class="['mld-radio-option__description', `mld-radio-option__description--${size}`]"
         >
           {{ option.description }}
         </span>
@@ -93,3 +77,7 @@ function handleChange(value: string | number) {
     </label>
   </div>
 </template>
+
+<style>
+@import '../styles/components/radio-group.css';
+</style>

@@ -1,0 +1,219 @@
+/* WellPlate Component Styles */
+
+.mld-well-plate {
+  user-select: none;
+}
+
+.mld-well-plate--inline {
+  display: inline-block;
+}
+
+.mld-well-plate--fill {
+  width: 100%;
+}
+
+.mld-well-plate__scroll {
+  overflow-x: auto;
+}
+
+/* Table */
+.mld-well-plate__table {
+  border-collapse: separate;
+}
+
+.mld-well-plate__table--fill {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.mld-well-plate__table--sm {
+  border-spacing: 2px;
+}
+
+.mld-well-plate__table--md {
+  border-spacing: 4px;
+}
+
+.mld-well-plate__table--lg {
+  border-spacing: 4px;
+}
+
+.mld-well-plate__table--xl {
+  border-spacing: 6px;
+}
+
+/* Header cells */
+.mld-well-plate__col-header,
+.mld-well-plate__row-header {
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.mld-well-plate__col-header--sm,
+.mld-well-plate__row-header--sm {
+  font-size: 0.625rem;
+}
+
+.mld-well-plate__col-header--md,
+.mld-well-plate__row-header--md {
+  font-size: 0.75rem;
+}
+
+.mld-well-plate__col-header--lg,
+.mld-well-plate__row-header--lg {
+  font-size: 0.875rem;
+}
+
+.mld-well-plate__col-header--xl,
+.mld-well-plate__row-header--xl {
+  font-size: 1rem;
+}
+
+.mld-well-plate__row-header {
+  vertical-align: middle;
+}
+
+/* Well cell */
+.mld-well-plate__cell {
+  padding: 0;
+}
+
+/* Well */
+.mld-well-plate__well {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background-color: var(--bg-tertiary);
+  border: 1px dashed var(--border-color);
+}
+
+.mld-well-plate__well--sm {
+  font-size: 0.625rem;
+}
+
+.mld-well-plate__well--md {
+  font-size: 0.75rem;
+}
+
+.mld-well-plate__well--lg {
+  font-size: 0.875rem;
+}
+
+.mld-well-plate__well--xl {
+  font-size: 1rem;
+}
+
+.mld-well-plate__well--rounded {
+  border-radius: 0.5rem;
+}
+
+.mld-well-plate__well--circle {
+  border-radius: 9999px;
+}
+
+.mld-well-plate__well--filled {
+  border-style: solid;
+}
+
+.mld-well-plate__well--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Well states */
+.mld-well-plate__well--selected {
+  box-shadow: 0 0 0 2px #10b981, 0 0 0 3px white;
+}
+
+.mld-well-plate__well--drag-over {
+  box-shadow: 0 0 0 2px #6366f1;
+  background-color: rgba(99, 102, 241, 0.2);
+}
+
+.mld-well-plate__well--hovered:not(.mld-well-plate__well--readonly) {
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5);
+}
+
+.mld-well-plate__well--drag-source {
+  box-shadow: 0 0 0 2px #f59e0b;
+  opacity: 0.5;
+}
+
+.mld-well-plate__well--drag-target {
+  box-shadow: 0 0 0 2px #10b981, 0 0 0 3px white;
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+/* Draggable well */
+.mld-well-plate__well--draggable {
+  cursor: grab;
+}
+
+.mld-well-plate__well--draggable:active {
+  cursor: grabbing;
+}
+
+/* Sample type indicator */
+.mld-well-plate__indicator {
+  font-weight: 700;
+  pointer-events: none;
+  color: var(--text-primary);
+}
+
+/* Well ID text */
+.mld-well-plate__well-id {
+  font-weight: 500;
+  pointer-events: none;
+  color: var(--text-primary);
+}
+
+/* Sample type colors */
+.mld-well-plate__well--sample {
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.mld-well-plate__well--control {
+  background-color: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.mld-well-plate__well--blank {
+  background-color: rgba(249, 115, 22, 0.15);
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.mld-well-plate__well--qc {
+  background-color: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+}
+
+/* Heatmap legend */
+.mld-well-plate__legend {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mld-well-plate__legend-min,
+.mld-well-plate__legend-max {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.mld-well-plate__legend-bar {
+  flex: 1;
+  height: 0.75rem;
+  border-radius: 0.125rem;
+  overflow: hidden;
+  display: flex;
+}
+
+.mld-well-plate__legend-segment {
+  flex: 1;
+}

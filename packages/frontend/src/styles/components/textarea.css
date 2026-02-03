@@ -1,0 +1,65 @@
+/* BaseTextarea Component Styles */
+
+.mld-textarea {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mld-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.mld-textarea:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-textarea--error {
+  border-color: var(--mld-error);
+}
+
+.mld-textarea--error:focus {
+  box-shadow: 0 0 0 2px var(--mld-error);
+}
+
+.mld-textarea--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--bg-tertiary);
+}
+
+.mld-textarea--sm {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.875rem;
+}
+
+.mld-textarea--md {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.mld-textarea--lg {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+.mld-textarea--resize-none {
+  resize: none;
+}
+
+.mld-textarea--resize-vertical {
+  resize: vertical;
+}
+
+.mld-textarea--resize-horizontal {
+  resize: horizontal;
+}
+
+.mld-textarea--resize-both {
+  resize: both;
+}

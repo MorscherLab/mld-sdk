@@ -26,25 +26,6 @@ const emit = defineEmits<{
 const inputValue = ref('')
 const inputRef = ref<HTMLInputElement>()
 
-const sizeConfig = computed(() => {
-  switch (props.size) {
-    case 'sm': return { padding: 'px-2 py-1', text: 'text-sm', tag: 'px-1.5 py-0.5 text-xs' }
-    case 'lg': return { padding: 'px-4 py-2.5', text: 'text-base', tag: 'px-2.5 py-1 text-sm' }
-    default: return { padding: 'px-3 py-2', text: 'text-sm', tag: 'px-2 py-0.5 text-xs' }
-  }
-})
-
-const containerClasses = computed(() => [
-  'w-full rounded-mld border bg-bg-input flex flex-wrap gap-1.5 items-center cursor-text',
-  'transition-colors duration-mld',
-  'focus-within:outline-none focus-within:ring-2 focus-within:ring-mld-primary focus-within:border-transparent',
-  sizeConfig.value.padding,
-  props.error
-    ? 'border-mld-danger focus-within:ring-mld-danger'
-    : 'border-border',
-  props.disabled ? 'opacity-50 cursor-not-allowed bg-bg-hover' : '',
-])
-
 const canAddMore = computed(() => {
   if (props.maxTags === undefined) return true
   return props.modelValue.length < props.maxTags
@@ -100,46 +81,47 @@ function focusInput() {
 
 <template>
   <div
-    :class="containerClasses"
+    :class="[
+      'mld-tags-input',
+      `mld-tags-input--${size}`,
+      error ? 'mld-tags-input--error' : '',
+      disabled ? 'mld-tags-input--disabled' : '',
+    ]"
     @click="focusInput"
   >
-    <!-- Tags -->
     <span
       v-for="(tag, index) in modelValue"
       :key="`${tag}-${index}`"
-      :class="[
-        'inline-flex items-center gap-1 rounded-full bg-mld-primary/10 text-mld-primary',
-        sizeConfig.tag,
-      ]"
+      :class="['mld-tags-input__tag', `mld-tags-input__tag--${size}`]"
     >
       {{ tag }}
       <button
         v-if="!disabled"
         type="button"
         :aria-label="`Remove ${tag}`"
-        class="p-0.5 -mr-0.5 rounded-full hover:text-mld-primary/70 hover:bg-mld-primary/20 transition-colors"
+        class="mld-tags-input__tag-remove"
         @click.stop="removeTag(index)"
       >
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="mld-tags-input__tag-remove-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </span>
 
-    <!-- Input -->
     <input
       ref="inputRef"
       v-model="inputValue"
       type="text"
       :placeholder="modelValue.length === 0 ? placeholder : ''"
       :disabled="disabled || !canAddMore"
-      :class="[
-        'flex-1 min-w-[60px] bg-transparent outline-none text-text-primary placeholder:text-text-muted',
-        sizeConfig.text,
-      ]"
+      :class="['mld-tags-input__input', `mld-tags-input__input--${size}`]"
       @keydown="handleKeydown"
       @paste="handlePaste"
       @blur="addTag(inputValue)"
     />
   </div>
 </template>
+
+<style>
+@import '../styles/components/tags-input.css';
+</style>

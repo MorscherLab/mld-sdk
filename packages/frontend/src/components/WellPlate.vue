@@ -509,3 +509,7 @@ const tableClass = computed(() => {
     </div>
   </div>
 </template>
+
+<style>
+@import '../styles/components/well-plate.css';
+</style>

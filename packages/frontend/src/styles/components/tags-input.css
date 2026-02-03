@@ -1,0 +1,118 @@
+/* TagsInput Component Styles */
+
+.mld-tags-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  align-items: center;
+  cursor: text;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mld-tags-input:focus-within {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-tags-input--error {
+  border-color: var(--mld-error);
+}
+
+.mld-tags-input--error:focus-within {
+  box-shadow: 0 0 0 2px var(--mld-error);
+}
+
+.mld-tags-input--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--bg-tertiary);
+}
+
+.mld-tags-input--sm {
+  padding: 0.25rem 0.5rem;
+}
+
+.mld-tags-input--md {
+  padding: 0.5rem 0.75rem;
+}
+
+.mld-tags-input--lg {
+  padding: 0.625rem 1rem;
+}
+
+/* Tags */
+.mld-tags-input__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--color-primary);
+}
+
+.mld-tags-input__tag--sm {
+  padding: 0.125rem 0.375rem;
+  font-size: 0.75rem;
+}
+
+.mld-tags-input__tag--md {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.mld-tags-input__tag--lg {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.875rem;
+}
+
+.mld-tags-input__tag-remove {
+  padding: 0.125rem;
+  margin-right: -0.125rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.mld-tags-input__tag-remove:hover {
+  color: rgba(59, 130, 246, 0.7);
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.mld-tags-input__tag-remove-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Input */
+.mld-tags-input__input {
+  flex: 1;
+  min-width: 60px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+}
+
+.mld-tags-input__input::placeholder {
+  color: var(--text-muted);
+}
+
+.mld-tags-input__input--sm {
+  font-size: 0.875rem;
+}
+
+.mld-tags-input__input--md {
+  font-size: 0.875rem;
+}
+
+.mld-tags-input__input--lg {
+  font-size: 1rem;
+}

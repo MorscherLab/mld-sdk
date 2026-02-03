@@ -1,0 +1,103 @@
+/* BaseToggle Component Styles */
+
+.mld-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mld-toggle--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mld-toggle__track {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  transition: background-color 0.2s ease;
+}
+
+.mld-toggle__track--off {
+  background-color: var(--bg-tertiary);
+}
+
+.mld-toggle__track--on {
+  background-color: var(--color-primary);
+}
+
+.mld-toggle__track--sm {
+  width: 32px;
+  height: 16px;
+}
+
+.mld-toggle__track--md {
+  width: 44px;
+  height: 24px;
+}
+
+.mld-toggle__track--lg {
+  width: 56px;
+  height: 28px;
+}
+
+.mld-toggle__knob {
+  display: inline-block;
+  border-radius: 9999px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+
+.mld-toggle__knob--sm {
+  width: 12px;
+  height: 12px;
+}
+
+.mld-toggle__knob--md {
+  width: 20px;
+  height: 20px;
+}
+
+.mld-toggle__knob--lg {
+  width: 24px;
+  height: 24px;
+}
+
+.mld-toggle__knob--off {
+  transform: translateX(2px);
+}
+
+.mld-toggle__knob--on-sm {
+  transform: translateX(16px);
+}
+
+.mld-toggle__knob--on-md {
+  transform: translateX(20px);
+}
+
+.mld-toggle__knob--on-lg {
+  transform: translateX(28px);
+}
+
+.mld-toggle__label {
+  color: var(--text-primary);
+}
+
+.mld-toggle__label--sm {
+  font-size: 0.875rem;
+}
+
+.mld-toggle__label--md {
+  font-size: 0.875rem;
+}
+
+.mld-toggle__label--lg {
+  font-size: 1rem;
+}

@@ -27,25 +27,6 @@ const isOpen = ref(false)
 const containerRef = ref<HTMLDivElement>()
 const currentMonth = ref(new Date())
 
-const sizeClasses = computed(() => {
-  switch (props.size) {
-    case 'sm': return 'px-2.5 py-1.5 text-sm'
-    case 'lg': return 'px-4 py-3 text-base'
-    default: return 'px-3 py-2 text-sm'
-  }
-})
-
-const inputClasses = computed(() => [
-  'w-full rounded-mld border bg-bg-input text-text-primary',
-  'transition-colors duration-mld cursor-pointer',
-  'focus:outline-none focus:ring-2 focus:ring-mld-primary focus:border-transparent',
-  sizeClasses.value,
-  props.error
-    ? 'border-mld-danger focus:ring-mld-danger'
-    : 'border-border',
-  props.disabled ? 'opacity-50 cursor-not-allowed bg-bg-hover' : '',
-])
-
 const selectedDate = computed(() => {
   if (!props.modelValue) return null
   const date = new Date(props.modelValue + 'T00:00:00')
@@ -197,80 +178,79 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="containerRef" class="relative">
-    <!-- Input -->
-    <div class="relative">
+  <div ref="containerRef" class="mld-date-picker">
+    <div class="mld-date-picker__input-wrapper">
       <input
         type="text"
         readonly
         :value="displayValue"
         :placeholder="placeholder || 'Select date'"
         :disabled="disabled"
-        :class="inputClasses"
-        class="pr-10"
+        :class="[
+          'mld-date-picker__input',
+          `mld-date-picker__input--${size}`,
+          error ? 'mld-date-picker__input--error' : '',
+          disabled ? 'mld-date-picker__input--disabled' : '',
+        ]"
         @click="toggleCalendar"
       />
-      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-        <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="mld-date-picker__icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       </div>
     </div>
 
-    <!-- Calendar Dropdown -->
     <Transition
-      enter-active-class="transition ease-out duration-100"
-      enter-from-class="opacity-0 scale-95"
-      enter-to-class="opacity-100 scale-100"
-      leave-active-class="transition ease-in duration-75"
-      leave-from-class="opacity-100 scale-100"
-      leave-to-class="opacity-0 scale-95"
+      enter-active-class="mld-date-picker__dropdown-enter-active"
+      enter-from-class="mld-date-picker__dropdown-enter-from"
+      enter-to-class="mld-date-picker__dropdown-enter-to"
+      leave-active-class="mld-date-picker__dropdown-leave-active"
+      leave-from-class="mld-date-picker__dropdown-leave-from"
+      leave-to-class="mld-date-picker__dropdown-leave-to"
     >
       <div
         v-if="isOpen"
-        class="absolute z-50 mt-1 w-72 p-3 rounded-mld border border-border bg-bg-card shadow-lg"
+        class="mld-date-picker__dropdown"
         role="dialog"
         aria-modal="true"
         aria-label="Date picker"
       >
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-3">
+        <div class="mld-date-picker__header">
           <button
             type="button"
             aria-label="Previous month"
-            class="p-2 rounded-full hover:bg-bg-hover text-text-muted hover:text-text-primary transition-colors"
+            class="mld-date-picker__nav-btn"
             @click="prevMonth"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <span class="text-sm font-medium text-text-primary">{{ monthYear }}</span>
+          <span class="mld-date-picker__month-year">{{ monthYear }}</span>
           <button
             type="button"
             aria-label="Next month"
-            class="p-2 rounded-full hover:bg-bg-hover text-text-muted hover:text-text-primary transition-colors"
+            class="mld-date-picker__nav-btn"
             @click="nextMonth"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
-        <!-- Week days -->
-        <div class="grid grid-cols-7 gap-1 mb-1">
+        <div class="mld-date-picker__weekdays">
           <div
             v-for="day in weekDays"
             :key="day"
-            class="text-center text-xs font-medium text-text-muted py-1"
+            class="mld-date-picker__weekday"
           >
             {{ day }}
           </div>
         </div>
 
-        <!-- Calendar grid -->
-        <div class="grid grid-cols-7 gap-0.5">
+        <div class="mld-date-picker__grid">
           <button
             v-for="(day, index) in calendarDays"
             :key="index"
@@ -279,11 +259,11 @@ onUnmounted(() => {
             :aria-label="day.date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })"
             :aria-selected="isSameDay(day.date, selectedDate)"
             :class="[
-              'w-9 h-9 text-sm rounded-full transition-colors flex items-center justify-center',
-              day.isCurrentMonth ? 'text-text-primary' : 'text-text-muted',
-              day.isDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-bg-hover cursor-pointer',
-              isSameDay(day.date, selectedDate) ? 'bg-mld-primary text-white hover:bg-mld-primary' : '',
-              isToday(day.date) && !isSameDay(day.date, selectedDate) ? 'ring-1 ring-mld-primary' : '',
+              'mld-date-picker__day',
+              !day.isCurrentMonth ? 'mld-date-picker__day--other-month' : '',
+              day.isDisabled ? 'mld-date-picker__day--disabled' : '',
+              isSameDay(day.date, selectedDate) ? 'mld-date-picker__day--selected' : '',
+              isToday(day.date) && !isSameDay(day.date, selectedDate) ? 'mld-date-picker__day--today' : '',
             ]"
             @click="selectDate(day)"
           >
@@ -291,11 +271,10 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <!-- Footer -->
-        <div class="flex items-center justify-between mt-3 pt-3 border-t border-border">
+        <div class="mld-date-picker__footer">
           <button
             type="button"
-            class="text-xs text-mld-primary hover:text-mld-primary/80 transition-colors"
+            class="mld-date-picker__footer-btn mld-date-picker__today-btn"
             @click="goToToday"
           >
             Today
@@ -303,7 +282,7 @@ onUnmounted(() => {
           <button
             v-if="clearable && modelValue"
             type="button"
-            class="text-xs text-text-muted hover:text-text-primary transition-colors"
+            class="mld-date-picker__footer-btn mld-date-picker__clear-btn"
             @click="clear"
           >
             Clear
@@ -313,3 +292,7 @@ onUnmounted(() => {
     </Transition>
   </div>
 </template>
+
+<style>
+@import '../styles/components/date-picker.css';
+</style>

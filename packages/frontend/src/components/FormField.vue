@@ -11,23 +11,27 @@ defineProps<Props>()
 </script>
 
 <template>
-  <div class="space-y-1.5">
+  <div class="mld-form-field">
     <label
       v-if="label"
       :for="htmlFor"
-      class="block text-sm font-medium text-text-primary"
+      class="mld-form-field__label"
     >
       {{ label }}
-      <span v-if="required" class="text-mld-danger ml-0.5">*</span>
+      <span v-if="required" class="mld-form-field__required">*</span>
     </label>
 
     <slot />
 
-    <p v-if="error" class="text-sm text-mld-danger">
+    <p v-if="error" class="mld-form-field__error">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="text-sm text-text-muted">
+    <p v-else-if="hint" class="mld-form-field__hint">
       {{ hint }}
     </p>
   </div>
 </template>
+
+<style>
+@import '../styles/components/form-field.css';
+</style>

@@ -1,0 +1,90 @@
+/* AlertBox Component Styles */
+
+.mld-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+}
+
+.mld-alert--success {
+  background-color: var(--mld-success-bg);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.mld-alert--error {
+  background-color: var(--mld-error-bg);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.mld-alert--warning {
+  background-color: var(--mld-warning-bg);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.mld-alert--info {
+  background-color: var(--mld-info-bg);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.mld-alert__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.mld-alert__icon--success {
+  color: var(--mld-success);
+}
+
+.mld-alert__icon--error {
+  color: var(--mld-error);
+}
+
+.mld-alert__icon--warning {
+  color: var(--mld-warning);
+}
+
+.mld-alert__icon--info {
+  color: var(--color-primary);
+}
+
+.mld-alert__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.mld-alert__title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.mld-alert__message {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.mld-alert__dismiss {
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.mld-alert__dismiss:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+}
+
+.mld-alert__dismiss-icon {
+  width: 1rem;
+  height: 1rem;
+}

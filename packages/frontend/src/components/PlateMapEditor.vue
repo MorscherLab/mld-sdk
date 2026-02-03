@@ -557,3 +557,7 @@ onUnmounted(() => {
     </Teleport>
   </div>
 </template>
+
+<style>
+@import '../styles/components/plate-map-editor.css';
+</style>

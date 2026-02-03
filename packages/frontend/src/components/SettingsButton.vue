@@ -94,28 +94,5 @@ onUnmounted(() => {
 </template>
 
 <style>
-.mld-settings-button {
-  position: relative;
-  display: inline-flex;
-}
-
-.mld-settings-dropdown {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  min-width: 200px;
-  background: var(--mld-bg-card, #ffffff);
-  border: 1px solid var(--mld-border, #e5e7eb);
-  border-radius: var(--mld-radius, 0.5rem);
-  box-shadow: var(--mld-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
-  z-index: 50;
-  overflow: hidden;
-}
-
-.mld-settings-dropdown__empty {
-  padding: 1rem;
-  color: var(--mld-text-muted, #9ca3af);
-  font-size: 0.875rem;
-  text-align: center;
-}
+@import '../styles/components/settings-button.css';
 </style>

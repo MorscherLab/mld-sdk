@@ -4,3 +4,34 @@
 
 /* CSS Variables and base styles */
 @import './variables.css';
+
+/* Component styles - alphabetically ordered */
+@import './components/alert-box.css';
+@import './components/app-sidebar.css';
+@import './components/app-top-bar.css';
+@import './components/button.css';
+@import './components/checkbox.css';
+@import './components/collapsible-card.css';
+@import './components/color-slider.css';
+@import './components/date-picker.css';
+@import './components/experiment-timeline.css';
+@import './components/file-uploader.css';
+@import './components/form-field.css';
+@import './components/icon-button.css';
+@import './components/input.css';
+@import './components/modal.css';
+@import './components/number-input.css';
+@import './components/plate-map-editor.css';
+@import './components/radio-group.css';
+@import './components/sample-legend.css';
+@import './components/select.css';
+@import './components/settings-button.css';
+@import './components/skeleton.css';
+@import './components/slider.css';
+@import './components/tabs.css';
+@import './components/tags-input.css';
+@import './components/textarea.css';
+@import './components/theme-toggle.css';
+@import './components/toast.css';
+@import './components/toggle.css';
+@import './components/well-plate.css';

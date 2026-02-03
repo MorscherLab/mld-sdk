@@ -80,22 +80,21 @@ const stepTypeColors: Record<ProtocolStepType, string> = {
   custom: '#EC4899',
 }
 
-const statusColors: Record<ProtocolStepStatus, { bg: string; text: string; border: string }> = {
-  pending: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', border: 'border-gray-300 dark:border-gray-600' },
-  in_progress: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-400' },
-  completed: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', border: 'border-green-400' },
-  failed: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-600 dark:text-red-400', border: 'border-red-400' },
-  skipped: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-400 dark:text-gray-500', border: 'border-gray-300 dark:border-gray-600' },
+const statusClasses: Record<ProtocolStepStatus, string> = {
+  pending: 'mld-timeline__card--pending',
+  in_progress: 'mld-timeline__card--in-progress',
+  completed: 'mld-timeline__card--completed',
+  failed: 'mld-timeline__card--failed',
+  skipped: 'mld-timeline__card--skipped',
 }
 
-const sizeClasses = computed(() => {
-  const sizes = {
-    sm: { icon: 'w-6 h-6', iconInner: 'w-3 h-3', text: 'text-xs', padding: 'p-2', gap: 'gap-2' },
-    md: { icon: 'w-8 h-8', iconInner: 'w-4 h-4', text: 'text-sm', padding: 'p-3', gap: 'gap-3' },
-    lg: { icon: 'w-10 h-10', iconInner: 'w-5 h-5', text: 'text-base', padding: 'p-4', gap: 'gap-4' },
-  }
-  return sizes[props.size]
-})
+const iconStatusClasses: Record<ProtocolStepStatus, string> = {
+  pending: 'mld-timeline__icon--pending',
+  in_progress: 'mld-timeline__icon--in-progress',
+  completed: 'mld-timeline__icon--completed',
+  failed: 'mld-timeline__icon--failed',
+  skipped: 'mld-timeline__icon--skipped',
+}
 
 function formatDuration(minutes: number | undefined): string {
   if (minutes === undefined) return ''
@@ -109,8 +108,12 @@ function getStepColor(step: ProtocolStep): string {
   return props.colorByType && !props.colorByStatus ? stepTypeColors[step.type] : ''
 }
 
-function getStatusClasses(step: ProtocolStep) {
-  return props.colorByStatus ? statusColors[step.status] : statusColors.pending
+function getStatusClass(step: ProtocolStep): string {
+  return props.colorByStatus ? statusClasses[step.status] : statusClasses.pending
+}
+
+function getIconStatusClass(step: ProtocolStep): string {
+  return props.colorByStatus ? iconStatusClasses[step.status] : iconStatusClasses.pending
 }
 
 function toggleExpand(step: ProtocolStep) {
@@ -194,25 +197,18 @@ function handleDragEnd() {
   dragOverStepId.value = null
 }
 
-const containerClass = computed(() =>
-  props.orientation === 'horizontal'
-    ? 'flex items-start overflow-x-auto pb-2'
-    : 'flex flex-col'
-)
-
-const stepClass = computed(() =>
-  props.orientation === 'horizontal'
-    ? 'flex-shrink-0'
-    : ''
-)
 </script>
 
 <template>
-  <div :class="containerClass" role="list" :aria-label="`Protocol timeline with ${sortedSteps.length} steps`">
+  <div
+    :class="['mld-timeline', orientation === 'horizontal' ? 'mld-timeline--horizontal' : 'mld-timeline--vertical']"
+    role="list"
+    :aria-label="`Protocol timeline with ${sortedSteps.length} steps`"
+  >
     <div
       v-for="(step, index) in sortedSteps"
       :key="step.id"
-      :class="[stepClass, 'relative']"
+      class="mld-timeline__step"
       role="listitem"
       :draggable="editable"
       @dragstart="handleDragStart($event, step)"
@@ -221,73 +217,59 @@ const stepClass = computed(() =>
       @drop="handleDrop($event, step)"
       @dragend="handleDragEnd"
     >
-      <!-- Connector line -->
       <div
         v-if="index < sortedSteps.length - 1"
-        :class="[
-          'absolute bg-border',
-          orientation === 'horizontal'
-            ? 'top-1/2 -translate-y-1/2 h-0.5 left-full w-4'
-            : 'left-4 top-full w-0.5 h-4 -translate-x-1/2',
-        ]"
-        :style="orientation === 'horizontal' ? { left: `calc(100% - 0.5rem)`, width: '2rem' } : {}"
+        class="mld-timeline__connector"
       />
 
-      <!-- Step card -->
       <div
         :class="[
-          'relative rounded-lg border-2 transition-all duration-200 cursor-pointer',
-          sizeClasses.padding,
-          getStatusClasses(step).bg,
-          getStatusClasses(step).border,
-          dragOverStepId === step.id ? 'ring-2 ring-mld-primary' : '',
-          draggedStepId === step.id ? 'opacity-50' : '',
-          editable ? 'cursor-grab active:cursor-grabbing' : '',
-          orientation === 'horizontal' ? 'min-w-[180px]' : 'w-full',
+          'mld-timeline__card',
+          `mld-timeline__card--${size}`,
+          getStatusClass(step),
+          dragOverStepId === step.id ? 'mld-timeline__card--drag-over' : '',
+          draggedStepId === step.id ? 'mld-timeline__card--dragging' : '',
+          editable ? 'mld-timeline__card--editable' : '',
         ]"
         :style="colorByType ? { borderColor: getStepColor(step) } : {}"
         @click="handleStepClick(step)"
       >
-        <!-- Header -->
-        <div class="flex items-center" :class="sizeClasses.gap">
-          <!-- Icon -->
+        <div :class="['mld-timeline__header', `mld-timeline__header--${size}`]">
           <div
             :class="[
-              'flex-shrink-0 rounded-full flex items-center justify-center',
-              sizeClasses.icon,
-              getStatusClasses(step).text,
+              'mld-timeline__icon',
+              `mld-timeline__icon--${size}`,
+              getIconStatusClass(step),
             ]"
             :style="colorByType ? { backgroundColor: `${getStepColor(step)}20`, color: getStepColor(step) } : {}"
           >
-            <svg :class="sizeClasses.iconInner" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stepTypeIcons[step.type]" />
             </svg>
           </div>
 
-          <!-- Title & meta -->
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span :class="['font-medium truncate', sizeClasses.text, 'text-text-primary']">
+          <div class="mld-timeline__content">
+            <div class="mld-timeline__title-row">
+              <span :class="['mld-timeline__title', `mld-timeline__title--${size}`]">
                 {{ step.name }}
               </span>
               <span
                 v-if="showDuration && step.duration"
-                :class="['text-text-muted', size === 'sm' ? 'text-[10px]' : 'text-xs']"
+                :class="['mld-timeline__duration', size === 'sm' ? 'mld-timeline__duration--sm' : '']"
               >
                 {{ formatDuration(step.duration) }}
               </span>
             </div>
-            <div :class="['text-text-muted capitalize', size === 'sm' ? 'text-[10px]' : 'text-xs']">
+            <div :class="['mld-timeline__type', `mld-timeline__type--${size}`]">
               {{ step.type.replace('_', ' ') }}
             </div>
           </div>
 
-          <!-- Expand indicator -->
           <svg
             v-if="collapsible && (step.description || step.parameters)"
             :class="[
-              'w-4 h-4 text-text-muted transition-transform',
-              expandedId === step.id ? 'rotate-180' : '',
+              'mld-timeline__expand-icon',
+              expandedId === step.id ? 'mld-timeline__expand-icon--expanded' : '',
             ]"
             fill="none"
             stroke="currentColor"
@@ -296,52 +278,48 @@ const stepClass = computed(() =>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
 
-          <!-- Remove button -->
           <button
             v-if="editable"
             type="button"
-            class="p-1 text-text-muted hover:text-mld-danger transition-colors rounded"
+            class="mld-timeline__remove-btn"
             :aria-label="`Remove ${step.name}`"
             @click.stop="handleRemoveStep(step.id)"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <!-- Expanded content -->
         <div
           v-if="expandedId === step.id && (step.description || step.parameters)"
           :aria-expanded="expandedId === step.id"
-          class="mt-3 pt-3 border-t border-border/50"
+          class="mld-timeline__expanded"
         >
-          <p v-if="step.description" :class="['text-text-secondary mb-2', size === 'sm' ? 'text-xs' : 'text-sm']">
+          <p v-if="step.description" :class="['mld-timeline__description', `mld-timeline__description--${size}`]">
             {{ step.description }}
           </p>
 
-          <div v-if="step.parameters && Object.keys(step.parameters).length > 0" class="space-y-1">
+          <div v-if="step.parameters && Object.keys(step.parameters).length > 0" class="mld-timeline__parameters">
             <div
               v-for="(value, key) in step.parameters"
               :key="String(key)"
-              :class="['flex justify-between', size === 'sm' ? 'text-[10px]' : 'text-xs']"
+              :class="['mld-timeline__param', `mld-timeline__param--${size}`]"
             >
-              <span class="text-text-muted">{{ key }}:</span>
-              <span class="text-text-primary font-medium">{{ value }}</span>
+              <span class="mld-timeline__param-key">{{ key }}:</span>
+              <span class="mld-timeline__param-value">{{ value }}</span>
             </div>
           </div>
 
-          <!-- Status controls -->
-          <div v-if="editable" class="mt-3 flex flex-wrap gap-1">
+          <div v-if="editable" class="mld-timeline__status-controls">
             <button
               v-for="status in (['pending', 'in_progress', 'completed', 'failed', 'skipped'] as const)"
               :key="status"
               type="button"
               :class="[
-                'px-2 py-0.5 rounded text-xs transition-colors',
-                step.status === status
-                  ? `${statusColors[status].bg} ${statusColors[status].text} font-medium`
-                  : 'text-text-muted hover:bg-bg-hover',
+                'mld-timeline__status-btn',
+                `mld-timeline__status-btn--${status}`,
+                step.status === status ? 'mld-timeline__status-btn--active' : '',
               ]"
               @click.stop="handleStatusChange(step, status)"
             >
@@ -351,35 +329,32 @@ const stepClass = computed(() =>
         </div>
       </div>
 
-      <!-- Add step button (between steps) -->
       <button
         v-if="editable && orientation === 'vertical'"
         type="button"
-        class="absolute left-4 -translate-x-1/2 -bottom-2 w-4 h-4 bg-bg-secondary border border-border rounded-full flex items-center justify-center text-text-muted hover:text-mld-primary hover:border-mld-primary transition-colors opacity-0 hover:opacity-100 focus:opacity-100 z-10"
+        class="mld-timeline__add-inline"
         :aria-label="`Add step after ${step.name}`"
         @click.stop="handleAddStep(step.id)"
       >
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
       </button>
 
-      <!-- Spacer for vertical layout -->
-      <div v-if="orientation === 'vertical' && index < sortedSteps.length - 1" class="h-4" />
-      <div v-if="orientation === 'horizontal' && index < sortedSteps.length - 1" class="w-8" />
+      <div v-if="orientation === 'vertical' && index < sortedSteps.length - 1" class="mld-timeline__spacer--vertical" />
+      <div v-if="orientation === 'horizontal' && index < sortedSteps.length - 1" class="mld-timeline__spacer--horizontal" />
     </div>
 
-    <!-- Empty state / Add first step -->
     <div
       v-if="sortedSteps.length === 0"
-      class="flex items-center justify-center p-8 border-2 border-dashed border-border rounded-lg"
+      class="mld-timeline__empty"
     >
-      <div class="text-center">
-        <p class="text-text-muted mb-2">No protocol steps defined</p>
+      <div class="mld-timeline__empty-content">
+        <p class="mld-timeline__empty-text">No protocol steps defined</p>
         <button
           v-if="editable"
           type="button"
-          class="px-3 py-1.5 text-sm bg-mld-primary text-white rounded-mld hover:bg-mld-primary-hover transition-colors"
+          class="mld-timeline__empty-btn"
           @click="handleAddStep()"
         >
           Add First Step
@@ -387,21 +362,20 @@ const stepClass = computed(() =>
       </div>
     </div>
 
-    <!-- Add step at end -->
     <button
       v-if="editable && sortedSteps.length > 0"
       type="button"
-      :class="[
-        'flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg text-text-muted hover:text-mld-primary hover:border-mld-primary transition-colors',
-        sizeClasses.padding,
-        orientation === 'horizontal' ? 'min-w-[120px] flex-shrink-0' : 'w-full mt-4',
-      ]"
+      :class="['mld-timeline__add-end', `mld-timeline__add-end--${size}`]"
       @click="handleAddStep()"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
       </svg>
-      <span :class="sizeClasses.text">Add Step</span>
+      <span :class="`mld-timeline__add-end-text--${size}`">Add Step</span>
     </button>
   </div>
 </template>
+
+<style>
+@import '../styles/components/experiment-timeline.css';
+</style>

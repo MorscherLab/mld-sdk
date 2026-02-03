@@ -65,19 +65,6 @@ const iconColors: Record<Toast['type'], string> = {
   </Teleport>
 </template>
 
-<style scoped>
-.toast-enter-active {
-  transition: all 0.3s ease-out;
-}
-.toast-leave-active {
-  transition: all 0.2s ease-in;
-}
-.toast-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-.toast-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
+<style>
+@import '../styles/components/toast.css';
 </style>

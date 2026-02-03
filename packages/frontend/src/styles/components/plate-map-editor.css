@@ -1,0 +1,464 @@
+/* PlateMapEditor Component Styles */
+
+.mld-plate-editor {
+  display: flex;
+}
+
+.mld-plate-editor--with-sidebar {
+  gap: 1rem;
+}
+
+/* Main plate area */
+.mld-plate-editor__main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Toolbar */
+.mld-plate-editor__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Plate tabs */
+.mld-plate-editor__tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.mld-plate-editor__tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mld-plate-editor__tab--active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: transparent;
+}
+
+.mld-plate-editor__tab-slot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.mld-plate-editor__tab-name {
+  font-weight: 500;
+}
+
+.mld-plate-editor__tab-count {
+  padding: 0 0.375rem;
+  min-width: 1.25rem;
+  text-align: center;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background-color: var(--bg-secondary);
+  color: var(--text-muted);
+}
+
+.mld-plate-editor__tab--active .mld-plate-editor__tab-count {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.mld-plate-editor__tab-remove {
+  opacity: 0;
+  margin-left: 0.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: opacity 0.15s ease;
+}
+
+.mld-plate-editor__tab:hover .mld-plate-editor__tab-remove {
+  opacity: 1;
+}
+
+.mld-plate-editor__tab--active .mld-plate-editor__tab-remove {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mld-plate-editor__tab-remove svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* Add plate button */
+.mld-plate-editor__add-plate {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px dashed var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.mld-plate-editor__add-plate:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.mld-plate-editor__add-plate svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Toolbar spacer */
+.mld-plate-editor__spacer {
+  flex: 1;
+}
+
+/* Toolbar actions */
+.mld-plate-editor__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mld-plate-editor__action-btn {
+  padding: 0.375rem;
+  border-radius: 0.25rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.mld-plate-editor__action-btn:hover {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+
+.mld-plate-editor__action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mld-plate-editor__action-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-plate-editor__divider {
+  width: 1px;
+  height: 1rem;
+  margin: 0 0.25rem;
+  background-color: var(--border-color);
+}
+
+/* Selection info bar */
+.mld-plate-editor__selection-bar {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.mld-plate-editor__selection-count {
+  color: var(--text-secondary);
+}
+
+.mld-plate-editor__selection-count strong {
+  font-weight: 600;
+}
+
+.mld-plate-editor__assign-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.mld-plate-editor__assign-btn:hover {
+  opacity: 0.9;
+}
+
+.mld-plate-editor__clear-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.mld-plate-editor__clear-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Legend */
+.mld-plate-editor__legend {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.25rem;
+}
+
+.mld-plate-editor__legend-items {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mld-plate-editor__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.mld-plate-editor__legend-swatch {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 0.25rem;
+}
+
+.mld-plate-editor__legend-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.mld-plate-editor__legend-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.mld-plate-editor__legend-hint svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* Sidebar */
+.mld-plate-editor__sidebar {
+  width: 13rem;
+  flex-shrink: 0;
+}
+
+.mld-plate-editor__sidebar-panel {
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.mld-plate-editor__sidebar-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+/* Add sample form */
+.mld-plate-editor__add-sample {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.mld-plate-editor__add-sample-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mld-plate-editor__add-sample-input {
+  flex: 1;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.mld-plate-editor__add-sample-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.mld-plate-editor__add-sample-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.mld-plate-editor__add-sample-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Shortcuts */
+.mld-plate-editor__shortcuts {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.mld-plate-editor__shortcuts-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+}
+
+.mld-plate-editor__shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.mld-plate-editor__shortcut-key {
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+  background-color: var(--bg-primary);
+}
+
+/* Import modal */
+.mld-plate-editor__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.mld-plate-editor__modal {
+  width: 100%;
+  max-width: 28rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.mld-plate-editor__modal-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.mld-plate-editor__modal-field {
+  margin-bottom: 0.75rem;
+}
+
+.mld-plate-editor__modal-label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+}
+
+.mld-plate-editor__modal-select,
+.mld-plate-editor__modal-textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.mld-plate-editor__modal-select:focus,
+.mld-plate-editor__modal-textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.mld-plate-editor__modal-textarea {
+  font-family: monospace;
+  font-size: 0.875rem;
+  resize: none;
+}
+
+.mld-plate-editor__modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.mld-plate-editor__modal-cancel {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.mld-plate-editor__modal-cancel:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.mld-plate-editor__modal-submit {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.mld-plate-editor__modal-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

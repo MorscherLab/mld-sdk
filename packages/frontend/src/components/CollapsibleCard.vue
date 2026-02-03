@@ -65,22 +65,6 @@ const headerClasses = computed(() => [
   </div>
 </template>
 
-<style scoped>
-.collapse-enter-active,
-.collapse-leave-active {
-  transition: all 0.2s ease;
-  overflow: hidden;
-}
-
-.collapse-enter-from,
-.collapse-leave-to {
-  opacity: 0;
-  max-height: 0;
-}
-
-.collapse-enter-to,
-.collapse-leave-from {
-  opacity: 1;
-  max-height: 500px;
-}
+<style>
+@import '../styles/components/collapsible-card.css';
 </style>

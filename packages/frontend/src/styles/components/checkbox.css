@@ -1,0 +1,104 @@
+/* BaseCheckbox Component Styles */
+
+.mld-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mld-checkbox--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mld-checkbox__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mld-checkbox__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.mld-checkbox__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+}
+
+.mld-checkbox__box--checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.mld-checkbox__box--sm {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+.mld-checkbox__box--md {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.mld-checkbox__box--lg {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.mld-checkbox__icon {
+  color: white;
+}
+
+.mld-checkbox__icon--sm {
+  width: 12px;
+  height: 12px;
+}
+
+.mld-checkbox__icon--md {
+  width: 14px;
+  height: 14px;
+}
+
+.mld-checkbox__icon--lg {
+  width: 16px;
+  height: 16px;
+}
+
+.mld-checkbox__label {
+  color: var(--text-primary);
+}
+
+.mld-checkbox__label--sm {
+  font-size: 0.875rem;
+}
+
+.mld-checkbox__label--md {
+  font-size: 0.875rem;
+}
+
+.mld-checkbox__label--lg {
+  font-size: 1rem;
+}

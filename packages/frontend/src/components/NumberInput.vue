@@ -23,24 +23,6 @@ const emit = defineEmits<{
   'update:modelValue': [value: number | undefined]
 }>()
 
-const sizeConfig = computed(() => {
-  switch (props.size) {
-    case 'sm': return { input: 'px-2.5 py-1.5 text-sm', button: 'w-7' }
-    case 'lg': return { input: 'px-4 py-3 text-base', button: 'w-10' }
-    default: return { input: 'px-3 py-2 text-sm', button: 'w-8' }
-  }
-})
-
-const containerClasses = computed(() => [
-  'inline-flex rounded-mld border overflow-hidden',
-  'transition-colors duration-mld',
-  'focus-within:ring-2 focus-within:ring-mld-primary focus-within:border-transparent',
-  props.error
-    ? 'border-mld-danger focus-within:ring-mld-danger'
-    : 'border-border',
-  props.disabled ? 'opacity-50' : '',
-])
-
 const canDecrement = computed(() => {
   if (props.modelValue === undefined) return true
   if (props.min === undefined) return true
@@ -84,26 +66,29 @@ function increment() {
 </script>
 
 <template>
-  <div :class="containerClasses">
-    <!-- Decrement button -->
+  <div
+    :class="[
+      'mld-number-input',
+      error ? 'mld-number-input--error' : '',
+      disabled ? 'mld-number-input--disabled' : '',
+    ]"
+  >
     <button
       type="button"
       aria-label="Decrease value"
       :disabled="disabled || !canDecrement"
       :class="[
-        sizeConfig.button,
-        'flex items-center justify-center bg-bg-hover border-r border-border',
-        'text-text-muted hover:text-text-primary hover:bg-bg-tertiary',
-        'transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+        'mld-number-input__button',
+        'mld-number-input__button--decrement',
+        `mld-number-input__button--${size}`,
       ]"
       @click="decrement"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <svg class="mld-number-input__button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
       </svg>
     </button>
 
-    <!-- Input -->
     <input
       type="number"
       :value="modelValue"
@@ -113,30 +98,31 @@ function increment() {
       :disabled="disabled"
       :placeholder="placeholder"
       :class="[
-        sizeConfig.input,
-        'w-20 text-center bg-bg-input text-text-primary outline-none',
-        '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-        disabled ? 'cursor-not-allowed bg-bg-hover' : '',
+        'mld-number-input__input',
+        `mld-number-input__input--${size}`,
+        disabled ? 'mld-number-input__input--disabled' : '',
       ]"
       @input="handleInput"
     />
 
-    <!-- Increment button -->
     <button
       type="button"
       aria-label="Increase value"
       :disabled="disabled || !canIncrement"
       :class="[
-        sizeConfig.button,
-        'flex items-center justify-center bg-bg-hover border-l border-border',
-        'text-text-muted hover:text-text-primary hover:bg-bg-tertiary',
-        'transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+        'mld-number-input__button',
+        'mld-number-input__button--increment',
+        `mld-number-input__button--${size}`,
       ]"
       @click="increment"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <svg class="mld-number-input__button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
       </svg>
     </button>
   </div>
 </template>
+
+<style>
+@import '../styles/components/number-input.css';
+</style>

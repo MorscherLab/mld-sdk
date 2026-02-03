@@ -1,0 +1,177 @@
+/* FileUploader Component Styles */
+
+.mld-file-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mld-file-uploader__dropzone {
+  position: relative;
+  border: 2px dashed var(--border-color);
+  border-radius: 0.5rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.mld-file-uploader__dropzone:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.mld-file-uploader__dropzone--dragover {
+  border-color: var(--color-primary);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.mld-file-uploader__dropzone--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mld-file-uploader__dropzone--sm {
+  padding: 1rem;
+}
+
+.mld-file-uploader__dropzone--md {
+  padding: 2rem 1.5rem;
+}
+
+.mld-file-uploader__dropzone--lg {
+  padding: 2.5rem 2rem;
+}
+
+.mld-file-uploader__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.mld-file-uploader__icon {
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.mld-file-uploader__icon--sm {
+  width: 2rem;
+  height: 2rem;
+}
+
+.mld-file-uploader__icon--md {
+  width: 3rem;
+  height: 3rem;
+}
+
+.mld-file-uploader__icon--lg {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.mld-file-uploader__text {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.mld-file-uploader__text--sm {
+  font-size: 0.875rem;
+}
+
+.mld-file-uploader__text--md {
+  font-size: 1rem;
+}
+
+.mld-file-uploader__text--lg {
+  font-size: 1.125rem;
+}
+
+.mld-file-uploader__highlight {
+  color: var(--color-primary);
+}
+
+.mld-file-uploader__hint {
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.mld-file-uploader__hint--sm {
+  font-size: 0.75rem;
+}
+
+.mld-file-uploader__hint--md {
+  font-size: 0.875rem;
+}
+
+.mld-file-uploader__hint--lg {
+  font-size: 1rem;
+}
+
+.mld-file-uploader__input {
+  display: none;
+}
+
+/* File list */
+.mld-file-uploader__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mld-file-uploader__file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-tertiary);
+}
+
+.mld-file-uploader__file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.mld-file-uploader__file-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.mld-file-uploader__file-name {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mld-file-uploader__file-size {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.mld-file-uploader__file-remove {
+  padding: 0.375rem;
+  border-radius: 9999px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.mld-file-uploader__file-remove:hover {
+  color: var(--mld-error);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.mld-file-uploader__file-remove-icon {
+  width: 1rem;
+  height: 1rem;
+}

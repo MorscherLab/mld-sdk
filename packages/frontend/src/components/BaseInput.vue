@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { InputType } from '../types'
 
 interface Props {
@@ -32,25 +31,6 @@ const emit = defineEmits<{
   keydown: [event: KeyboardEvent]
 }>()
 
-const sizeClasses = computed(() => {
-  switch (props.size) {
-    case 'sm': return 'px-2.5 py-1.5 text-sm'
-    case 'lg': return 'px-4 py-3 text-base'
-    default: return 'px-3 py-2 text-sm'
-  }
-})
-
-const inputClasses = computed(() => [
-  'w-full rounded-mld border bg-bg-input text-text-primary placeholder:text-text-muted',
-  'transition-colors duration-mld',
-  'focus:outline-none focus:ring-2 focus:ring-mld-primary focus:border-transparent',
-  sizeClasses.value,
-  props.error
-    ? 'border-mld-danger focus:ring-mld-danger'
-    : 'border-border',
-  props.disabled ? 'opacity-50 cursor-not-allowed bg-bg-hover' : '',
-])
-
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
   const value = props.type === 'number' ? Number(target.value) : target.value
@@ -70,10 +50,19 @@ function handleInput(event: Event) {
     :min="min"
     :max="max"
     :step="step"
-    :class="inputClasses"
+    :class="[
+      'mld-input',
+      `mld-input--${size}`,
+      error ? 'mld-input--error' : '',
+      disabled ? 'mld-input--disabled' : '',
+    ]"
     @input="handleInput"
     @focus="emit('focus', $event)"
     @blur="emit('blur', $event)"
     @keydown="emit('keydown', $event)"
   />
 </template>
+
+<style>
+@import '../styles/components/input.css';
+</style>

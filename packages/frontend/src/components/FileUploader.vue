@@ -150,20 +150,17 @@ function formatFileSize(bytes: number): string {
 </script>
 
 <template>
-  <div class="space-y-3">
-    <!-- Drop zone -->
+  <div class="mld-file-uploader">
     <div
       role="button"
       tabindex="0"
       :aria-label="disabled ? 'File upload disabled' : 'Click or drag files to upload'"
       :aria-disabled="disabled"
       :class="[
-        'relative border-2 border-dashed rounded-mld transition-colors',
-        sizeConfig.padding,
-        isDragOver
-          ? 'border-mld-primary bg-mld-primary/5'
-          : 'border-border hover:border-mld-primary/50',
-        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+        'mld-file-uploader__dropzone',
+        `mld-file-uploader__dropzone--${size}`,
+        isDragOver ? 'mld-file-uploader__dropzone--dragover' : '',
+        disabled ? 'mld-file-uploader__dropzone--disabled' : '',
       ]"
       @click="openFilePicker"
       @keydown.enter="openFilePicker"
@@ -178,13 +175,13 @@ function formatFileSize(bytes: number): string {
         :accept="accept"
         :multiple="multiple"
         :disabled="disabled"
-        class="hidden"
+        class="mld-file-uploader__input"
         @change="handleInputChange"
       />
 
-      <div class="flex flex-col items-center text-center">
+      <div class="mld-file-uploader__content">
         <svg
-          :class="[sizeConfig.icon, 'text-text-muted mb-3']"
+          :class="['mld-file-uploader__icon', `mld-file-uploader__icon--${size}`]"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -192,38 +189,37 @@ function formatFileSize(bytes: number): string {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
 
-        <p :class="['text-text-primary font-medium', sizeConfig.text]">
-          <span class="text-mld-primary">Click to upload</span>
+        <p :class="['mld-file-uploader__text', `mld-file-uploader__text--${size}`]">
+          <span class="mld-file-uploader__highlight">Click to upload</span>
           <span> or drag and drop</span>
         </p>
 
-        <p :class="['text-text-muted mt-1', sizeConfig.subtext]">
+        <p :class="['mld-file-uploader__hint', `mld-file-uploader__hint--${size}`]">
           {{ acceptLabel }}{{ maxSizeLabel ? ` (max ${maxSizeLabel})` : '' }}
         </p>
       </div>
     </div>
 
-    <!-- Selected files list -->
-    <ul v-if="selectedFiles.length > 0" class="space-y-2">
+    <ul v-if="selectedFiles.length > 0" class="mld-file-uploader__list">
       <li
         v-for="(file, index) in selectedFiles"
         :key="`${file.name}-${index}`"
-        class="flex items-center justify-between p-2 rounded-mld bg-bg-hover"
+        class="mld-file-uploader__file"
       >
-        <div class="flex items-center gap-2 min-w-0">
-          <svg class="w-5 h-5 shrink-0 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="mld-file-uploader__file-info">
+          <svg class="mld-file-uploader__file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <span class="text-sm text-text-primary truncate">{{ file.name }}</span>
-          <span class="text-xs text-text-muted shrink-0">{{ formatFileSize(file.size) }}</span>
+          <span class="mld-file-uploader__file-name">{{ file.name }}</span>
+          <span class="mld-file-uploader__file-size">{{ formatFileSize(file.size) }}</span>
         </div>
         <button
           type="button"
           :aria-label="`Remove ${file.name}`"
-          class="p-1.5 rounded-full text-text-muted hover:text-mld-danger hover:bg-mld-danger/10 transition-colors"
+          class="mld-file-uploader__file-remove"
           @click.stop="removeFile(index)"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="mld-file-uploader__file-remove-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -231,3 +227,7 @@ function formatFileSize(bytes: number): string {
     </ul>
   </div>
 </template>
+
+<style>
+@import '../styles/components/file-uploader.css';
+</style>

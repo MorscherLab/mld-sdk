@@ -149,13 +149,5 @@ function getItemClasses(item: SidebarItem) {
 </template>
 
 <style>
-/* AppSidebar - consistent theming */
-.mld-sidebar {
-  background-color: var(--bg-secondary, var(--mld-bg-card, #ffffff));
-  border-right: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
-}
-
-.mld-sidebar--floating {
-  border: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
-}
+@import '../styles/components/app-sidebar.css';
 </style>
