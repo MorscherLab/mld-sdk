@@ -27,15 +27,13 @@ const emit = defineEmits<{
 
 const sidebarWidth = computed(() => props.collapsed ? props.collapsedWidth : props.width)
 
-function handleItemClick(item: SidebarItem, event?: MouseEvent) {
+function handleItemClick(item: SidebarItem, event?: Event) {
   if (item.disabled) return
 
-  // Prevent default for items with `to` (internal routes)
-  // The consuming app should handle navigation via @select event
+  // Prevent default for internal routes - consuming app handles navigation via @select
   if (item.to && event) {
     event.preventDefault()
   }
-  // External links (href) use default anchor behavior
 
   emit('select', item)
 }
@@ -53,7 +51,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
     ]
   }
   return [
-    'flex items-center gap-3 px-3 py-2 rounded-mld text-sm transition-colors duration-mld',
+    'flex items-center justify-start gap-3 px-3 py-2 rounded-mld text-sm transition-colors duration-mld',
     'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mld-primary',
     'w-full text-left', // For button elements to match anchor styling
     item.disabled
@@ -108,7 +106,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
                 v-if="child.href"
                 :href="child.href"
                 :class="getItemClasses(child)"
-                @click="(e: MouseEvent) => handleItemClick(child, e)"
+                @click="handleItemClick(child, $event)"
               >
                 <span class="flex-1 truncate">{{ child.label }}</span>
               </a>
@@ -116,7 +114,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
                 v-else
                 type="button"
                 :class="getItemClasses(child)"
-                @click="(e: MouseEvent) => handleItemClick(child, e)"
+                @click="handleItemClick(child)"
               >
                 <span class="flex-1 truncate">{{ child.label }}</span>
               </button>
@@ -129,24 +127,14 @@ function getItemClasses(item: SidebarItem, isParent = false) {
           v-else-if="item.href"
           :href="item.href"
           :class="getItemClasses(item)"
-          @click="(e: MouseEvent) => handleItemClick(item, e)"
+          @click="handleItemClick(item, $event)"
         >
-          <!-- Icon slot or default icon -->
           <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
             <slot :name="`icon-${item.id}`" :item="item">
               {{ item.icon }}
             </slot>
           </span>
-
-          <!-- Label (hidden when collapsed) -->
-          <span
-            v-if="!props.collapsed"
-            class="flex-1 truncate"
-          >
-            {{ item.label }}
-          </span>
-
-          <!-- Badge -->
+          <span v-if="!props.collapsed" class="flex-1 truncate">{{ item.label }}</span>
           <span
             v-if="!props.collapsed && item.badge !== undefined"
             class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
@@ -158,24 +146,14 @@ function getItemClasses(item: SidebarItem, isParent = false) {
           v-else
           type="button"
           :class="getItemClasses(item)"
-          @click="(e: MouseEvent) => handleItemClick(item, e)"
+          @click="handleItemClick(item)"
         >
-          <!-- Icon slot or default icon -->
           <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
             <slot :name="`icon-${item.id}`" :item="item">
               {{ item.icon }}
             </slot>
           </span>
-
-          <!-- Label (hidden when collapsed) -->
-          <span
-            v-if="!props.collapsed"
-            class="flex-1 truncate"
-          >
-            {{ item.label }}
-          </span>
-
-          <!-- Badge -->
+          <span v-if="!props.collapsed" class="flex-1 truncate">{{ item.label }}</span>
           <span
             v-if="!props.collapsed && item.badge !== undefined"
             class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
