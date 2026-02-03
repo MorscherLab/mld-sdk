@@ -34,19 +34,23 @@ jobs:
             packages/frontend/package-lock.json
             showcase/package-lock.json
 
+      - name: Install Frontend SDK dependencies
+        working-directory: packages/frontend
+        run: npm ci
+
       - name: Build Frontend SDK
         working-directory: packages/frontend
-        run: |
-          npm ci
-          npm run build
+        run: npm run build
+
+      - name: Install Showcase dependencies
+        working-directory: showcase
+        run: npm install
 
       - name: Build Showcase
         working-directory: showcase
         env:
           NODE_ENV: production
-        run: |
-          npm ci
-          npm run build:ci
+        run: npm run build:ci
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
