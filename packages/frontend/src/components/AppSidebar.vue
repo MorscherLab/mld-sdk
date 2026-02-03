@@ -108,7 +108,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
             <a
               v-for="child in item.children"
               :key="child.id"
-              :href="child.to || child.href || '#'"
+              :href="child.to ? '#' : (child.href || '#')"
               :class="getItemClasses(child)"
               @click="(e) => handleItemClick(child, e)"
             >
@@ -120,7 +120,7 @@ function getItemClasses(item: SidebarItem, isParent = false) {
         <!-- Item without children: render as clickable link -->
         <a
           v-else
-          :href="item.to || item.href || '#'"
+          :href="item.to ? '#' : (item.href || '#')"
           :class="getItemClasses(item)"
           @click="(e) => handleItemClick(item, e)"
         >
