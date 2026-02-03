@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import type { SidebarItem } from '../types'
-
-const router = useRouter()
 
 interface Props {
   items: readonly SidebarItem[]
@@ -33,16 +30,12 @@ const sidebarWidth = computed(() => props.collapsed ? props.collapsedWidth : pro
 function handleItemClick(item: SidebarItem, event?: MouseEvent) {
   if (item.disabled) return
 
-  if (item.to) {
-    // For internal routes, use router.push
-    if (event && item.href) {
-      // If there's also an href (shouldn't happen but just in case), prevent default
-      event.preventDefault()
-    }
-    router.push(item.to)
-  } else if (item.href) {
-    // Let default behavior handle external links
+  // Prevent default for items with `to` (internal routes)
+  // The consuming app should handle navigation via @select event
+  if (item.to && event) {
+    event.preventDefault()
   }
+  // External links (href) use default anchor behavior
 
   emit('select', item)
 }
