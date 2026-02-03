@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { AppTopBar, AppSidebar, ThemeToggle, ToastNotification, BaseInput, type SidebarItem } from '@morscherlab/mld-sdk'
 
 const route = useRoute()
+const router = useRouter()
 const collapsed = ref(false)
 const searchQuery = ref('')
+
+function handleSidebarSelect(item: SidebarItem) {
+  if (item.to) {
+    router.push(item.to)
+  }
+}
 
 const sidebarItems: readonly SidebarItem[] = [
   { id: 'overview', label: 'Overview', to: '/' },
@@ -138,6 +145,7 @@ const filteredSidebarItems = computed(() => {
         :floating="false"
         width="220px"
         class="flex-shrink-0"
+        @select="handleSidebarSelect"
       />
 
       <!-- Scrollable main content -->
