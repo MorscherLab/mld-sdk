@@ -9,9 +9,7 @@ const collapsed = ref(false)
 const searchQuery = ref('')
 
 function handleSidebarSelect(item: SidebarItem) {
-  if (item.to) {
-    router.push(item.to)
-  }
+  if (item.to) router.push(item.to)
 }
 
 const sidebarItems: readonly SidebarItem[] = [
