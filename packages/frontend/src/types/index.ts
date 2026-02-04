@@ -38,6 +38,13 @@ export type {
   SampleGroup,
   GroupItem,
   FileUploaderMode,
+  // SegmentedControl types
+  SegmentedOption,
+  SegmentedControlVariant,
+  SegmentedControlSize,
+  // MultiSelect types
+  MultiSelectOption,
+  MultiSelectSize,
 } from './components'
 
 // Auth types

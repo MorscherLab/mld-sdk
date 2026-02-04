@@ -189,3 +189,82 @@ export interface GroupItem {
 
 // FileUploader types
 export type FileUploaderMode = 'file' | 'folder'
+
+// MoleculeInput types
+export interface MoleculeData {
+  smiles: string
+  molfile: string
+}
+
+// ReagentList types
+export type StorageCondition = 'RT' | '4C' | '-20C' | '-80C'
+
+export type ReagentColumn =
+  | 'name'
+  | 'catalog'
+  | 'lot'
+  | 'expiry'
+  | 'storage'
+  | 'location'
+  | 'stock'
+  | 'supplier'
+
+export interface Reagent {
+  id: string
+  name: string
+  catalogNumber?: string
+  lotNumber?: string
+  expiryDate?: Date | string
+  storageCondition?: StorageCondition
+  location?: string
+  stockLevel?: number
+  stockUnit?: string
+  supplier?: string
+  url?: string
+}
+
+// SampleHierarchyTree types
+export type TreeNodeType =
+  | 'study'
+  | 'experiment'
+  | 'plate'
+  | 'sample'
+  | 'cell_line'
+  | 'passage'
+  | 'clone'
+  | 'treatment'
+  | 'folder'
+  | 'custom'
+
+export type BadgeVariant = 'default' | 'success' | 'warning' | 'error'
+
+export interface TreeNode {
+  id: string
+  label: string
+  type?: TreeNodeType
+  icon?: string
+  children?: TreeNode[]
+  metadata?: Record<string, unknown>
+  badge?: string | number
+  badgeVariant?: BadgeVariant
+}
+
+// SegmentedControl types
+export interface SegmentedOption {
+  value: string | number
+  label: string
+  description?: string
+  disabled?: boolean
+}
+
+export type SegmentedControlVariant = 'simple' | 'card'
+export type SegmentedControlSize = 'sm' | 'md' | 'lg'
+
+// MultiSelect types
+export interface MultiSelectOption {
+  value: string | number
+  label: string
+  disabled?: boolean
+}
+
+export type MultiSelectSize = 'sm' | 'md' | 'lg'

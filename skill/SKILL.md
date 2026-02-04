@@ -1,7 +1,7 @@
 ---
 name: mld-sdk-plugin
-version: 0.3.0
-sdk_version: 0.3.0
+version: 0.3.1
+sdk_version: 0.3.1
 description: |
   Build full-stack analysis plugins for MorscherLabDatabase platform using mld-sdk.
 
@@ -16,7 +16,9 @@ description: |
 
   **Triggers:** "mld plugin", "analysis plugin", "mld-sdk", "PlatformContext",
   "AnalysisPlugin", "PluginType", "@morscherlab/mld-sdk", "plugin frontend",
-  "WellPlate", "PlateMapEditor", "ExperimentTimeline"
+  "WellPlate", "PlateMapEditor", "ExperimentTimeline", "MoleculeInput",
+  "ConcentrationInput", "DoseCalculator", "ReagentList", "SampleHierarchyTree",
+  "ProtocolStepEditor", "useConcentrationUnits", "useDoseCalculator", "useProtocolTemplates"
 ---
 
 ## Quick Start

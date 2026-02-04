@@ -11,6 +11,7 @@ interface Props {
   iconBg?: string
   showToggle?: boolean
   toggleValue?: boolean
+  toggleColor?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -18,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   showToggle: false,
   toggleValue: false,
+  toggleColor: '',
 })
 
 const emit = defineEmits<{
@@ -53,6 +55,14 @@ const iconColorStyle = computed(() => {
   if (!props.icon) return {}
   return {
     color: props.iconColor || 'var(--color-primary)',
+  }
+})
+
+const toggleTrackStyle = computed(() => {
+  if (!props.toggleValue || !props.toggleColor) return {}
+  return {
+    backgroundColor: props.toggleColor,
+    borderColor: props.toggleColor,
   }
 })
 </script>
@@ -103,6 +113,7 @@ const iconColorStyle = computed(() => {
               'mld-collapsible-card__toggle-track',
               toggleValue ? 'mld-collapsible-card__toggle-track--on' : '',
             ]"
+            :style="toggleTrackStyle"
             @keydown.enter.prevent="handleToggleClick"
             @keydown.space.prevent="handleToggleClick"
           >

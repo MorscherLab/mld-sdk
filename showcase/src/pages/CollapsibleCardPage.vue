@@ -1,16 +1,33 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { CollapsibleCard } from '@morscherlab/mld-sdk'
+import { ref, computed } from 'vue'
+import { CollapsibleCard, SegmentedControl, BaseToggle, type SegmentedOption } from '@morscherlab/mld-sdk'
 
 const toggle1 = ref(true)
 const toggle2 = ref(false)
 const toggle3 = ref(true)
+
+// Peak Picking demo state
+const peakPickingEnabled = ref(true)
+const peakPickingMethod = ref<string>('v4')
+const organizeNames = ref(true)
+const skipBlanks = ref(false)
+
+const peakPickingMethods: SegmentedOption[] = [
+  { value: 'v4', label: 'v4', description: 'Advanced' },
+  { value: 'v2', label: 'v2', description: 'Smoothed' },
+  { value: 'v1', label: 'v1', description: 'Basic' },
+]
+
+const peakPickingSubtitle = computed(() =>
+  peakPickingEnabled.value ? `Enabled (${peakPickingMethod.value})` : 'Disabled'
+)
 
 // SVG path icons
 const settingsIcon = '<path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>'
 const chartIcon = '<path d="M18 20V10M12 20V4M6 20v-6"/>'
 const bellIcon = '<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>'
 const lockIcon = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>'
+const peakIcon = '<path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>'
 </script>
 
 <template>
@@ -20,6 +37,53 @@ const lockIcon = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path
       An expandable card component with a clickable header. Supports icon badges
       and inline toggle switches for feature toggles.
     </p>
+
+    <!-- RFA Peak Picking Style -->
+    <div class="demo-section">
+      <h3>Peak Picking Panel Style (RFA)</h3>
+      <p class="text-sm text-text-secondary mb-4">
+        This pattern matches the RawFileAnalyzer sidebar panels with colored icon, toggle switch,
+        and SegmentedControl inside.
+      </p>
+      <div class="max-w-xs space-y-2">
+        <CollapsibleCard
+          title="Peak Picking"
+          :subtitle="peakPickingSubtitle"
+          :icon="peakIcon"
+          icon-color="#F97316"
+          icon-bg="rgba(249, 115, 22, 0.15)"
+          show-toggle
+          v-model:toggle-value="peakPickingEnabled"
+          toggle-color="#F97316"
+          default-open
+        >
+          <div v-if="peakPickingEnabled" class="space-y-3">
+            <!-- Method Section -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium uppercase tracking-wide text-text-muted">Method</label>
+              <SegmentedControl
+                v-model="peakPickingMethod"
+                :options="peakPickingMethods"
+                variant="card"
+                size="sm"
+              />
+            </div>
+
+            <!-- Toggle Options -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between py-1">
+                <span class="text-sm text-text-primary">Organize names</span>
+                <BaseToggle v-model="organizeNames" size="sm" />
+              </div>
+              <div class="flex items-center justify-between py-1">
+                <span class="text-sm text-text-primary">Skip blanks</span>
+                <BaseToggle v-model="skipBlanks" size="sm" />
+              </div>
+            </div>
+          </div>
+        </CollapsibleCard>
+      </div>
+    </div>
 
     <!-- Default Closed -->
     <div class="demo-section">
@@ -275,6 +339,12 @@ const lockIcon = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path
             <td><code>boolean</code></td>
             <td><code>false</code></td>
             <td>Toggle state (v-model:toggle-value)</td>
+          </tr>
+          <tr>
+            <td><code>toggleColor</code></td>
+            <td><code>string</code></td>
+            <td>-</td>
+            <td>Custom color for toggle when active (e.g., "#F97316")</td>
           </tr>
         </tbody>
       </table>

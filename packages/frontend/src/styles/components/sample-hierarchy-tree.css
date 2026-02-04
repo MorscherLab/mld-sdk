@@ -1,0 +1,311 @@
+/* SampleHierarchyTree Component Styles */
+
+.mld-sample-tree {
+  font-size: 0.875rem;
+}
+
+.mld-sample-tree--sm {
+  font-size: 0.75rem;
+}
+
+.mld-sample-tree--lg {
+  font-size: 1rem;
+}
+
+/* Node */
+.mld-sample-tree__node {
+  user-select: none;
+}
+
+/* Node header (clickable row) */
+.mld-sample-tree__node-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.mld-sample-tree__node-header:hover {
+  background-color: var(--bg-hover);
+}
+
+.mld-sample-tree__node--selected > .mld-sample-tree__node-header {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.mld-sample-tree--sm .mld-sample-tree__node-header {
+  padding: 0.25rem 0.375rem;
+  gap: 0.25rem;
+}
+
+.mld-sample-tree--lg .mld-sample-tree__node-header {
+  padding: 0.5rem 0.625rem;
+  gap: 0.5rem;
+}
+
+/* Toggle button */
+.mld-sample-tree__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.mld-sample-tree__toggle:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+}
+
+.mld-sample-tree__toggle svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  transition: transform 0.15s ease;
+}
+
+.mld-sample-tree__node--expanded > .mld-sample-tree__node-header .mld-sample-tree__toggle svg {
+  transform: rotate(90deg);
+}
+
+.mld-sample-tree--sm .mld-sample-tree__toggle {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-sample-tree--sm .mld-sample-tree__toggle svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.mld-sample-tree--lg .mld-sample-tree__toggle {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.mld-sample-tree--lg .mld-sample-tree__toggle svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Placeholder for leaf nodes (no toggle) */
+.mld-sample-tree__toggle-placeholder {
+  width: 1.25rem;
+  flex-shrink: 0;
+}
+
+.mld-sample-tree--sm .mld-sample-tree__toggle-placeholder {
+  width: 1rem;
+}
+
+.mld-sample-tree--lg .mld-sample-tree__toggle-placeholder {
+  width: 1.5rem;
+}
+
+/* Icon */
+.mld-sample-tree__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.mld-sample-tree__icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-sample-tree--sm .mld-sample-tree__icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-sample-tree--sm .mld-sample-tree__icon svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.mld-sample-tree--lg .mld-sample-tree__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.mld-sample-tree--lg .mld-sample-tree__icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Icon colors by type */
+.mld-sample-tree__icon--study {
+  color: var(--text-muted);
+}
+
+.mld-sample-tree__icon--experiment {
+  color: var(--color-primary);
+}
+
+.mld-sample-tree__icon--plate {
+  color: var(--mld-info);
+}
+
+.mld-sample-tree__icon--sample {
+  color: var(--mld-success);
+}
+
+.mld-sample-tree__icon--cell_line {
+  color: var(--color-purple);
+}
+
+.mld-sample-tree__icon--passage {
+  color: var(--text-secondary);
+}
+
+.mld-sample-tree__icon--clone {
+  color: var(--mld-warning);
+}
+
+.mld-sample-tree__icon--treatment {
+  color: var(--color-cta);
+}
+
+.mld-sample-tree__icon--folder {
+  color: var(--text-muted);
+}
+
+.mld-sample-tree__icon--custom {
+  color: var(--text-secondary);
+}
+
+/* Label */
+.mld-sample-tree__label {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Badge */
+.mld-sample-tree__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.mld-sample-tree--sm .mld-sample-tree__badge {
+  min-width: 1rem;
+  padding: 0.0625rem 0.25rem;
+  font-size: 0.5rem;
+}
+
+.mld-sample-tree--lg .mld-sample-tree__badge {
+  min-width: 1.5rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.mld-sample-tree__badge--default {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.mld-sample-tree__badge--success {
+  background-color: var(--mld-success-bg);
+  color: var(--mld-success);
+}
+
+.mld-sample-tree__badge--warning {
+  background-color: var(--mld-warning-bg);
+  color: var(--mld-warning);
+}
+
+.mld-sample-tree__badge--error {
+  background-color: var(--mld-error-bg);
+  color: var(--mld-error);
+}
+
+/* Children container */
+.mld-sample-tree__children {
+  margin-left: 1.25rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.mld-sample-tree--sm .mld-sample-tree__children {
+  margin-left: 1rem;
+  padding-left: 0.5rem;
+}
+
+.mld-sample-tree--lg .mld-sample-tree__children {
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+}
+
+/* Animation */
+.mld-sample-tree__children--entering {
+  animation: mld-tree-expand 0.15s ease-out;
+}
+
+.mld-sample-tree__children--leaving {
+  animation: mld-tree-collapse 0.15s ease-out forwards;
+}
+
+@keyframes mld-tree-expand {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+@keyframes mld-tree-collapse {
+  from {
+    opacity: 1;
+    max-height: 1000px;
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+  }
+}
+
+/* Empty state */
+.mld-sample-tree__empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.mld-sample-tree__empty-icon {
+  width: 2rem;
+  height: 2rem;
+  margin: 0 auto 0.5rem;
+  opacity: 0.5;
+}
+
+.mld-sample-tree__empty-text {
+  font-size: 0.875rem;
+}

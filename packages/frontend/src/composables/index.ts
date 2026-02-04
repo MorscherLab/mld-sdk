@@ -24,3 +24,32 @@ export {
   type UseWellPlateEditorOptions,
   type UseWellPlateEditorReturn,
 } from './useWellPlateEditor'
+export {
+  useConcentrationUnits,
+  type ConcentrationValue,
+  type ConcentrationUnit,
+  type MolarityUnit,
+  type MassVolumeUnit,
+  type PercentageUnit,
+  type UnitCategory,
+  type UseConcentrationUnitsReturn,
+} from './useConcentrationUnits'
+export {
+  useDoseCalculator,
+  type VolumeUnit,
+  type VolumeValue,
+  type DilutionParams,
+  type DilutionResult,
+  type SerialDilutionParams,
+  type SerialDilutionStep,
+  type SerialDilutionResult,
+  type WellConcentration,
+  type UseDoseCalculatorReturn,
+} from './useDoseCalculator'
+export {
+  useProtocolTemplates,
+  type ParameterDefinition,
+  type StepTemplate,
+  type ValidationResult,
+  type UseProtocolTemplatesReturn,
+} from './useProtocolTemplates'

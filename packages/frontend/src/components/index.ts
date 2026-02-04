@@ -10,6 +10,8 @@ export { default as BaseSlider } from './BaseSlider.vue'
 export { default as ColorSlider } from './ColorSlider.vue'
 export { default as BaseTabs } from './BaseTabs.vue'
 export { default as BaseModal } from './BaseModal.vue'
+export { default as SegmentedControl } from './SegmentedControl.vue'
+export { default as MultiSelect } from './MultiSelect.vue'
 
 // Form components
 export { default as FormField } from './FormField.vue'
@@ -45,3 +47,11 @@ export { default as ExperimentTimeline } from './ExperimentTimeline.vue'
 export { default as SampleSelector } from './SampleSelector.vue'
 export { default as GroupingModal } from './GroupingModal.vue'
 export { default as GroupAssigner } from './GroupAssigner.vue'
+
+// Lab/Experiment components
+export { default as MoleculeInput } from './MoleculeInput.vue'
+export { default as ConcentrationInput } from './ConcentrationInput.vue'
+export { default as DoseCalculator } from './DoseCalculator.vue'
+export { default as ReagentList } from './ReagentList.vue'
+export { default as SampleHierarchyTree } from './SampleHierarchyTree.vue'
+export { default as ProtocolStepEditor } from './ProtocolStepEditor.vue'

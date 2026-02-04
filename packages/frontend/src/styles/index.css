@@ -38,3 +38,11 @@
 @import './components/sample-selector.css';
 @import './components/grouping-modal.css';
 @import './components/group-assigner.css';
+@import './components/molecule-input.css';
+@import './components/concentration-input.css';
+@import './components/dose-calculator.css';
+@import './components/reagent-list.css';
+@import './components/sample-hierarchy-tree.css';
+@import './components/protocol-step-editor.css';
+@import './components/segmented-control.css';
+@import './components/multi-select.css';

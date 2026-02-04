@@ -621,3 +621,333 @@ export interface PluginSettings {
   defaultParameters: Record<string, unknown>
 }
 ```
+
+---
+
+## Lab Components Example
+
+### Dose Calculator with Well Plate
+
+```vue
+<!-- src/views/DoseCalculatorView.vue -->
+<template>
+  <div class="dose-view">
+    <CollapsibleCard title="Concentration Calculator" :default-open="true">
+      <ConcentrationInput
+        v-model="stockConcentration"
+        :allowed-units="['M', 'mM', 'uM', 'nM']"
+        :show-conversion="true"
+        :molecular-weight="molecularWeight"
+      />
+
+      <DoseCalculator
+        mode="serial"
+        :molecular-weight="molecularWeight"
+        :target-wells="selectedWells"
+        @apply-to-wells="handleApplyToWells"
+        @calculate="handleCalculate"
+      />
+    </CollapsibleCard>
+
+    <CollapsibleCard title="Target Plate" :default-open="true">
+      <WellPlate
+        v-model="selectedWells"
+        :format="96"
+        :wells="wellData"
+        selection-mode="rectangle"
+        show-labels
+        @selection-change="handleSelectionChange"
+      />
+    </CollapsibleCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  CollapsibleCard,
+  ConcentrationInput,
+  DoseCalculator,
+  WellPlate,
+} from '@morscherlab/mld-sdk/components'
+import { useConcentrationUnits, useDoseCalculator, useToast } from '@morscherlab/mld-sdk/composables'
+import type { ConcentrationValue, Well, SerialDilutionResult } from '@morscherlab/mld-sdk/types'
+
+const toast = useToast()
+const { formatWithUnit } = useConcentrationUnits()
+
+const molecularWeight = ref(342.3)
+const stockConcentration = ref<ConcentrationValue>({ value: 10, unit: 'mM' })
+const selectedWells = ref<string[]>([])
+const wellData = ref<Record<string, Partial<Well>>>({})
+
+function handleSelectionChange(wellIds: string[]) {
+  selectedWells.value = wellIds
+}
+
+function handleApplyToWells(wellConcentrations: Record<string, ConcentrationValue>) {
+  Object.entries(wellConcentrations).forEach(([wellId, conc]) => {
+    wellData.value[wellId] = {
+      ...wellData.value[wellId],
+      sampleType: 'sample',
+      value: conc.value,
+    }
+  })
+  toast.success(`Applied concentrations to ${Object.keys(wellConcentrations).length} wells`)
+}
+
+function handleCalculate(result: SerialDilutionResult) {
+  console.log('Serial dilution series:', result)
+}
+</script>
+
+<style>
+.dose-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+</style>
+```
+
+---
+
+### Protocol Editor with Timeline
+
+```vue
+<!-- src/views/ProtocolView.vue -->
+<template>
+  <div class="protocol-view">
+    <div class="protocol-view__sidebar">
+      <ExperimentTimeline
+        v-model="protocolSteps"
+        orientation="vertical"
+        editable
+        collapsible
+        color-by-status
+        @step-click="handleStepClick"
+        @step-add="handleStepAdd"
+        @step-remove="handleStepRemove"
+      />
+    </div>
+
+    <div class="protocol-view__editor">
+      <ProtocolStepEditor
+        v-if="activeStep"
+        v-model="activeStep"
+        :templates="builtInTemplates"
+        :custom-templates="customTemplates"
+        mode="edit"
+        show-preview
+      />
+      <AlertBox v-else type="info">
+        Select a step from the timeline to edit, or add a new step.
+      </AlertBox>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import {
+  ExperimentTimeline,
+  ProtocolStepEditor,
+  AlertBox,
+} from '@morscherlab/mld-sdk/components'
+import { useProtocolTemplates } from '@morscherlab/mld-sdk/composables'
+import type { ProtocolStep } from '@morscherlab/mld-sdk/types'
+
+const { builtInTemplates, customTemplates, createStepFromTemplate } = useProtocolTemplates()
+
+const protocolSteps = ref<ProtocolStep[]>([
+  {
+    id: '1',
+    type: 'addition',
+    name: 'Add cells',
+    description: 'Seed cells into plate',
+    duration: 15,
+    status: 'completed',
+    order: 0,
+  },
+  {
+    id: '2',
+    type: 'incubation',
+    name: 'Overnight incubation',
+    description: 'Incubate at 37C overnight',
+    duration: 960,
+    status: 'in_progress',
+    order: 1,
+  },
+])
+
+const activeStepId = ref<string>('2')
+
+const activeStep = computed({
+  get: () => protocolSteps.value.find(s => s.id === activeStepId.value),
+  set: (step) => {
+    if (step) {
+      const index = protocolSteps.value.findIndex(s => s.id === step.id)
+      if (index >= 0) protocolSteps.value[index] = step
+    }
+  },
+})
+
+function handleStepClick(stepId: string) {
+  activeStepId.value = stepId
+}
+
+function handleStepAdd(afterStepId?: string) {
+  const newStep = createStepFromTemplate('addition', {
+    name: 'New Step',
+    status: 'pending',
+  })
+  const insertIndex = afterStepId
+    ? protocolSteps.value.findIndex(s => s.id === afterStepId) + 1
+    : protocolSteps.value.length
+  protocolSteps.value.splice(insertIndex, 0, newStep)
+  activeStepId.value = newStep.id
+}
+
+function handleStepRemove(stepId: string) {
+  protocolSteps.value = protocolSteps.value.filter(s => s.id !== stepId)
+  if (activeStepId.value === stepId) {
+    activeStepId.value = protocolSteps.value[0]?.id || ''
+  }
+}
+</script>
+
+<style>
+.protocol-view {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.5rem;
+  min-height: 500px;
+}
+
+.protocol-view__sidebar {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+
+.protocol-view__editor {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+</style>
+```
+
+---
+
+### Reagent Inventory with Molecule Display
+
+```vue
+<!-- src/views/ReagentInventoryView.vue -->
+<template>
+  <div class="inventory-view">
+    <CollapsibleCard title="Add New Reagent" :default-open="false">
+      <FormField label="Compound Structure">
+        <MoleculeInput
+          v-model="newMolecule"
+          :height="300"
+          show-smiles
+        />
+      </FormField>
+
+      <FormField label="Name" required>
+        <BaseInput v-model="newReagentName" placeholder="Reagent name" />
+      </FormField>
+
+      <FormField label="Stock Concentration">
+        <ConcentrationInput
+          v-model="newConcentration"
+          :molecular-weight="newMolecule.weight"
+          show-conversion
+        />
+      </FormField>
+
+      <BaseButton variant="primary" @click="addReagent">
+        Add to Inventory
+      </BaseButton>
+    </CollapsibleCard>
+
+    <CollapsibleCard title="Reagent Inventory" :default-open="true">
+      <ReagentList
+        v-model="reagents"
+        :show-stock-level="true"
+        :low-stock-threshold="15"
+        :columns="['name', 'concentration', 'volume', 'stockLevel', 'location']"
+        sortable
+        searchable
+      />
+    </CollapsibleCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  CollapsibleCard,
+  FormField,
+  BaseInput,
+  BaseButton,
+  MoleculeInput,
+  ConcentrationInput,
+  ReagentList,
+} from '@morscherlab/mld-sdk/components'
+import { useToast } from '@morscherlab/mld-sdk/composables'
+import type { MoleculeData, ConcentrationValue, Reagent } from '@morscherlab/mld-sdk/types'
+
+const toast = useToast()
+
+const newMolecule = ref<MoleculeData>({ smiles: '', molfile: '' })
+const newReagentName = ref('')
+const newConcentration = ref<ConcentrationValue>({ value: 10, unit: 'mM' })
+
+const reagents = ref<Reagent[]>([
+  {
+    id: '1',
+    name: 'DMSO',
+    concentration: { value: 100, unit: '%' },
+    volume: { value: 500, unit: 'mL' },
+    stockLevel: 85,
+    location: 'Cabinet A',
+  },
+  {
+    id: '2',
+    name: 'Dexamethasone',
+    concentration: { value: 10, unit: 'mM' },
+    volume: { value: 10, unit: 'mL' },
+    stockLevel: 12,
+    location: 'Freezer -20C',
+  },
+])
+
+function addReagent() {
+  if (!newReagentName.value) {
+    toast.error('Please enter a reagent name')
+    return
+  }
+
+  reagents.value.push({
+    id: crypto.randomUUID(),
+    name: newReagentName.value,
+    concentration: { ...newConcentration.value },
+    stockLevel: 100,
+  })
+
+  toast.success(`Added ${newReagentName.value} to inventory`)
+  newReagentName.value = ''
+  newMolecule.value = { smiles: '', molfile: '' }
+}
+</script>
+
+<style>
+.inventory-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+</style>
+```

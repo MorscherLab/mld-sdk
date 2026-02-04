@@ -1,6 +1,6 @@
 {
   "name": "@morscherlab/mld-sdk",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "MLD Platform SDK - Vue 3 components, composables, and types for plugin development",
   "type": "module",
   "main": "./dist/index.js",

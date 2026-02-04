@@ -825,3 +825,241 @@ const { state } = editor
 //   activeSampleId?: string,
 // }
 ```
+
+---
+
+## useConcentrationUnits
+
+Concentration unit handling with conversion between molarity, mass/volume, and percentage units.
+
+```typescript
+import { useConcentrationUnits, type ConcentrationValue } from '@morscherlab/mld-sdk'
+```
+
+### Basic Usage
+
+```typescript
+const {
+  unitCategories,
+  molarityUnits,
+  massVolumeUnits,
+  percentageUnits,
+  convert,
+  formatWithUnit,
+  parseConcentration,
+} = useConcentrationUnits()
+
+// Convert between units in same category
+const result = convert(100, 'µM', 'mM')  // 0.1
+
+// Convert with molecular weight (cross-category)
+const massConc = convert(100, 'µM', 'µg/mL', 180.16)  // 18.016
+
+// Format with unit
+formatWithUnit({ value: 0.5, unit: 'mM' })  // "0.5 mM"
+
+// Parse string input
+parseConcentration('10 µM')  // { value: 10, unit: 'µM' }
+```
+
+### Available Units
+
+| Category | Units |
+|----------|-------|
+| Molarity | `pM`, `nM`, `µM`, `mM`, `M` |
+| Mass/Volume | `pg/mL`, `ng/mL`, `µg/mL`, `mg/mL`, `g/mL` |
+| Percentage | `% v/v`, `% w/v`, `% w/w` |
+
+### Utility Functions
+
+```typescript
+const { isMolarity, isMassVolume, isPercentage, getBaseUnit, getConversionHint } = useConcentrationUnits()
+
+// Check unit category
+isMolarity('µM')      // true
+isMassVolume('mg/mL') // true
+isPercentage('% v/v') // true
+
+// Get base unit for category
+getBaseUnit('µM')     // 'M'
+getBaseUnit('µg/mL')  // 'g/mL'
+
+// Get conversion hint (suggests next unit scale)
+getConversionHint({ value: 1500, unit: 'µM' })  // "1.5 mM"
+```
+
+---
+
+## useDoseCalculator
+
+Dilution and serial dilution calculations with volume handling.
+
+```typescript
+import { useDoseCalculator, type DilutionParams, type SerialDilutionParams } from '@morscherlab/mld-sdk'
+```
+
+### Dilution Calculation
+
+Calculate stock and diluent volumes using C1V1 = C2V2:
+
+```typescript
+const { calculateDilution, formatVolume } = useDoseCalculator()
+
+const result = calculateDilution({
+  stockConcentration: { value: 10, unit: 'mM' },
+  finalConcentration: { value: 100, unit: 'µM' },
+  finalVolume: { value: 1, unit: 'mL' },
+})
+
+if (result.valid) {
+  console.log('Stock:', formatVolume(result.stockVolume))    // "10 µL"
+  console.log('Diluent:', formatVolume(result.diluentVolume)) // "990 µL"
+  console.log('Factor:', result.dilutionFactor)               // 100
+}
+```
+
+### Serial Dilution
+
+Generate a dilution series:
+
+```typescript
+const { calculateSerialDilution } = useDoseCalculator()
+
+const result = calculateSerialDilution({
+  startingConcentration: { value: 100, unit: 'µM' },
+  dilutionFactor: 3,
+  numberOfDilutions: 8,
+  volumePerWell: { value: 100, unit: 'µL' },
+})
+
+if (result.valid) {
+  result.steps.forEach(step => {
+    console.log(`Step ${step.stepNumber}: ${step.concentration.value} ${step.concentration.unit}`)
+  })
+  // Step 1: 100 µM
+  // Step 2: 33.33 µM
+  // Step 3: 11.11 µM
+  // ...
+}
+```
+
+### Mass ↔ Molarity Conversion
+
+```typescript
+const { convertMassToMolar, convertMolarToMass } = useDoseCalculator()
+
+// Mass to Molar (requires molecular weight)
+const molar = convertMassToMolar(10, 'µg/mL', 180.16)  // { value: 55.5, unit: 'µM' }
+
+// Molar to Mass
+const mass = convertMolarToMass(100, 'µM', 180.16)  // { value: 18.016, unit: 'µg/mL' }
+```
+
+### Well Plate Integration
+
+Generate concentrations for wells:
+
+```typescript
+const { calculateSerialDilution, generateWellConcentrations } = useDoseCalculator()
+
+const dilutionResult = calculateSerialDilution({...})
+const wellIds = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8']
+
+const wellConcentrations = generateWellConcentrations(dilutionResult, wellIds)
+// [{ wellId: 'A1', concentration: {...}, volume: {...} }, ...]
+```
+
+---
+
+## useProtocolTemplates
+
+Protocol step template management with built-in templates and custom template persistence.
+
+```typescript
+import { useProtocolTemplates, type StepTemplate, type ProtocolStep } from '@morscherlab/mld-sdk'
+```
+
+### Basic Usage
+
+```typescript
+const {
+  builtInTemplates,
+  customTemplates,
+  allTemplates,
+  getTemplate,
+  createStepFromTemplate,
+  validateStep,
+} = useProtocolTemplates()
+
+// Get template by type
+const incubationTemplate = getTemplate('incubation')
+
+// Create step from template
+const step = createStepFromTemplate(incubationTemplate, {
+  temperature: 37,
+  duration: 60,
+  co2: 5,
+  humidity: 95,
+})
+
+// Validate step against template
+const validation = validateStep(step, incubationTemplate)
+if (!validation.valid) {
+  console.log(validation.errors)
+}
+```
+
+### Built-in Templates
+
+| Type | Parameters |
+|------|------------|
+| `incubation` | temperature (°C), duration (min), CO2 (%), humidity (%) |
+| `wash` | buffer (select), volume (µL), cycles |
+| `addition` | reagent, volume (µL), concentration |
+| `measurement` | instrument (select), parameters (text) |
+| `centrifuge` | RPM, duration (min), temperature (°C) |
+| `transfer` | source, destination, volume (µL) |
+| `mix` | method (select), duration (sec), speed |
+| `custom` | name, description |
+
+### Custom Templates
+
+```typescript
+const { addCustomTemplate, updateCustomTemplate, removeCustomTemplate } = useProtocolTemplates()
+
+// Add custom template
+addCustomTemplate({
+  id: 'my-assay-step',
+  type: 'custom',
+  name: 'My Assay Step',
+  parameters: [
+    { key: 'reagent', label: 'Reagent', type: 'text', required: true },
+    { key: 'volume', label: 'Volume', type: 'number', unit: 'µL', min: 0 },
+  ],
+})
+
+// Update template
+updateCustomTemplate('my-assay-step', { name: 'Updated Name' })
+
+// Remove template
+removeCustomTemplate('my-assay-step')
+```
+
+### Parameter Definition
+
+```typescript
+interface ParameterDefinition {
+  key: string
+  label: string
+  type: 'number' | 'text' | 'select' | 'concentration' | 'temperature' | 'duration' | 'reagent'
+  unit?: string
+  options?: Array<{ value: string; label: string }>
+  required?: boolean
+  default?: unknown
+  min?: number
+  max?: number
+  placeholder?: string
+}
+```
+
+Custom templates are automatically persisted to localStorage.

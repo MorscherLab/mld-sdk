@@ -39,6 +39,8 @@ const sidebarItems: readonly SidebarItem[] = [
       { id: 'tags-input', label: 'TagsInput', to: '/tags-input' },
       { id: 'file-uploader', label: 'FileUploader', to: '/file-uploader' },
       { id: 'form-field', label: 'FormField', to: '/form-field' },
+      { id: 'segmented-control', label: 'SegmentedControl', to: '/segmented-control' },
+      { id: 'multi-select', label: 'MultiSelect', to: '/multi-select' },
     ],
   },
   {
@@ -70,6 +72,12 @@ const sidebarItems: readonly SidebarItem[] = [
       { id: 'sample-legend', label: 'SampleLegend', to: '/sample-legend' },
       { id: 'plate-map-editor', label: 'PlateMapEditor', to: '/plate-map-editor' },
       { id: 'experiment-timeline', label: 'ExperimentTimeline', to: '/experiment-timeline' },
+      { id: 'molecule-input', label: 'MoleculeInput', to: '/molecule-input' },
+      { id: 'concentration-input', label: 'ConcentrationInput', to: '/concentration-input' },
+      { id: 'dose-calculator', label: 'DoseCalculator', to: '/dose-calculator' },
+      { id: 'reagent-list', label: 'ReagentList', to: '/reagent-list' },
+      { id: 'sample-hierarchy-tree', label: 'SampleHierarchyTree', to: '/sample-hierarchy-tree' },
+      { id: 'protocol-step-editor', label: 'ProtocolStepEditor', to: '/protocol-step-editor' },
     ],
   },
   {

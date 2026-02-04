@@ -1,0 +1,186 @@
+/* MoleculeInput Component Styles */
+
+.mld-molecule-input {
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mld-molecule-input:focus-within {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-molecule-input--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.mld-molecule-input--readonly {
+  pointer-events: none;
+}
+
+.mld-molecule-input--error {
+  border-color: var(--mld-error);
+}
+
+.mld-molecule-input--error:focus-within {
+  box-shadow: 0 0 0 2px var(--mld-error);
+}
+
+/* Editor container */
+.mld-molecule-input__editor {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  background-color: var(--bg-secondary);
+}
+
+.mld-molecule-input__editor iframe {
+  border: none;
+  display: block;
+}
+
+/* Skeleton loader */
+.mld-molecule-input__skeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 100%;
+  min-height: 200px;
+  background-color: var(--bg-tertiary);
+}
+
+.mld-molecule-input__skeleton-icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--text-muted);
+  animation: mld-molecule-pulse 1.5s ease-in-out infinite;
+}
+
+.mld-molecule-input__skeleton-text {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+@keyframes mld-molecule-pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Readonly SVG display */
+.mld-molecule-input__readonly {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 1rem;
+  background-color: var(--bg-tertiary);
+}
+
+.mld-molecule-input__readonly svg {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Empty state */
+.mld-molecule-input__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 200px;
+  padding: 1rem;
+  color: var(--text-muted);
+}
+
+.mld-molecule-input__empty-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.mld-molecule-input__empty-text {
+  font-size: 0.875rem;
+}
+
+/* SMILES preview */
+.mld-molecule-input__smiles {
+  padding: 0.5rem 0.75rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+  word-break: break-all;
+  user-select: all;
+}
+
+.mld-molecule-input__smiles-label {
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-right: 0.5rem;
+}
+
+/* Error state */
+.mld-molecule-input__error {
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--mld-error);
+  background-color: var(--mld-error-bg);
+  border-top: 1px solid var(--mld-error);
+}
+
+.mld-molecule-input__error-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Actions toolbar */
+.mld-molecule-input__actions {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background-color: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+}
+
+.mld-molecule-input__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.mld-molecule-input__action-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+}
+
+.mld-molecule-input__action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mld-molecule-input__action-btn svg {
+  width: 1rem;
+  height: 1rem;
+}

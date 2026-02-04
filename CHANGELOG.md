@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-02-04
+
+### Added
+
+- **SegmentedControl** - Tab-like button group for selecting between options
+- **MultiSelect** - Multi-selection dropdown with search and tags
+- **MoleculeInput** - SMILES input with JSME molecular editor integration
+- **ConcentrationInput** - Numeric input with unit conversion (nM, µM, mM, M)
+- **DoseCalculator** - Calculate dilutions and doses with stock/working concentrations
+- **ReagentList** - Manage lists of reagents with concentrations and colors
+- **SampleHierarchyTree** - Tree view for hierarchical sample organization
+- **ProtocolStepEditor** - Protocol step management with templates and parameters
+- **useConcentrationUnits** - Composable for concentration unit conversions
+- **useDoseCalculator** - Composable for dose/dilution calculations
+- **useProtocolTemplates** - Composable for protocol step templates
+
+### Fixed
+
+- **CollapsibleCard** - Fix header alignment issues:
+  - Replace CSS Grid with Flexbox for reliable title/subtitle centering
+  - Use `!important` on margin resets to override Tailwind preflight defaults
+  - Tighter title/subtitle spacing with reduced line-height
+
 ## [0.3.0] - 2026-02-03
 
 ### Added

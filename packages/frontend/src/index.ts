@@ -40,6 +40,16 @@ export {
   SampleSelector,
   GroupingModal,
   GroupAssigner,
+  // Lab/Experiment components
+  MoleculeInput,
+  ConcentrationInput,
+  DoseCalculator,
+  ReagentList,
+  SampleHierarchyTree,
+  ProtocolStepEditor,
+  // Selection components
+  SegmentedControl,
+  MultiSelect,
 } from './components'
 
 // Composables
@@ -51,9 +61,17 @@ export {
   useToast,
   usePlatformContext,
   useWellPlateEditor,
+  useConcentrationUnits,
+  useDoseCalculator,
+  useProtocolTemplates,
   type ApiClientOptions,
   type UseWellPlateEditorOptions,
   type UseWellPlateEditorReturn,
+  type ConcentrationValue,
+  type ConcentrationUnit,
+  type VolumeValue,
+  type VolumeUnit,
+  type StepTemplate,
 } from './composables'
 
 // Stores
@@ -103,6 +121,13 @@ export type {
   SampleGroup,
   GroupItem,
   FileUploaderMode,
+  // SegmentedControl types
+  SegmentedOption,
+  SegmentedControlVariant,
+  SegmentedControlSize,
+  // MultiSelect types
+  MultiSelectOption,
+  MultiSelectSize,
   // Auth types
   AuthConfig,
   UserInfo,

@@ -77,6 +77,16 @@ const routes: RouteRecordRaw[] = [
     name: 'form-field',
     component: () => import('./pages/FormFieldPage.vue'),
   },
+  {
+    path: '/segmented-control',
+    name: 'segmented-control',
+    component: () => import('./pages/SegmentedControlPage.vue'),
+  },
+  {
+    path: '/multi-select',
+    name: 'multi-select',
+    component: () => import('./pages/MultiSelectPage.vue'),
+  },
   // Feedback Components
   {
     path: '/alert',
@@ -162,6 +172,37 @@ const routes: RouteRecordRaw[] = [
     path: '/group-assigner',
     name: 'group-assigner',
     component: () => import('./pages/GroupAssignerPage.vue'),
+  },
+  // Lab/Experiment Components
+  {
+    path: '/molecule-input',
+    name: 'molecule-input',
+    component: () => import('./pages/MoleculeInputPage.vue'),
+  },
+  {
+    path: '/concentration-input',
+    name: 'concentration-input',
+    component: () => import('./pages/ConcentrationInputPage.vue'),
+  },
+  {
+    path: '/dose-calculator',
+    name: 'dose-calculator',
+    component: () => import('./pages/DoseCalculatorPage.vue'),
+  },
+  {
+    path: '/reagent-list',
+    name: 'reagent-list',
+    component: () => import('./pages/ReagentListPage.vue'),
+  },
+  {
+    path: '/sample-hierarchy-tree',
+    name: 'sample-hierarchy-tree',
+    component: () => import('./pages/SampleHierarchyTreePage.vue'),
+  },
+  {
+    path: '/protocol-step-editor',
+    name: 'protocol-step-editor',
+    component: () => import('./pages/ProtocolStepEditorPage.vue'),
   },
 ]
 
