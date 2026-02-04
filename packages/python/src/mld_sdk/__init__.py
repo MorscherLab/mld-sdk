@@ -88,7 +88,7 @@ from mld_sdk.repositories import (
     PlatformConfig,
 )
 
-__version__ = "1.1.0"
+__version__ = "0.3.2"
 
 __all__ = [
     # Core plugin classes

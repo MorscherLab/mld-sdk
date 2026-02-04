@@ -1,6 +1,6 @@
 {
   "name": "@morscherlab/mld-sdk",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "MLD Platform SDK - Vue 3 components, composables, and types for plugin development",
   "type": "module",
   "main": "./dist/index.js",
@@ -52,12 +52,16 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
+    "@simplewebauthn/browser": "^10.0.0",
     "pinia": "^2.1.0 || ^3.0.0",
     "tailwindcss": "^4.1.0",
     "vue": "^3.4.0",
     "vue-router": "^4.2.0"
   },
   "peerDependenciesMeta": {
+    "@simplewebauthn/browser": {
+      "optional": true
+    },
     "vue-router": {
       "optional": true
     }

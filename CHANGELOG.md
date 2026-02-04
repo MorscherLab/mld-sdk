@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-02-04
+
+### Fixed
+
+- **Frontend SDK** - Add `@simplewebauthn/browser` as optional peer dependency (fixes #1)
+- **Python SDK** - Fix `__version__` mismatch showing 1.1.0 instead of package version (fixes #2)
+
 ## [0.3.1] - 2026-02-04
 
 ### Added
