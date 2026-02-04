@@ -5,10 +5,7 @@
   flex-direction: column;
   gap: 0.75rem;
   height: 100%;
-  padding: 0.75rem;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--mld-radius-lg);
+  /* No padding/background/border - let parent container provide styling */
 }
 
 /* Select All Row */
@@ -78,19 +75,21 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: nowrap; /* Ensure buttons stay on one line */
 }
 
 /* BaseButton overrides for action buttons */
 .mld-sample-selector__action-btn {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  min-width: 0; /* Allow buttons to shrink below content size */
 }
 
 .mld-sample-selector__action-btn--reset {
-  flex: 0;
+  flex: 0 0 auto; /* Don't grow or shrink */
   min-width: auto;
   padding: 0.5rem;
 }
