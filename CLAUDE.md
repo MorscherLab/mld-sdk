@@ -158,7 +158,10 @@ Both packages share the same version number. Current: 0.3.0
 
 **Keep these in sync when adding components or changing APIs:**
 - This file (`CLAUDE.md`) - update component counts, composable lists
-- Skill at `~/.claude/skills/mld-sdk-plugin/` - update reference docs
+- Skill at `skill/` (in repository) - update reference docs
+- Run `./scripts/sync-skill-version.sh X.Y.Z` before releasing
+
+**Skill distribution:** Skill files are packaged as `mld-sdk-skill-vX.Y.Z.zip` and attached to GitHub Releases automatically by the release workflow.
 
 ### Current Component List (32)
 

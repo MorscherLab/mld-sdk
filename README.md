@@ -34,6 +34,26 @@ uv add mld-sdk
 npm install @morscherlab/mld-sdk
 ```
 
+### Claude Code Skill
+
+For AI-assisted plugin development with Claude Code, install the MLD SDK skill:
+
+```bash
+# Download latest skill package from releases
+curl -LO https://github.com/MorscherLab/mld-sdk/releases/latest/download/mld-sdk-skill-v0.3.0.zip
+
+# Extract to Claude skills directory
+unzip mld-sdk-skill-v0.3.0.zip -d ~/.claude/skills/mld-sdk-plugin/
+```
+
+The skill provides:
+- Quick start templates for analysis plugins
+- Decision tree for choosing SDK features
+- Complete API reference optimized for AI assistants
+- Integration patterns and examples
+
+See [Skill Setup Guide](./docs/skill-setup.md) for details.
+
 ## Documentation
 
 ### Comprehensive Docs

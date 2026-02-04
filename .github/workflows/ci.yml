@@ -60,3 +60,56 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  skill:
+    name: Validate Skill Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate skill structure
+        run: |
+          echo "Checking skill directory structure..."
+
+          # Check required files exist
+          if [ ! -f skill/SKILL.md ]; then
+            echo "ERROR: skill/SKILL.md not found"
+            exit 1
+          fi
+
+          if [ ! -f skill/README.md ]; then
+            echo "ERROR: skill/README.md not found"
+            exit 1
+          fi
+
+          if [ ! -d skill/references ]; then
+            echo "ERROR: skill/references/ directory not found"
+            exit 1
+          fi
+
+          # Check reference files
+          for ref in python-backend.md frontend-sdk.md integration.md quick-start-templates.md; do
+            if [ ! -f "skill/references/$ref" ]; then
+              echo "ERROR: skill/references/$ref not found"
+              exit 1
+            fi
+          done
+
+          echo "All skill files present."
+
+      - name: Check version consistency
+        run: |
+          # Extract versions
+          skill_version=$(grep "^version: " skill/SKILL.md | cut -d' ' -f2)
+          sdk_version=$(grep "^version = " packages/python/pyproject.toml | cut -d'"' -f2)
+
+          echo "Skill version: $skill_version"
+          echo "SDK version: $sdk_version"
+
+          if [ "$skill_version" != "$sdk_version" ]; then
+            echo "WARNING: Skill version ($skill_version) differs from SDK version ($sdk_version)"
+            echo "Run './scripts/sync-skill-version.sh $sdk_version' to sync versions"
+          else
+            echo "Versions are in sync."
+          fi
