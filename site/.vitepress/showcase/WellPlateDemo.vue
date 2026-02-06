@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { WellPlate, BaseSelect, BaseToggle, type WellPlateFormat, type Well } from '@morscherlab/mld-sdk'
+import { WellPlate, BaseSelect, BaseToggle, type WellPlateFormat, type Well, type WellEditData } from '@morscherlab/mld-sdk'
 
 const selectedWells = ref<string[]>([])
 const format = ref<WellPlateFormat>(96)
@@ -131,6 +131,33 @@ const dragDemoWells = ref<Record<string, Partial<Well>>>({
   'B2': { sampleType: 'treatment', state: 'filled' },
   'C1': { sampleType: 'blank', state: 'filled' },
 })
+
+// Editable wells data for Editing Mode demo
+const editableWells = ref<Record<string, Partial<Well>>>({
+  'A1': { state: 'filled', sampleType: 'sample', metadata: { label: 'S001', injectionVolume: 5, injectionCount: 1 } },
+  'A2': { state: 'filled', sampleType: 'sample', metadata: { label: 'S002', injectionVolume: 5, injectionCount: 2 } },
+  'B1': { state: 'filled', sampleType: 'blank', metadata: { label: 'BLK1', injectionVolume: 5, injectionCount: 1 } },
+  'C1': { state: 'filled', sampleType: 'qc', metadata: { label: 'QC01', injectionVolume: 3, injectionCount: 1, customMethod: 'QC_Short' } },
+})
+
+function handleWellEdit(wellId: string, data: WellEditData) {
+  console.log('Well edited:', wellId, data)
+  editableWells.value[wellId] = {
+    state: data.label ? 'filled' : 'empty',
+    sampleType: data.sampleType || undefined,
+    metadata: {
+      label: data.label,
+      injectionVolume: data.injectionVolume,
+      injectionCount: data.injectionCount,
+      customMethod: data.customMethod || null,
+    },
+  }
+}
+
+function handleWellEditClear(wellId: string) {
+  console.log('Well cleared:', wellId)
+  delete editableWells.value[wellId]
+}
 </script>
 
 <template>
@@ -288,6 +315,30 @@ const dragDemoWells = ref<Record<string, Partial<Well>>>({
     />
     <p class="text-xs text-text-muted mt-2">
       Drag filled wells (colored) to empty wells to move their content.
+    </p>
+  </div>
+
+  <!-- Editing Mode Section -->
+  <div class="demo-section">
+    <h3>Editing Mode</h3>
+    <p class="text-sm text-text-secondary mb-4">
+      Use <code>editable</code> to enable click-to-edit. Click any well to open the edit popup
+      where you can set sample name, type, injection volume, and more.
+    </p>
+    <WellPlate
+      :format="54"
+      :wells="editableWells"
+      :editable="true"
+      :show-well-labels="true"
+      :show-badges="true"
+      :show-legend="true"
+      :show-sample-type-indicator="true"
+      size="md"
+      @well-edit="handleWellEdit"
+      @well-clear="handleWellEditClear"
+    />
+    <p class="text-xs text-text-muted mt-2">
+      Click any well to edit. Labels, badges, and legend are enabled.
     </p>
   </div>
 </template>

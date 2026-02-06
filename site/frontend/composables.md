@@ -696,6 +696,98 @@ await execute()
 
 ---
 
+## useRackEditor
+
+Multi-rack management for LCMS sequence generation workflows. Manages multiple racks with per-well data, auto-cycling slot positions, and fill series functionality.
+
+```typescript
+import { useRackEditor, type UseRackEditorOptions } from '@morscherlab/mld-sdk'
+```
+
+### Initialization
+
+```typescript
+const editor = useRackEditor(
+  // Optional initial racks
+  undefined,
+  // Options
+  {
+    defaultFormat: 54,           // Default plate format
+    defaultInjectionVolume: 5,   // Default injection volume
+    maxRacks: 10,                // Maximum racks allowed
+    minRacks: 1,                 // Minimum racks (prevents removal below this)
+  }
+)
+```
+
+### Working with Racks
+
+```typescript
+const { racks, activeRack, activeRackId, addRack, removeRack, setActiveRack } = editor
+
+// Add new rack (slot auto-cycles R -> G -> B -> Y)
+const rack = addRack('My Rack')
+
+// Switch active rack
+setActiveRack(rack.id)
+
+// Remove rack
+removeRack(rack.id)
+
+// Update rack properties
+editor.updateRack(rack.id, { format: 96, slot: 'B' })
+
+// Reorder racks
+editor.reorderRacks(0, 2)
+
+// Access racks
+console.log(racks.value)       // All racks
+console.log(activeRack.value)  // Current rack
+```
+
+### Working with Wells
+
+```typescript
+const { setWellData, clearWell, clearAllWells, fillSeries } = editor
+
+// Set well data
+setWellData(rackId, 'A1', {
+  state: 'filled',
+  sampleType: 'sample',
+  metadata: { label: 'Sample_001', injectionVolume: 5 },
+})
+
+// Clear single well
+clearWell(rackId, 'A1')
+
+// Clear all wells in a rack
+clearAllWells(rackId)
+
+// Auto-fill empty wells with sequential names
+fillSeries(rackId, 'S')  // Fills: S001, S002, S003, ...
+```
+
+### Aggregation
+
+```typescript
+const { totalSampleCount, getAllWells } = editor
+
+// Total filled wells across all racks
+console.log(totalSampleCount.value)
+
+// Get all wells as flat array
+const allWells = getAllWells()
+// [{ rackId: '...', wellId: 'A1', well: {...} }, ...]
+```
+
+### Reset
+
+```typescript
+editor.reset()  // Resets to a single empty rack
+```
+
+---
+
 ## useWellPlateEditor
 
 Complete well plate editor state management with undo/redo.

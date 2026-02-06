@@ -1,54 +1,65 @@
 # Session Handoff
 
-## Completed Work
+**Date:** 2026-02-03 15:20
+**Branch:** main
 
-### Frontend Components SFC + Standalone CSS Migration
+## Current Work
 
-Successfully converted all 29 Vue components from Tailwind utility classes to proper SFC format with semantic BEM-style CSS classes.
+Created comprehensive MLD Plugin Skill (`mld-sdk-plugin`) for building full-stack plugins.
 
-#### What Was Done
+## Completed This Session
 
-1. **Created CSS directory structure** at `packages/frontend/src/styles/components/`
+### MLD Plugin Skill Created
 
-2. **Created 29 standalone CSS files** using BEM naming with `mld-` prefix:
-   - alert-box.css, app-sidebar.css, app-top-bar.css, button.css, checkbox.css
-   - collapsible-card.css, color-slider.css, date-picker.css, experiment-timeline.css
-   - file-uploader.css, form-field.css, icon-button.css, input.css, modal.css
-   - number-input.css, plate-map-editor.css, radio-group.css, sample-legend.css
-   - select.css, settings-button.css, skeleton.css, slider.css, tabs.css
-   - tags-input.css, textarea.css, theme-toggle.css, toast.css, toggle.css, well-plate.css
+Created skill at `~/.claude/skills/mld-sdk-plugin/` with:
 
-3. **Updated all 29 Vue components** to:
-   - Use semantic CSS classes instead of Tailwind utilities
-   - Import styles via `@import` in `<style>` blocks
-   - Remove unused computed class arrays and imports
+| File | Lines | Content |
+|------|-------|---------|
+| `SKILL.md` | 491 | Core workflow, quick start, decision tree |
+| `references/python-backend.md` | 492 | Python SDK, service patterns, repositories |
+| `references/frontend-sdk.md` | 769 | Vue components, lab components (WellPlate, PlateMapEditor, ExperimentTimeline) |
+| `references/integration.md` | 465 | Standalone vs integrated modes |
+| `references/quick-start-templates.md` | 623 | Copy-paste starter code |
 
-4. **Updated `src/styles/index.css`** to import all component CSS files
+### Documentation Sync Updates
 
-5. **Fixed TypeScript errors** from the conversion:
-   - Removed unused `const props =` in AlertBox, BaseCheckbox, BaseRadioGroup, BaseTextarea
-   - Removed unused `sizeConfig` computed in FileUploader
-   - Removed unused `computed` import in SampleLegend
+Updated `CLAUDE.md`:
+- Component count: 29 → 32
+- Version: 0.2.0 → 0.3.0
+- Added "Documentation Sync" section with component catalog
+- Added reminder to keep skill in sync
 
-#### Verification
+Updated skill's `frontend-sdk.md`:
+- Added Component Catalog table (32 components by category)
 
-- `npm run typecheck` - Passes
-- `npm run build` - Succeeds, `dist/styles.css` at 156.73 kB (gzip: 20.18 kB)
+## Key Decisions
 
-## CSS Architecture
+1. **Full-stack focus**: Skill covers both Python backend and Vue frontend equally
+2. **Progressive disclosure**: SKILL.md is core workflow (~500 lines), details in reference files
+3. **Component catalog**: Added quick reference table listing all 32 components by category
+4. **Sync reminder**: Added section in CLAUDE.md reminding to update both docs and skill
 
-- **Naming**: BEM-style with `mld-` prefix (e.g., `mld-button`, `mld-button--primary`, `mld-button__icon`)
-- **Theming**: CSS custom properties from `variables.css`
-- **Import methods**:
-  - Automatic: Components include `<style>@import '../styles/components/xxx.css';</style>`
-  - Manual: Import `@morscherlab/mld-sdk/styles` or individual CSS files
+## Uncommitted Changes
 
-## Files Changed
+- `.claude/settings.local.json` - local settings
+- `packages/frontend/src/components/AppSidebar.vue` - minor change (1 line)
 
-- 29 Vue components in `packages/frontend/src/components/`
-- 29 CSS files created in `packages/frontend/src/styles/components/`
-- `packages/frontend/src/styles/index.css` updated
+## Skill Triggers
 
-## No Pending Work
+The skill triggers on: "mld plugin", "analysis plugin", "mld-sdk", "PlatformContext", "AnalysisPlugin", "PluginType", "@morscherlab/mld-sdk", "plugin frontend", "WellPlate", "PlateMapEditor", "ExperimentTimeline"
 
-The migration is complete. All tasks from the plan at `~/.claude/plans/frolicking-wobbling-tower.md` have been finished.
+## Next Steps
+
+1. Test skill by creating a sample plugin
+2. Consider adding more base component documentation to skill
+3. Commit the CLAUDE.md updates if desired
+
+## Current Component Count: 32
+
+**Base Inputs:** BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader
+
+**Layout:** AppTopBar, AppSidebar, CollapsibleCard, FormField, Skeleton
+
+**Feedback:** AlertBox, ToastNotification, IconButton, ThemeToggle, SettingsButton
+
+**Lab/Domain:** WellPlate, PlateMapEditor, SampleLegend, ExperimentTimeline, SampleSelector, GroupAssigner, GroupingModal

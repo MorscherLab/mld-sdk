@@ -121,6 +121,7 @@ export default defineConfig({
           text: 'Lab Components',
           items: [
             { text: 'WellPlate', link: '/showcase/well-plate' },
+            { text: 'RackEditor', link: '/showcase/rack-editor' },
             { text: 'SampleLegend', link: '/showcase/sample-legend' },
             { text: 'PlateMapEditor', link: '/showcase/plate-map-editor' },
             { text: 'ExperimentTimeline', link: '/showcase/experiment-timeline' },

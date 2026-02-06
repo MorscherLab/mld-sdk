@@ -1,11 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import Calendar from '../../components/Calendar.vue'
 import type { CalendarMarker } from '../../types'
 
 describe('Calendar', () => {
-  const fixedDate = new Date(2024, 0, 15) // January 15, 2024 (Monday)
-
   describe('rendering with default props', () => {
     it('should render calendar container', () => {
       const wrapper = mount(Calendar)

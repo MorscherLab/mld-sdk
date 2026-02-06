@@ -134,6 +134,47 @@ export interface HeatmapConfig {
   showLegend?: boolean
 }
 
+// Slot position for rack color coding
+export type SlotPosition = 'R' | 'G' | 'B' | 'Y'
+
+// Extended well data stored in Well.metadata
+export interface WellExtendedData {
+  label?: string
+  injectionVolume?: number
+  injectionCount?: number
+  customMethod?: string | null
+}
+
+// Data emitted when editing a well
+export interface WellEditData {
+  wellId: string
+  label: string
+  sampleType: string
+  injectionVolume: number
+  injectionCount: number
+  customMethod: string
+}
+
+// Fields shown in the edit popup
+export type WellEditField = 'label' | 'sampleType' | 'injectionVolume' | 'injectionCount' | 'customMethod'
+
+// Legend item for sample type display
+export interface WellLegendItem {
+  type: string
+  label: string
+  color: string
+}
+
+// Rack for RackEditor
+export interface Rack {
+  id: string
+  name: string
+  format: WellPlateFormat
+  slot: SlotPosition
+  injectionVolume: number
+  wells: Record<string, Partial<Well>>
+}
+
 // Sample Legend types
 export interface SampleType {
   id: string

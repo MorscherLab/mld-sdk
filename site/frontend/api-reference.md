@@ -83,7 +83,8 @@ import '@morscherlab/mld-sdk/styles'
 
 | Component | Description |
 |-----------|-------------|
-| `WellPlate` | Well plate visualization and interaction |
+| `WellPlate` | Well plate visualization, interaction, and editing |
+| `RackEditor` | Multi-rack management with tabbed navigation and well editing |
 | `SampleLegend` | Sample type legend |
 | `PlateMapEditor` | Plate map editor with sample assignment |
 | `ExperimentTimeline` | Protocol step timeline |
@@ -487,6 +488,57 @@ await execute('user-123')
 
 ---
 
+### useRackEditor
+
+Multi-rack state management for LCMS sequence workflows.
+
+```typescript
+import { useRackEditor, type UseRackEditorOptions } from '@morscherlab/mld-sdk'
+```
+
+#### Options
+
+```typescript
+interface UseRackEditorOptions {
+  defaultFormat?: WellPlateFormat    // default: 54
+  defaultInjectionVolume?: number    // default: 5
+  maxRacks?: number                  // default: 10
+  minRacks?: number                  // default: 1
+}
+```
+
+#### Returns
+
+| Property/Method | Type | Description |
+|-----------------|------|-------------|
+| `racks` | `Ref<Rack[]>` | All racks |
+| `activeRack` | `ComputedRef<Rack \| undefined>` | Currently active rack |
+| `activeRackId` | `Ref<string>` | Active rack ID |
+| `addRack(name?)` | `Rack` | Add new rack (slot auto-cycles R/G/B/Y) |
+| `removeRack(rackId)` | `void` | Remove rack |
+| `reorderRacks(from, to)` | `void` | Reorder racks by index |
+| `updateRack(rackId, data)` | `void` | Update rack properties |
+| `setActiveRack(rackId)` | `void` | Set active rack |
+| `setWellData(rackId, wellId, data)` | `void` | Set well data |
+| `clearWell(rackId, wellId)` | `void` | Clear single well |
+| `clearAllWells(rackId)` | `void` | Clear all wells in rack |
+| `fillSeries(rackId, prefix?)` | `void` | Auto-fill empty wells (S001, S002...) |
+| `getAllWells()` | `Array<{rackId, wellId, well}>` | Get all wells across racks |
+| `totalSampleCount` | `ComputedRef<number>` | Total filled wells |
+| `reset()` | `void` | Reset to single empty rack |
+
+#### Example
+
+```typescript
+const editor = useRackEditor(undefined, { defaultFormat: 54 })
+
+const rack = editor.addRack('My Rack')
+editor.fillSeries(rack.id, 'S')
+console.log(editor.totalSampleCount.value)
+```
+
+---
+
 ### useWellPlateEditor
 
 Well plate editor state management.
@@ -706,6 +758,34 @@ interface HeatmapConfig {
   colorScale?: 'viridis' | 'plasma' | 'turbo' | 'custom'
   customColors?: string[]
   showLegend?: boolean
+}
+
+// Rack and well editing types
+type SlotPosition = 'R' | 'G' | 'B' | 'Y'
+type WellEditField = 'label' | 'sampleType' | 'injectionVolume' | 'injectionCount' | 'customMethod'
+
+interface WellEditData {
+  wellId: string
+  label: string
+  sampleType: string
+  injectionVolume: number
+  injectionCount: number
+  customMethod: string
+}
+
+interface WellLegendItem {
+  type: string
+  label: string
+  color: string
+}
+
+interface Rack {
+  id: string
+  name: string
+  format: WellPlateFormat
+  slot: SlotPosition
+  injectionVolume: number
+  wells: Record<string, Partial<Well>>
 }
 
 interface SampleType {

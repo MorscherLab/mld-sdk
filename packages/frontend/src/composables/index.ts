@@ -53,3 +53,8 @@ export {
   type ValidationResult,
   type UseProtocolTemplatesReturn,
 } from './useProtocolTemplates'
+export {
+  useRackEditor,
+  type UseRackEditorOptions,
+  type UseRackEditorReturn,
+} from './useRackEditor'

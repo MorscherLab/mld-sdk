@@ -34,6 +34,7 @@ export {
   Skeleton,
   // Biological experiment components
   WellPlate,
+  RackEditor,
   SampleLegend,
   PlateMapEditor,
   ExperimentTimeline,
@@ -70,9 +71,12 @@ export {
   useConcentrationUnits,
   useDoseCalculator,
   useProtocolTemplates,
+  useRackEditor,
   type ApiClientOptions,
   type UseWellPlateEditorOptions,
   type UseWellPlateEditorReturn,
+  type UseRackEditorOptions,
+  type UseRackEditorReturn,
   type ConcentrationValue,
   type ConcentrationUnit,
   type VolumeValue,
@@ -114,6 +118,13 @@ export type {
   Well,
   HeatmapColorScale,
   HeatmapConfig,
+  // Well Plate editing types
+  SlotPosition,
+  WellExtendedData,
+  WellEditData,
+  WellEditField,
+  WellLegendItem,
+  Rack,
   // Sample Legend types
   SampleType,
   // Plate Map Editor types

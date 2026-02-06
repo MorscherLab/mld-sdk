@@ -44,6 +44,7 @@ export { default as Skeleton } from './Skeleton.vue'
 
 // Biological experiment components
 export { default as WellPlate } from './WellPlate.vue'
+export { default as RackEditor } from './RackEditor.vue'
 export { default as SampleLegend } from './SampleLegend.vue'
 export { default as PlateMapEditor } from './PlateMapEditor.vue'
 export { default as ExperimentTimeline } from './ExperimentTimeline.vue'

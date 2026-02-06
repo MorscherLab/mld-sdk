@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import type { WellPlateFormat, WellPlateSelectionMode, WellPlateSize, Well, HeatmapConfig, WellShape } from '../types'
+import type { WellPlateFormat, WellPlateSelectionMode, WellPlateSize, Well, HeatmapConfig, WellShape, WellEditField, WellEditData, WellLegendItem } from '../types'
+import WellEditPopup from './WellEditPopup.vue'
 
 interface Props {
   modelValue?: string[]
@@ -17,6 +18,14 @@ interface Props {
   readonly?: boolean
   size?: WellPlateSize
   wellShape?: WellShape
+  // New editing props
+  showWellLabels?: boolean
+  showBadges?: boolean
+  editable?: boolean
+  editFields?: WellEditField[]
+  defaultInjectionVolume?: number
+  showLegend?: boolean
+  legendItems?: WellLegendItem[]
 }
 
 // Drag state for moving wells
@@ -38,6 +47,14 @@ const props = withDefaults(defineProps<Props>(), {
   readonly: false,
   size: 'md',
   wellShape: 'rounded',
+  // New props default to off for backward compatibility
+  showWellLabels: false,
+  showBadges: false,
+  editable: false,
+  editFields: () => ['label', 'sampleType', 'injectionVolume', 'injectionCount', 'customMethod'],
+  defaultInjectionVolume: 5,
+  showLegend: false,
+  legendItems: undefined,
 })
 
 const emit = defineEmits<{
@@ -47,6 +64,9 @@ const emit = defineEmits<{
   'selection-change': [wellIds: string[]]
   'context-menu': [wellId: string, event: MouseEvent]
   'well-move': [sourceWellId: string, targetWellId: string]
+  // New editing emits
+  'well-edit': [wellId: string, data: WellEditData]
+  'well-clear': [wellId: string]
 }>()
 
 const plateRef = ref<HTMLElement | null>(null)
@@ -55,6 +75,10 @@ const isDragging = ref(false)
 const dragStart = ref<{ row: number; col: number } | null>(null)
 const dragEnd = ref<{ row: number; col: number } | null>(null)
 const hoveredWell = ref<string | null>(null)
+
+// Edit popup state
+const editingWellId = ref<string | null>(null)
+const editPopupPosition = ref({ x: 0, y: 0 })
 
 const PLATE_CONFIGS: Record<WellPlateFormat, { rows: number; cols: number }> = {
   6: { rows: 2, cols: 3 },
@@ -120,7 +144,6 @@ const dragSelectedWells = computed(() => {
 
 // Size presets with pixel values for reliable sizing
 const sizeConfig = computed(() => {
-  // Use pixel values to avoid Tailwind class generation issues
   const sizes = {
     sm: { cellWidth: '40px', cellHeight: '40px', headerWidth: '32px', headerHeight: '32px', text: 'text-[10px]', gap: '2px' },
     md: { cellWidth: '56px', cellHeight: '32px', headerWidth: '32px', headerHeight: '24px', text: 'text-xs', gap: '3px' },
@@ -132,6 +155,15 @@ const sizeConfig = computed(() => {
 })
 
 const isFillMode = computed(() => props.size === 'fill')
+
+// Default legend items
+const defaultLegendItems: WellLegendItem[] = [
+  { type: 'sample', label: 'Sample', color: '#10b981' },
+  { type: 'blank', label: 'Blank', color: '#f97316' },
+  { type: 'qc', label: 'QC', color: '#8b5cf6' },
+]
+
+const activeLegendItems = computed(() => props.legendItems ?? defaultLegendItems)
 
 // Sample type colors (matching MSExpDesigner)
 const defaultSampleTypeColors: Record<string, { bg: string; border: string }> = {
@@ -182,7 +214,7 @@ function getWellClasses(well: Well): string[] {
     : 'cursor-pointer'
 
   return [
-    'transition-all duration-150',
+    'transition-all duration-150 relative',
     cursorClass,
     'flex items-center justify-center',
     sizeConfig.value.text,
@@ -233,6 +265,23 @@ function getSampleTypeIndicator(well: Well): string | null {
   return typeMap[well.sampleType] || well.sampleType.charAt(0).toUpperCase()
 }
 
+function getWellLabel(well: Well): string | undefined {
+  if (!props.showWellLabels) return undefined
+  return well.metadata?.label as string | undefined
+}
+
+function getWellBadge(well: Well): { text: string; color: string } | null {
+  if (!props.showBadges || !well.metadata) return null
+  const count = well.metadata.injectionCount as number | undefined
+  if (count && count > 1) {
+    return { text: String(count), color: '#6366f1' }
+  }
+  if (well.metadata.customMethod) {
+    return { text: '+', color: '#ec4899' }
+  }
+  return null
+}
+
 function isSelected(wellId: string): boolean {
   return selectedWellSet.value.has(wellId) || dragSelectedWells.value.has(wellId)
 }
@@ -241,6 +290,12 @@ function handleWellClick(well: Well, event: MouseEvent) {
   if (props.disabled || props.readonly) return
 
   emit('well-click', well.id, event)
+
+  // When editable, open popup instead of modifying selection
+  if (props.editable) {
+    openEditPopup(well.id, event)
+    return
+  }
 
   if (props.selectionMode === 'none') return
 
@@ -262,8 +317,35 @@ function handleWellClick(well: Well, event: MouseEvent) {
   emit('selection-change', newSelection)
 }
 
+function openEditPopup(wellId: string, event: MouseEvent) {
+  const target = event.currentTarget as HTMLElement
+  const rect = target.getBoundingClientRect()
+  editPopupPosition.value = {
+    x: rect.right + 8,
+    y: rect.top,
+  }
+  editingWellId.value = wellId
+}
+
+function handleEditSave(data: WellEditData) {
+  emit('well-edit', data.wellId, data)
+  editingWellId.value = null
+}
+
+function handleEditClear() {
+  if (editingWellId.value) {
+    emit('well-clear', editingWellId.value)
+  }
+  editingWellId.value = null
+}
+
+function handleEditClose() {
+  editingWellId.value = null
+}
+
 function handleWellMouseDown(well: Well, event: MouseEvent) {
   if (props.disabled || props.readonly || props.selectionMode !== 'rectangle') return
+  if (props.editable) return
   if (event.button !== 0) return
 
   isDragging.value = true
@@ -307,7 +389,7 @@ function handleContextMenu(well: Well, event: MouseEvent) {
 // Drag handlers for moving well contents
 function handleDragStart(well: Well, event: DragEvent) {
   if (props.disabled || props.readonly || props.selectionMode !== 'drag') return
-  if (!well.sampleType) return // Only allow dragging filled wells
+  if (!well.sampleType) return
 
   dragSourceWell.value = well.id
   if (event.dataTransfer) {
@@ -353,6 +435,10 @@ function handleKeyDown(event: KeyboardEvent) {
   if (props.disabled || props.readonly) return
 
   if (event.key === 'Escape') {
+    if (editingWellId.value) {
+      editingWellId.value = null
+      return
+    }
     emit('update:modelValue', [])
     emit('selection-change', [])
   }
@@ -448,7 +534,7 @@ const tableStyle = computed(() => ({
                   boxSizing: 'border-box',
                   ...getWellStyle(well),
                 }"
-                :title="`${well.id}${well.sampleType ? `: ${well.sampleType}` : ''}`"
+                :title="`${well.id}${well.sampleType ? `: ${well.sampleType}` : ''}${getWellLabel(well) ? ` - ${getWellLabel(well)}` : ''}`"
                 @click="handleWellClick(well, $event)"
                 @mousedown="handleWellMouseDown(well, $event)"
                 @mouseenter="handleWellMouseEnter(well, $event)"
@@ -462,9 +548,17 @@ const tableStyle = computed(() => ({
                 @keydown.enter="handleWellClick(well, $event as unknown as MouseEvent)"
                 @keydown.space.prevent="handleWellClick(well, $event as unknown as MouseEvent)"
               >
+                <!-- Well label text (from metadata.label) -->
+                <span
+                  v-if="getWellLabel(well)"
+                  class="truncate px-0.5 max-w-full pointer-events-none"
+                  style="color: var(--text-primary)"
+                >
+                  {{ getWellLabel(well) }}
+                </span>
                 <!-- Sample type indicator (S/B/Q/C) -->
                 <span
-                  v-if="getSampleTypeIndicator(well)"
+                  v-else-if="getSampleTypeIndicator(well)"
                   class="font-bold pointer-events-none"
                   style="color: var(--text-primary)"
                 >
@@ -477,6 +571,16 @@ const tableStyle = computed(() => ({
                   style="color: var(--text-primary)"
                 >
                   {{ well.id }}
+                </span>
+
+                <!-- Badge (injection count or custom method) -->
+                <span
+                  v-if="getWellBadge(well)"
+                  class="mld-well-plate__badge"
+                  :style="{ backgroundColor: getWellBadge(well)!.color }"
+                  :title="getWellBadge(well)!.text === '+' ? 'Custom method' : `${getWellBadge(well)!.text}x injections`"
+                >
+                  {{ getWellBadge(well)!.text }}
                 </span>
               </div>
             </td>
@@ -500,8 +604,36 @@ const tableStyle = computed(() => ({
           </div>
           <span class="mld-well-plate__legend-label">{{ props.heatmap.max ?? 1 }}</span>
         </div>
+
+        <!-- Sample type legend bar -->
+        <div v-if="props.showLegend" class="mld-well-plate__sample-legend">
+          <div
+            v-for="item in activeLegendItems"
+            :key="item.type"
+            class="mld-well-plate__sample-legend-item"
+          >
+            <span
+              class="mld-well-plate__sample-legend-dot"
+              :style="{ backgroundColor: `${item.color}26`, border: `1px solid ${item.color}66` }"
+            />
+            <span class="mld-well-plate__sample-legend-text">{{ item.label }}</span>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Edit popup -->
+    <WellEditPopup
+      v-if="editable && editingWellId"
+      :well-id="editingWellId"
+      :well-data="wells[editingWellId]"
+      :edit-fields="editFields"
+      :default-injection-volume="defaultInjectionVolume"
+      :position="editPopupPosition"
+      @save="handleEditSave"
+      @clear="handleEditClear"
+      @close="handleEditClose"
+    />
   </div>
 </template>
 

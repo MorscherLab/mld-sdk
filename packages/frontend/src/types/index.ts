@@ -25,6 +25,13 @@ export type {
   Well,
   HeatmapColorScale,
   HeatmapConfig,
+  // Well Plate editing types
+  SlotPosition,
+  WellExtendedData,
+  WellEditData,
+  WellEditField,
+  WellLegendItem,
+  Rack,
   // Sample Legend types
   SampleType,
   // Plate Map Editor types
