@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "@morscherlab/mld-sdk/styles";
+
+/* Showcase-specific styles */
+.code-block {
+  background-color: var(--mld-bg-secondary, #f3f4f6);
+  border: 1px solid var(--mld-border, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.demo-section {
+  background-color: var(--mld-bg-card, #ffffff);
+  border: 1px solid var(--mld-border, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.demo-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--mld-text-primary, #111827);
+}
+
+.demo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.demo-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.props-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.props-table th,
+.props-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--mld-border, #e5e7eb);
+}
+
+.props-table th {
+  background-color: var(--mld-bg-secondary, #f3f4f6);
+  font-weight: 600;
+}
+
+.props-table code {
+  background-color: var(--mld-bg-hover, #f3f4f6);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+}
+
+/* Ensure showcase pages have proper dark mode support in VitePress */
+.dark .demo-section {
+  background-color: var(--mld-bg-card, #1e293b);
+  border-color: var(--mld-border, #334155);
+}
+
+.dark .demo-section h3 {
+  color: var(--mld-text-primary, #f8fafc);
+}
+
+.dark .code-block {
+  background-color: var(--mld-bg-secondary, #1e293b);
+  border-color: var(--mld-border, #334155);
+}
+
+.dark .props-table th {
+  background-color: var(--mld-bg-secondary, #1e293b);
+}
+
+.dark .props-table th,
+.dark .props-table td {
+  border-bottom-color: var(--mld-border, #334155);
+}
