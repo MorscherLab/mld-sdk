@@ -58,7 +58,8 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 |-----------|-------------|
 | [BaseTabs](/showcase/tabs) | 3 variants: underline, pills, bordered |
 | [AppTopBar](/showcase/top-bar) | Header with logo, pages dropdown, actions |
-| [AppSidebar](/showcase/sidebar) | Sidebar with nested items, collapse |
+| [AppSidebar](/showcase/sidebar) | Sidebar with collapsible sections, collapse |
+| [AppLayout](/showcase/layout) | Page shell with topbar + sidebar + content |
 | [BaseModal](/showcase/modal) | 5 sizes, customizable close behavior |
 | [CollapsibleCard](/showcase/collapsible-card) | Expandable card with header |
 | [ThemeToggle](/showcase/theme-toggle) | Light/dark mode toggle button |

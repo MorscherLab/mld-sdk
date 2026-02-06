@@ -1,0 +1,72 @@
+/* AppLayout Component Styles */
+
+.mld-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mld-layout__topbar {
+  flex-shrink: 0;
+}
+
+.mld-layout__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.mld-layout--sidebar-right .mld-layout__body {
+  flex-direction: row-reverse;
+}
+
+.mld-layout__sidebar {
+  flex-shrink: 0;
+  transition: width 0.2s ease;
+}
+
+.mld-layout__main {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+/* Floating variant: all sections appear as separate cards on a background */
+.mld-layout--floating {
+  background-color: var(--bg-primary, var(--mld-bg-primary, #f8fafc));
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.mld-layout--floating .mld-layout__topbar {
+  border-radius: var(--radius-lg, 0.75rem);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
+}
+
+.mld-layout--floating .mld-layout__body {
+  gap: 1rem;
+}
+
+.mld-layout--floating .mld-layout__sidebar {
+  border-radius: var(--radius-lg, 0.75rem);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
+  background-color: var(--bg-card, var(--mld-bg-card, #ffffff));
+}
+
+.mld-layout--floating .mld-layout__main {
+  border-radius: var(--radius-lg, 0.75rem);
+  overflow-y: auto;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
+  background-color: var(--bg-card, var(--mld-bg-card, #ffffff));
+}
+
+/* When floating, sidebar doesn't need its own border since the wrapper provides it */
+.mld-layout--floating .mld-sidebar {
+  border-right: none;
+  border-left: none;
+}

@@ -396,38 +396,53 @@ app.mount('#app')
 ```vue
 <!-- src/App.vue -->
 <template>
-  <div class="app">
-    <AppTopBar title="My Analysis Plugin">
-      <template #actions>
-        <ThemeToggle />
-      </template>
-    </AppTopBar>
+  <AppLayout floating v-model:sidebar-collapsed="collapsed">
+    <template #topbar>
+      <AppTopBar title="My Analysis Plugin">
+        <template #actions>
+          <ThemeToggle />
+        </template>
+      </AppTopBar>
+    </template>
 
-    <div class="app__content">
-      <router-view />
-    </div>
+    <template #sidebar="{ collapsed: isCollapsed }">
+      <AppSidebar
+        :floating="false"
+        :items="navItems"
+        :active-id="activeItem"
+        :collapsed="isCollapsed"
+        @select="(item) => { activeItem = item.id; if (item.to) router.push(item.to) }"
+        @update:collapsed="collapsed = $event"
+      />
+    </template>
+
+    <router-view />
 
     <ToastNotification />
-  </div>
+  </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { AppTopBar, ThemeToggle, ToastNotification } from '@morscherlab/mld-sdk/components'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import {
+  AppLayout,
+  AppTopBar,
+  AppSidebar,
+  ThemeToggle,
+  ToastNotification,
+} from '@morscherlab/mld-sdk/components'
+import type { SidebarItem } from '@morscherlab/mld-sdk/types'
+
+const router = useRouter()
+const collapsed = ref(false)
+const activeItem = ref('home')
+
+const navItems: SidebarItem[] = [
+  { id: 'home', label: 'Home', to: '/' },
+  { id: 'analysis', label: 'Analysis', to: '/analysis' },
+]
 </script>
-
-<style>
-.app {
-  min-height: 100vh;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-}
-
-.app__content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-</style>
 ```
 
 ### Router

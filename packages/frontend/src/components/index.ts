@@ -33,6 +33,7 @@ export { default as SettingsButton } from './SettingsButton.vue'
 export { default as CollapsibleCard } from './CollapsibleCard.vue'
 export { default as AppTopBar } from './AppTopBar.vue'
 export { default as AppSidebar } from './AppSidebar.vue'
+export { default as AppLayout } from './AppLayout.vue'
 
 // Utility components
 export { default as Skeleton } from './Skeleton.vue'

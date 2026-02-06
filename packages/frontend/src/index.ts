@@ -30,6 +30,7 @@ export {
   CollapsibleCard,
   AppTopBar,
   AppSidebar,
+  AppLayout,
   Skeleton,
   // Biological experiment components
   WellPlate,

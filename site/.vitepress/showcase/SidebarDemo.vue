@@ -38,6 +38,30 @@ const nestedItems: SidebarItem[] = [
   { id: 'settings', label: 'Settings' },
 ]
 
+const collapsibleItems: SidebarItem[] = [
+  { id: 'home', label: 'Home' },
+  {
+    id: 'experiments',
+    label: 'Experiments',
+    defaultOpen: true,
+    children: [
+      { id: 'exp-list', label: 'All Experiments' },
+      { id: 'exp-new', label: 'New Experiment' },
+      { id: 'exp-templates', label: 'Templates' },
+    ],
+  },
+  {
+    id: 'analysis',
+    label: 'Analysis',
+    defaultOpen: false,
+    children: [
+      { id: 'analysis-results', label: 'Results' },
+      { id: 'analysis-reports', label: 'Reports' },
+    ],
+  },
+  { id: 'settings', label: 'Settings' },
+]
+
 const itemsWithDisabled: SidebarItem[] = [
   { id: 'active1', label: 'Active Item' },
   { id: 'disabled', label: 'Disabled Item', disabled: true },
@@ -47,6 +71,7 @@ const itemsWithDisabled: SidebarItem[] = [
 const activeBasic = ref('dashboard')
 const activeBadges = ref('inbox')
 const activeNested = ref('home')
+const activeCollapsible = ref('home')
 const activeFloating = ref('dashboard')
 const collapsedDemo = ref(false)
 </script>
@@ -95,7 +120,24 @@ const collapsedDemo = ref(false)
     </div>
   </DemoSection>
 
-  <!-- Nested Items -->
+  <!-- Collapsible Sections -->
+  <DemoSection title="Collapsible Sections">
+    <p class="text-sm text-text-secondary mb-4">
+      Parent items with children render as collapsible sections using <code>CollapsibleCard</code>.
+      Use <code>defaultOpen</code> to control initial state (defaults to open).
+    </p>
+    <div class="h-96 border border-border rounded-mld overflow-hidden">
+      <AppSidebar
+        :floating="false"
+        :items="collapsibleItems"
+        :active-id="activeCollapsible"
+        @select="(item) => activeCollapsible = item.id"
+      />
+    </div>
+    <p class="mt-2 text-sm text-text-secondary">Active: {{ activeCollapsible }}</p>
+  </DemoSection>
+
+  <!-- Nested Items (legacy name kept for continuity) -->
   <DemoSection title="Nested Items">
     <div class="h-80 border border-border rounded-mld overflow-hidden">
       <AppSidebar

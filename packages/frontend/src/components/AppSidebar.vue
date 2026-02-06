@@ -1,14 +1,49 @@
 <script setup lang="ts">
+/**
+ * AppSidebar - Navigation sidebar with collapsible sections
+ *
+ * Two-mode component:
+ * 1. Items mode: Pass `items` array for automatic nav rendering with CollapsibleCard sections
+ * 2. Slot mode: Use default slot for custom content when no items provided
+ *
+ * Items with children render as CollapsibleCard sections (respects `defaultOpen` prop).
+ * When collapsed, parent items show icon-only; children are hidden.
+ * Supports v-model:collapsed for two-way binding of collapse state.
+ *
+ * @example
+ * ```vue
+ * <!-- Items mode -->
+ * <AppSidebar
+ *   :items="navItems"
+ *   :active-id="activeRoute"
+ *   v-model:collapsed="collapsed"
+ *   @select="handleNavigation"
+ * />
+ *
+ * <!-- Slot mode -->
+ * <AppSidebar v-model:collapsed="collapsed">
+ *   <custom-navigation />
+ * </AppSidebar>
+ * ```
+ */
 import { computed } from 'vue'
 import type { SidebarItem } from '../types'
+import CollapsibleCard from './CollapsibleCard.vue'
 
 interface Props {
+  /** Navigation items (if provided, renders nav automatically; otherwise use default slot) */
   items?: readonly SidebarItem[]
+  /** ID of currently active item (applies active styling) */
   activeId?: string
+  /** Whether sidebar is collapsed (use v-model:collapsed for two-way binding) */
   collapsed?: boolean
+  /** Floating variant with absolute positioning */
   floating?: boolean
+  /** Width when expanded */
   width?: string
+  /** Width when collapsed (icon-only mode) */
   collapsedWidth?: string
+  /** Position sidebar on left or right side */
   side?: 'left' | 'right'
   /** Top offset when floating, useful when used with a floating AppTopBar (e.g., '88px') */
   topOffset?: string
@@ -24,158 +59,125 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
+  /** Emitted when a navigation item is clicked */
   select: [item: SidebarItem]
+  /** Emitted when collapse state should change (for v-model:collapsed) */
   'update:collapsed': [collapsed: boolean]
 }>()
 
 const sidebarWidth = computed(() => props.collapsed ? props.collapsedWidth : props.width)
 const hasItems = computed(() => props.items.length > 0)
 
+const sidebarClasses = computed(() => [
+  'mld-sidebar',
+  `mld-sidebar--${props.side}`,
+  props.floating ? 'mld-sidebar--floating' : 'mld-sidebar--static',
+])
+
+const sidebarStyle = computed(() => ({
+  width: sidebarWidth.value,
+  ...(props.floating && { top: props.topOffset || '1rem' }),
+}))
+
+/** Prevent default navigation for vue-router items; consumer handles routing via @select event */
 function handleItemClick(item: SidebarItem, event?: Event) {
   if (item.disabled) return
-
-  // Prevent default for internal routes - consuming app handles navigation via @select
   if (item.to && event) {
     event.preventDefault()
   }
-
   emit('select', item)
 }
 
-function isActive(item: SidebarItem): boolean {
-  return item.id === props.activeId
-}
-
-function getItemClasses(item: SidebarItem, isParent = false) {
-  if (isParent) {
-    // Parent items with children are category headers - not clickable links
-    return [
-      'flex items-center gap-2 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider',
-      'text-text-muted select-none',
-    ]
-  }
-  return [
-    'flex items-center justify-start gap-3 px-3 py-2 rounded-mld text-sm transition-colors duration-mld',
-    'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mld-primary',
-    'w-full text-left', // For button elements to match anchor styling
-    item.disabled
-      ? 'text-text-muted cursor-not-allowed'
-      : isActive(item)
-        ? 'bg-mld-primary/10 text-mld-primary font-medium'
-        : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover cursor-pointer',
-  ]
+function getItemClasses(item: SidebarItem) {
+  const classes = ['mld-sidebar__item']
+  if (item.disabled) classes.push('mld-sidebar__item--disabled')
+  else if (item.id === props.activeId) classes.push('mld-sidebar__item--active')
+  return classes
 }
 </script>
 
 <template>
   <aside
-    :style="{
-      width: sidebarWidth,
-      ...(props.floating && props.topOffset ? { top: props.topOffset } : {}),
-    }"
-    :class="[
-      'mld-sidebar flex flex-col transition-[width] duration-200',
-      props.side === 'right' ? 'mld-sidebar--right' : '',
-      props.floating
-        ? `mld-sidebar--floating fixed ${props.side === 'right' ? 'right-4' : 'left-4'} bottom-4 rounded-xl shadow-sm z-40 ${props.topOffset ? '' : 'top-4'}`
-        : 'h-full',
-    ]"
+    :class="sidebarClasses"
+    :style="sidebarStyle"
   >
     <!-- Header slot -->
-    <div v-if="$slots.header" class="px-3 py-4 border-b border-border">
+    <div v-if="$slots.header" class="mld-sidebar__header">
       <slot name="header" />
     </div>
 
     <!-- Navigation items (when items provided) -->
-    <nav v-if="hasItems" class="flex-1 overflow-y-auto p-3 space-y-4">
+    <nav v-if="hasItems" class="mld-sidebar__nav">
       <template v-for="item in props.items" :key="item.id">
-        <!-- Item with children: render as category header -->
-        <div v-if="item.children?.length" class="space-y-1">
-          <!-- Category header (not clickable) -->
-          <div
-            v-if="!props.collapsed"
-            :class="getItemClasses(item, true)"
-          >
-            <span v-if="item.icon" class="flex-shrink-0 w-4 h-4">
+        <!-- Item with children: collapsible section -->
+        <div v-if="item.children?.length">
+          <!-- Collapsed: icon only -->
+          <div v-if="props.collapsed" class="mld-sidebar__section-icon">
+            <span class="mld-sidebar__icon">
               <slot :name="`icon-${item.id}`" :item="item">
                 {{ item.icon }}
               </slot>
             </span>
-            <span class="truncate">{{ item.label }}</span>
           </div>
-
-          <!-- Children -->
-          <div v-if="!props.collapsed" class="space-y-0.5">
-            <template v-for="child in item.children" :key="child.id">
-              <a
-                v-if="child.href"
-                :href="child.href"
-                :class="getItemClasses(child)"
-                @click="handleItemClick(child, $event)"
-              >
-                <span class="flex-1 truncate" style="text-align: left">{{ child.label }}</span>
-              </a>
-              <button
-                v-else
-                type="button"
-                :class="getItemClasses(child)"
-                @click="handleItemClick(child)"
-              >
-                <span class="flex-1 truncate" style="text-align: left">{{ child.label }}</span>
-              </button>
-            </template>
+          <!-- Expanded: CollapsibleCard section -->
+          <div v-else class="mld-sidebar__section">
+            <CollapsibleCard
+              :title="item.label"
+              :default-open="item.defaultOpen !== false"
+            >
+              <div class="mld-sidebar__section-children">
+                <component
+                  v-for="child in item.children"
+                  :key="child.id"
+                  :is="child.href ? 'a' : 'button'"
+                  :href="child.href"
+                  :type="child.href ? undefined : 'button'"
+                  :class="getItemClasses(child)"
+                  @click="handleItemClick(child, $event)"
+                >
+                  <span v-if="child.icon" class="mld-sidebar__icon">
+                    <slot :name="`icon-${child.id}`" :item="child">
+                      {{ child.icon }}
+                    </slot>
+                  </span>
+                  <span class="mld-sidebar__item-label">{{ child.label }}</span>
+                  <span v-if="child.badge !== undefined" class="mld-sidebar__badge">
+                    {{ child.badge }}
+                  </span>
+                </component>
+              </div>
+            </CollapsibleCard>
           </div>
         </div>
 
-        <!-- Item without children: render as clickable link -->
-        <a
-          v-else-if="item.href"
+        <component
+          v-else
+          :is="item.href ? 'a' : 'button'"
           :href="item.href"
+          :type="item.href ? undefined : 'button'"
           :class="getItemClasses(item)"
           @click="handleItemClick(item, $event)"
         >
-          <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
+          <span v-if="item.icon" class="mld-sidebar__icon">
             <slot :name="`icon-${item.id}`" :item="item">
               {{ item.icon }}
             </slot>
           </span>
-          <span v-if="!props.collapsed" class="flex-1 truncate">{{ item.label }}</span>
-          <span
-            v-if="!props.collapsed && item.badge !== undefined"
-            class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
-          >
+          <span v-if="!props.collapsed" class="mld-sidebar__item-label">{{ item.label }}</span>
+          <span v-if="!props.collapsed && item.badge !== undefined" class="mld-sidebar__badge">
             {{ item.badge }}
           </span>
-        </a>
-        <button
-          v-else
-          type="button"
-          :class="getItemClasses(item)"
-          @click="handleItemClick(item)"
-        >
-          <span v-if="item.icon" class="flex-shrink-0 w-5 h-5">
-            <slot :name="`icon-${item.id}`" :item="item">
-              {{ item.icon }}
-            </slot>
-          </span>
-          <span v-if="!props.collapsed" class="flex-1 truncate">{{ item.label }}</span>
-          <span
-            v-if="!props.collapsed && item.badge !== undefined"
-            class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-mld-primary/10 text-mld-primary"
-          >
-            {{ item.badge }}
-          </span>
-        </button>
+        </component>
       </template>
     </nav>
 
     <!-- Content slot (when no nav items provided) -->
-    <div v-else-if="$slots.default" class="flex-1 overflow-y-auto">
+    <div v-else-if="$slots.default" class="mld-sidebar__content">
       <slot />
     </div>
 
     <!-- Footer slot -->
-    <div v-if="$slots.footer" class="px-3 py-4 border-t border-border">
+    <div v-if="$slots.footer" class="mld-sidebar__footer">
       <slot name="footer" />
     </div>
 
@@ -183,12 +185,12 @@ function getItemClasses(item: SidebarItem, isParent = false) {
     <button
       v-if="hasItems"
       type="button"
-      class="p-3 border-t border-border text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
+      class="mld-sidebar__collapse-btn"
       :aria-label="props.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
       @click="emit('update:collapsed', !props.collapsed)"
     >
       <svg
-        :class="['w-5 h-5 mx-auto transition-transform', props.collapsed ? 'rotate-180' : '']"
+        :class="{ 'mld-sidebar__collapse-icon': true, 'mld-sidebar__collapse-icon--collapsed': props.collapsed }"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

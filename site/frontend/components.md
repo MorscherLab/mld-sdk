@@ -513,10 +513,15 @@ Application header bar.
 
 ### AppSidebar
 
-Sidebar navigation.
+Sidebar navigation with collapsible sections. Parent items with `children` render as collapsible `CollapsibleCard` sections.
 
 ```vue
-<AppSidebar :items="navItems" :collapsed="isCollapsed">
+<AppSidebar
+  :items="navItems"
+  :active-id="activeId"
+  v-model:collapsed="isCollapsed"
+  @select="(item) => activeId = item.id"
+>
   <template #header>
     <Logo />
   </template>
@@ -528,7 +533,72 @@ Sidebar navigation.
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `items` | `SidebarItem[]` | `[]` | Navigation items |
-| `collapsed` | `boolean` | `false` | Collapsed state |
+| `activeId` | `string` | - | Currently active item ID |
+| `collapsed` | `boolean` | `false` | Collapsed state (v-model) |
+| `floating` | `boolean` | `true` | Floating style with fixed position |
+| `width` | `string` | `'240px'` | Expanded width |
+| `collapsedWidth` | `string` | `'64px'` | Collapsed width |
+| `side` | `'left' \| 'right'` | `'left'` | Sidebar side |
+| `topOffset` | `string` | - | Top offset when floating |
+
+#### SidebarItem Type
+
+```typescript
+interface SidebarItem {
+  id: string
+  label: string
+  icon?: string
+  to?: string
+  href?: string
+  children?: SidebarItem[]
+  badge?: string | number
+  disabled?: boolean
+  defaultOpen?: boolean  // Whether section starts open (default: true)
+}
+```
+
+#### Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `select` | `SidebarItem` | Item clicked |
+| `update:collapsed` | `boolean` | Collapse state changed |
+
+---
+
+### AppLayout
+
+Page layout shell combining topbar, sidebar, and main content area.
+
+```vue
+<AppLayout v-model:sidebar-collapsed="collapsed">
+  <template #topbar>
+    <AppTopBar variant="default" />
+  </template>
+  <template #sidebar="{ collapsed: isCollapsed }">
+    <AppSidebar :floating="false" :collapsed="isCollapsed" :items="items" />
+  </template>
+  <main>Page content</main>
+</AppLayout>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `sidebarPosition` | `'left' \| 'right'` | `'left'` | Sidebar side |
+| `sidebarWidth` | `string` | `'240px'` | Expanded sidebar width |
+| `sidebarCollapsedWidth` | `string` | `'64px'` | Collapsed sidebar width |
+| `sidebarCollapsed` | `boolean` | `false` | Collapsed state (v-model) |
+| `floating` | `boolean` | `false` | Floating style: sections as separate cards |
+
+#### Slots
+
+| Slot | Props | Description |
+|------|-------|-------------|
+| `topbar` | - | Top bar area (optional) |
+| `sidebar` | `{ collapsed, toggle }` | Sidebar with scoped props |
+| `default` | - | Main content area |
 
 ---
 

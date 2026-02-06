@@ -59,7 +59,7 @@ Tests run automatically on push to main and PRs. Release workflow triggers on `v
 
 | Directory | Contents |
 |-----------|----------|
-| `components/` | 38 Vue 3 components (base inputs, forms, feedback, layout, well plates) |
+| `components/` | 39 Vue 3 components (base inputs, forms, feedback, layout, well plates) |
 | `composables/` | `useApi`, `useAuth`, `usePasskey`, `useTheme`, `useToast`, `usePlatformContext`, `useForm`, `useAsync`, `useWellPlateEditor`, `useConcentrationUnits`, `useDoseCalculator`, `useProtocolTemplates` |
 | `stores/` | `useAuthStore` (auth state), `useSettingsStore` (app settings) |
 | `types/` | TypeScript definitions for all components and platform types |
@@ -163,11 +163,11 @@ Both packages share the same version number. Current: 0.3.0
 
 **Skill distribution:** Skill files are packaged as `mld-sdk-skill-vX.Y.Z.zip` and attached to GitHub Releases automatically by the release workflow.
 
-### Current Component List (38)
+### Current Component List (39)
 
 **Base Inputs:** BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader
 
-**Layout:** AppTopBar, AppSidebar, CollapsibleCard, FormField, Skeleton
+**Layout:** AppTopBar, AppSidebar, AppLayout, CollapsibleCard, FormField, Skeleton
 
 **Feedback:** AlertBox, ToastNotification, IconButton, ThemeToggle, SettingsButton
 

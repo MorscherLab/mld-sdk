@@ -23,12 +23,12 @@ import '@morscherlab/mld-sdk/styles'
 
 ---
 
-## Component Catalog (38 total)
+## Component Catalog (39 total)
 
 | Category | Components |
 |----------|------------|
 | **Base Inputs** | BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader |
-| **Layout** | AppTopBar, AppSidebar, CollapsibleCard, FormField, Skeleton |
+| **Layout** | AppTopBar, AppSidebar, AppLayout, CollapsibleCard, FormField, Skeleton |
 | **Feedback** | AlertBox, ToastNotification, IconButton, ThemeToggle, SettingsButton |
 | **Lab/Domain** | WellPlate, PlateMapEditor, SampleLegend, ExperimentTimeline, SampleSelector, GroupAssigner, GroupingModal, MoleculeInput, ConcentrationInput, DoseCalculator, ReagentList, SampleHierarchyTree, ProtocolStepEditor |
 
@@ -948,6 +948,26 @@ const tabs: TabItem[] = [
   </template>
 </AppTopBar>
 ```
+
+### AppLayout
+
+Page layout shell combining topbar, sidebar, and main content.
+
+```vue
+<AppLayout v-model:sidebar-collapsed="collapsed">
+  <template #topbar>
+    <AppTopBar variant="floating" />
+  </template>
+  <template #sidebar="{ collapsed: isCollapsed }">
+    <AppSidebar :floating="false" :collapsed="isCollapsed" :items="items" />
+  </template>
+  <main>Content</main>
+</AppLayout>
+```
+
+**Props:** `sidebarPosition` ('left'|'right'), `sidebarWidth` ('240px'), `sidebarCollapsedWidth` ('64px'), `sidebarCollapsed` (boolean, v-model)
+
+**Slots:** `#topbar`, `#sidebar` (scoped: `{ collapsed, toggle }`), `#default`
 
 ### ToastNotification
 

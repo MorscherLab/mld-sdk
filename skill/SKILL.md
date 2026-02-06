@@ -16,7 +16,7 @@ description: |
 
   **Triggers:** "mld plugin", "analysis plugin", "mld-sdk", "PlatformContext",
   "AnalysisPlugin", "PluginType", "@morscherlab/mld-sdk", "plugin frontend",
-  "WellPlate", "PlateMapEditor", "ExperimentTimeline", "MoleculeInput",
+  "AppLayout", "WellPlate", "PlateMapEditor", "ExperimentTimeline", "MoleculeInput",
   "ConcentrationInput", "DoseCalculator", "ReagentList", "SampleHierarchyTree",
   "ProtocolStepEditor", "useConcentrationUnits", "useDoseCalculator", "useProtocolTemplates"
 ---

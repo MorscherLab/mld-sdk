@@ -102,6 +102,7 @@ export default defineConfig({
             { text: 'BaseTabs', link: '/showcase/tabs' },
             { text: 'AppTopBar', link: '/showcase/top-bar' },
             { text: 'AppSidebar', link: '/showcase/sidebar' },
+            { text: 'AppLayout', link: '/showcase/layout' },
             { text: 'BaseModal', link: '/showcase/modal' },
             { text: 'CollapsibleCard', link: '/showcase/collapsible-card' },
             { text: 'ThemeToggle', link: '/showcase/theme-toggle' },

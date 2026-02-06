@@ -61,6 +61,7 @@ export interface SidebarItem {
   children?: SidebarItem[]
   badge?: string | number
   disabled?: boolean
+  defaultOpen?: boolean
 }
 
 // Collapsible types
