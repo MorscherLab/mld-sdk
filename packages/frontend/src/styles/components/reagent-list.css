@@ -80,10 +80,26 @@
   height: 0.875rem;
 }
 
-/* Table */
+/* Table - reset consumer/framework styles */
 .mld-reagent-list__table {
+  display: table !important;
+  overflow: visible !important;
   width: 100%;
   border-collapse: collapse;
+  border: none !important;
+  margin: 0 !important;
+}
+
+.mld-reagent-list__table thead {
+  display: table-header-group !important;
+}
+
+.mld-reagent-list__table tbody {
+  display: table-row-group !important;
+}
+
+.mld-reagent-list__table tr {
+  border: none !important;
 }
 
 .mld-reagent-list__table thead {

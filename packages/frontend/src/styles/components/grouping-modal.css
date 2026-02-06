@@ -247,9 +247,25 @@
 }
 
 .mld-grouping-modal__table {
+  display: table !important;
+  overflow: visible !important;
   width: 100%;
   border-collapse: collapse;
+  border: none !important;
+  margin: 0 !important;
   font-size: 0.8125rem;
+}
+
+.mld-grouping-modal__table thead {
+  display: table-header-group !important;
+}
+
+.mld-grouping-modal__table tbody {
+  display: table-row-group !important;
+}
+
+.mld-grouping-modal__table tr {
+  border: none !important;
 }
 
 .mld-grouping-modal__th,

@@ -25,9 +25,33 @@
   width: 100%;
 }
 
-/* Table */
+/* Table - reset consumer/framework styles (VitePress, Tailwind preflight, etc.) */
 .mld-well-plate__table {
+  display: table !important;
+  overflow: visible !important;
   border-collapse: separate;
+  border: none !important;
+  margin: 0 !important;
+}
+
+.mld-well-plate__table thead {
+  display: table-header-group !important;
+}
+
+.mld-well-plate__table tbody {
+  display: table-row-group !important;
+}
+
+.mld-well-plate__table tr {
+  border: none !important;
+  background: transparent !important;
+}
+
+.mld-well-plate__table th,
+.mld-well-plate__table td {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 .mld-well-plate__table--fill {

@@ -2,6 +2,22 @@ import { defineConfig } from 'vitepress'
 import tailwindcss from '@tailwindcss/vite'
 import { resolve } from 'path'
 
+const guideSidebar = [
+  {
+    text: 'Getting Started',
+    items: [
+      { text: 'Quick Start', link: '/guide/getting-started' },
+      { text: 'Skill Setup', link: '/guide/skill-setup' },
+    ],
+  },
+  {
+    text: 'Building Plugins',
+    items: [
+      { text: 'Full-Stack Plugin', link: '/integration/fullstack-plugin' },
+    ],
+  },
+]
+
 export default defineConfig({
   title: 'MLD SDK',
   description: 'SDK for building plugins that integrate with the MorscherLab Database platform',
@@ -10,42 +26,22 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
-      {
-        text: 'Reference',
-        items: [
-          { text: 'Python SDK', link: '/python/api-reference' },
-          { text: 'Frontend SDK', link: '/frontend/api-reference' },
-          { text: 'Components', link: '/frontend/components' },
-          { text: 'Composables', link: '/frontend/composables' },
-        ],
-      },
+      { text: 'Python SDK', link: '/python/plugin-guide' },
+      { text: 'Frontend SDK', link: '/frontend/components' },
       { text: 'Showcase', link: '/showcase/' },
     ],
 
     sidebar: {
-      '/guide/': [
-        {
-          text: 'Getting Started',
-          items: [
-            { text: 'Quick Start', link: '/guide/getting-started' },
-            { text: 'Skill Setup', link: '/guide/skill-setup' },
-          ],
-        },
-        {
-          text: 'Advanced',
-          items: [
-            { text: 'R Integration', link: '/guide/r-integration' },
-            { text: 'Full-Stack Plugin', link: '/integration/fullstack-plugin' },
-          ],
-        },
-      ],
+      '/guide/': guideSidebar,
+      '/integration/': guideSidebar,
       '/python/': [
         {
           text: 'Python SDK',
           items: [
-            { text: 'API Reference', link: '/python/api-reference' },
             { text: 'Plugin Guide', link: '/python/plugin-guide' },
+            { text: 'API Reference', link: '/python/api-reference' },
             { text: 'Exceptions', link: '/python/exceptions' },
+            { text: 'R Integration', link: '/python/r-integration' },
           ],
         },
       ],
@@ -53,18 +49,10 @@ export default defineConfig({
         {
           text: 'Frontend SDK',
           items: [
-            { text: 'API Reference', link: '/frontend/api-reference' },
             { text: 'Components', link: '/frontend/components' },
             { text: 'Composables', link: '/frontend/composables' },
             { text: 'Theming', link: '/frontend/theming' },
-          ],
-        },
-      ],
-      '/integration/': [
-        {
-          text: 'Integration',
-          items: [
-            { text: 'Full-Stack Plugin', link: '/integration/fullstack-plugin' },
+            { text: 'API Reference', link: '/frontend/api-reference' },
           ],
         },
       ],
