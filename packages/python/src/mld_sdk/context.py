@@ -25,12 +25,10 @@ from typing import TYPE_CHECKING, Callable, Optional
 
 from mld_sdk.repositories import (
     AnalysisArtifactRepository,
-    CompoundListRepository,
     ExperimentRepository,
     MetadataTemplateRepository,
     PlatformConfig,
     PluginDataRepository,
-    TracingPresetRepository,
     UserRepository,
 )
 
@@ -161,18 +159,6 @@ class PlatformContext(ABC):
         pass
 
     @abstractmethod
-    def get_compound_list_repository(self) -> Optional[CompoundListRepository]:
-        """Get the compound list repository.
-
-        Returns:
-            CompoundListRepository instance, or None if not available.
-
-        Note:
-            Returns None in "none" database mode.
-        """
-        pass
-
-    @abstractmethod
     def get_plugin_data_repository(self) -> Optional[PluginDataRepository]:
         """Get the plugin data repository for experiment data and analysis results.
 
@@ -195,18 +181,6 @@ class PlatformContext(ABC):
 
         Returns:
             MetadataTemplateRepository instance, or None if not available.
-
-        Note:
-            Returns None in "none" database mode.
-        """
-        pass
-
-    @abstractmethod
-    def get_tracing_preset_repository(self) -> Optional[TracingPresetRepository]:
-        """Get the tracing preset repository.
-
-        Returns:
-            TracingPresetRepository instance, or None if not available.
 
         Note:
             Returns None in "none" database mode.

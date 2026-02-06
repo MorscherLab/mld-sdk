@@ -20,8 +20,6 @@ class PluginCapabilities:
     requires_auth: bool = False
     requires_database: bool = False
     requires_experiments: bool = False
-    requires_compound_lists: bool = False
-
     # Optional integrations
     supports_experiment_linking: bool = False
 

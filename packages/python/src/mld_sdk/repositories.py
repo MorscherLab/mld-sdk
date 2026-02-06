@@ -8,11 +8,9 @@ to plugins via PlatformContext.
 Repository types correspond to plugin capabilities:
 - ExperimentRepository: Basic experiment access (read-only for ANALYSIS plugins)
 - PluginDataRepository: Plugin-specific data storage
-- CompoundListRepository: Compound/target lists
 - UserRepository: User information
 - AnalysisArtifactRepository: Analysis output artifacts
 - MetadataTemplateRepository: Experiment metadata templates
-- TracingPresetRepository: Isotope tracing presets
 """
 
 from abc import ABC, abstractmethod
@@ -36,7 +34,6 @@ class Experiment:
     updated_at: datetime
     created_by: Optional[str] = None
     method_id: Optional[str] = None
-    compound_list_id: Optional[str] = None
     parent_experiment_id: Optional[str] = None
     cell_line: Optional[str] = None
     project: Optional[str] = None
@@ -101,55 +98,12 @@ class AnalysisArtifact:
 
 
 @dataclass
-class CompoundList:
-    """Compound list data model."""
-
-    id: str
-    name: str
-    created_at: datetime
-    updated_at: datetime
-    owner_id: Optional[str] = None
-    is_master: bool = False
-    method_id: Optional[str] = None
-    description: Optional[str] = None
-
-
-@dataclass
-class Compound:
-    """Compound data model."""
-
-    id: str
-    compound_list_id: str
-    name: str
-    formula: str
-    adduct: str
-    expected_rt: float
-    created_at: datetime
-    mass: Optional[float] = None
-    rt_source: str = "default"
-
-
-@dataclass
 class MetadataTemplate:
     """Metadata template data model."""
 
     id: str
     name: str
     fields: list[dict]
-    created_at: datetime
-    updated_at: datetime
-    owner_id: Optional[str] = None
-    description: Optional[str] = None
-    is_default: bool = False
-
-
-@dataclass
-class TracingPreset:
-    """Tracing preset data model."""
-
-    id: str
-    name: str
-    entries: list[dict]
     created_at: datetime
     updated_at: datetime
     owner_id: Optional[str] = None
@@ -223,7 +177,6 @@ class ExperimentRepository(Protocol):
         experiment_type: str,
         created_by: Optional[str] = None,
         method_id: Optional[str] = None,
-        compound_list_id: Optional[str] = None,
         parent_experiment_id: Optional[str] = None,
         cell_line: Optional[str] = None,
         project: Optional[str] = None,
@@ -250,7 +203,6 @@ class ExperimentRepository(Protocol):
         status: Optional[str] = None,
         experiment_type: Optional[str] = None,
         method_id: Optional[str] = None,
-        compound_list_id: Optional[str] = None,
         parent_experiment_id: Optional[str] = None,
         cell_line: Optional[str] = None,
         project: Optional[str] = None,
@@ -446,35 +398,6 @@ class AnalysisArtifactRepository(Protocol):
 
 
 @runtime_checkable
-class CompoundListRepository(Protocol):
-    """Repository for compound/target lists."""
-
-    async def get_by_id(self, compound_list_id: str) -> Optional[CompoundList]:
-        """Get compound list by ID."""
-        ...
-
-    async def list_all(
-        self,
-        owner_id: Optional[str] = None,
-        include_master: bool = True,
-    ) -> list[CompoundList]:
-        """List compound lists (master lists + user's lists)."""
-        ...
-
-    async def get_master_lists(self) -> list[CompoundList]:
-        """Get all master compound lists."""
-        ...
-
-    async def get_compounds_for_list(self, compound_list_id: str) -> list[Compound]:
-        """Get all compounds for a list."""
-        ...
-
-    async def get_compound_count(self, compound_list_id: str) -> int:
-        """Get number of compounds in a list."""
-        ...
-
-
-@runtime_checkable
 class MetadataTemplateRepository(Protocol):
     """Repository for experiment metadata templates."""
 
@@ -492,23 +415,6 @@ class MetadataTemplateRepository(Protocol):
 
     async def get_defaults(self) -> list[MetadataTemplate]:
         """Get all default templates."""
-        ...
-
-
-@runtime_checkable
-class TracingPresetRepository(Protocol):
-    """Repository for isotope tracing presets."""
-
-    async def get_by_id(self, preset_id: str) -> Optional[TracingPreset]:
-        """Get a tracing preset by ID."""
-        ...
-
-    async def list_for_user(
-        self,
-        user_id: Optional[str] = None,
-        include_defaults: bool = True,
-    ) -> list[TracingPreset]:
-        """List presets available to a user."""
         ...
 
 

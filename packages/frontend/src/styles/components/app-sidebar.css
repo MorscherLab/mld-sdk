@@ -5,6 +5,11 @@
   border-right: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
 }
 
+.mld-sidebar--right:not(.mld-sidebar--floating) {
+  border-right: none;
+  border-left: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
+}
+
 .mld-sidebar--floating {
   border: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
 }

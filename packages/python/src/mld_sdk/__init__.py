@@ -73,18 +73,13 @@ from mld_sdk.repositories import (
     PluginAnalysisResult,
     User,
     AnalysisArtifact,
-    CompoundList,
-    Compound,
     MetadataTemplate,
-    TracingPreset,
     # Repository protocols
     ExperimentRepository,
     PluginDataRepository,
     UserRepository,
     AnalysisArtifactRepository,
-    CompoundListRepository,
     MetadataTemplateRepository,
-    TracingPresetRepository,
     PlatformConfig,
 )
 
@@ -116,17 +111,12 @@ __all__ = [
     "PluginAnalysisResult",
     "User",
     "AnalysisArtifact",
-    "CompoundList",
-    "Compound",
     "MetadataTemplate",
-    "TracingPreset",
     # Repository protocols
     "ExperimentRepository",
     "PluginDataRepository",
     "UserRepository",
     "AnalysisArtifactRepository",
-    "CompoundListRepository",
     "MetadataTemplateRepository",
-    "TracingPresetRepository",
     "PlatformConfig",
 ]

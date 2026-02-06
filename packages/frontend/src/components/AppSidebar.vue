@@ -3,21 +3,24 @@ import { computed } from 'vue'
 import type { SidebarItem } from '../types'
 
 interface Props {
-  items: readonly SidebarItem[]
+  items?: readonly SidebarItem[]
   activeId?: string
   collapsed?: boolean
   floating?: boolean
   width?: string
   collapsedWidth?: string
+  side?: 'left' | 'right'
   /** Top offset when floating, useful when used with a floating AppTopBar (e.g., '88px') */
   topOffset?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
   collapsed: false,
   floating: true,
   width: '240px',
   collapsedWidth: '64px',
+  side: 'left',
 })
 
 const emit = defineEmits<{
@@ -26,6 +29,7 @@ const emit = defineEmits<{
 }>()
 
 const sidebarWidth = computed(() => props.collapsed ? props.collapsedWidth : props.width)
+const hasItems = computed(() => props.items.length > 0)
 
 function handleItemClick(item: SidebarItem, event?: Event) {
   if (item.disabled) return
@@ -71,9 +75,10 @@ function getItemClasses(item: SidebarItem, isParent = false) {
     }"
     :class="[
       'mld-sidebar flex flex-col transition-[width] duration-200',
+      props.side === 'right' ? 'mld-sidebar--right' : '',
       props.floating
-        ? `mld-sidebar--floating fixed left-4 bottom-4 rounded-xl shadow-sm z-40 ${props.topOffset ? '' : 'top-4'}`
-        : 'h-full border-r border-border',
+        ? `mld-sidebar--floating fixed ${props.side === 'right' ? 'right-4' : 'left-4'} bottom-4 rounded-xl shadow-sm z-40 ${props.topOffset ? '' : 'top-4'}`
+        : 'h-full',
     ]"
   >
     <!-- Header slot -->
@@ -81,8 +86,8 @@ function getItemClasses(item: SidebarItem, isParent = false) {
       <slot name="header" />
     </div>
 
-    <!-- Navigation items -->
-    <nav class="flex-1 overflow-y-auto p-3 space-y-4">
+    <!-- Navigation items (when items provided) -->
+    <nav v-if="hasItems" class="flex-1 overflow-y-auto p-3 space-y-4">
       <template v-for="item in props.items" :key="item.id">
         <!-- Item with children: render as category header -->
         <div v-if="item.children?.length" class="space-y-1">
@@ -164,13 +169,19 @@ function getItemClasses(item: SidebarItem, isParent = false) {
       </template>
     </nav>
 
+    <!-- Content slot (when no nav items provided) -->
+    <div v-else-if="$slots.default" class="flex-1 overflow-y-auto">
+      <slot />
+    </div>
+
     <!-- Footer slot -->
     <div v-if="$slots.footer" class="px-3 py-4 border-t border-border">
       <slot name="footer" />
     </div>
 
-    <!-- Collapse toggle -->
+    <!-- Collapse toggle (only with nav items) -->
     <button
+      v-if="hasItems"
       type="button"
       class="p-3 border-t border-border text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
       :aria-label="props.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
