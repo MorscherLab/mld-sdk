@@ -1,12 +1,54 @@
----
-layout: page
----
 <script setup>
-import WellPlatePage from '../.vitepress/showcase/WellPlatePage.vue'
+import WellPlateDemo from '../.vitepress/showcase/WellPlateDemo.vue'
 </script>
 
+# WellPlate
+
+Interactive microplate display component supporting 6 to 384-well formats with multiple selection modes, heatmap visualization, and drag-and-drop well movement.
+
+## Demo
+
 <ClientOnly>
-  <div style="padding: 2rem;">
-    <WellPlatePage />
-  </div>
+  <WellPlateDemo />
 </ClientOnly>
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `modelValue` | `string[]` | `[]` | Selected well IDs (v-model) |
+| `format` | `6 \| 12 \| 24 \| 48 \| 54 \| 96 \| 384` | `96` | Plate format |
+| `wells` | `Record<string, Partial<Well>>` | `{}` | Well data by ID |
+| `selectionMode` | `'none' \| 'single' \| 'multiple' \| 'rectangle' \| 'drag'` | `'multiple'` | Selection behavior. `'drag'` mode allows moving well contents. |
+| `showLabels` | `boolean` | `true` | Show row/column labels |
+| `showWellIds` | `boolean` | `false` | Show well ID text inside wells |
+| `showSampleTypeIndicator` | `boolean` | `false` | Show sample type letter (S/B/Q/C) in wells |
+| `heatmap` | `HeatmapConfig` | `{ enabled: false }` | Heatmap visualization settings |
+| `sampleColors` | `Record<string, string>` | `{}` | Color mapping for sample types |
+| `zoom` | `number` | `1` | Zoom level (0.5 - 2.0) |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'fill'` | `'md'` | Well size preset. Use `'fill'` to make plate fill parent container width. |
+| `wellShape` | `'circle' \| 'rounded'` | `'rounded'` | Shape of well elements |
+
+## Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `update:modelValue` | `string[]` | Emitted when selection changes |
+| `well-click` | `wellId, event` | Single well clicked |
+| `well-hover` | `wellId \| null, event` | Mouse enters/leaves a well |
+| `selection-change` | `string[]` | Selection completed (after drag) |
+| `context-menu` | `wellId, event` | Right-click on a well |
+| `well-move` | `sourceWellId, targetWellId` | Well content dragged to another well (drag mode only) |
+
+## Usage
+
+```vue
+<WellPlate
+  v-model="selectedWells"
+  :format="96"
+  :wells="wellData"
+  :sample-colors="{ control: '#3B82F6', treatment: '#10B981' }"
+  selection-mode="rectangle"
+  @well-click="handleClick"
+/>
+```

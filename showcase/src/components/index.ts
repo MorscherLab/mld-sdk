@@ -1,5 +1,0 @@
-export { default as DemoSection } from './DemoSection.vue'
-export { default as PageHeader } from './PageHeader.vue'
-export { default as PropsTable, type PropDefinition } from './PropsTable.vue'
-export { default as EventsTable, type EventDefinition } from './EventsTable.vue'
-export { default as CodeBlock } from './CodeBlock.vue'
