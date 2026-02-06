@@ -66,6 +66,7 @@ export default defineConfig({
           items: [
             { text: 'BaseButton', link: '/showcase/button' },
             { text: 'IconButton', link: '/showcase/icon-button' },
+            { text: 'DropdownButton', link: '/showcase/dropdown-button' },
           ],
         },
         {
@@ -94,6 +95,7 @@ export default defineConfig({
             { text: 'AlertBox', link: '/showcase/alert' },
             { text: 'ToastNotification', link: '/showcase/toast' },
             { text: 'Skeleton', link: '/showcase/skeleton' },
+            { text: 'BasePill', link: '/showcase/pill' },
           ],
         },
         {
@@ -106,6 +108,13 @@ export default defineConfig({
             { text: 'BaseModal', link: '/showcase/modal' },
             { text: 'CollapsibleCard', link: '/showcase/collapsible-card' },
             { text: 'ThemeToggle', link: '/showcase/theme-toggle' },
+          ],
+        },
+        {
+          text: 'Data Display',
+          items: [
+            { text: 'Calendar', link: '/showcase/calendar' },
+            { text: 'DataFrame', link: '/showcase/dataframe' },
           ],
         },
         {

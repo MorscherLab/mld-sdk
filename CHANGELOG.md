@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-02-06
+
+### Added
+
+- **BasePill** - Compact label component for tags, status badges with 7 variants, 3 sizes, removable mode, and icon slot
+- **DropdownButton** - Button-style select with dropdown menu, supports all button variants/sizes, option descriptions, and loading state
+- **Calendar** - Month calendar with single, multiple, and range date selection, markers, min/max constraints, and locale support
+- **DataFrame** - Data table with column sorting, search filtering, pagination, row selection, custom formatters, and nested key access
+- **Showcase demos** - Added VitePress demo pages for all 4 new components with new "Data Display" sidebar section
+
 ## [0.3.2] - 2026-02-04
 
 ### Fixed

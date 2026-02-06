@@ -269,3 +269,89 @@ export interface MultiSelectOption {
 }
 
 export type MultiSelectSize = 'sm' | 'md' | 'lg'
+
+// Pill types
+/** Visual style variant for pill/badge components */
+export type PillVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | 'outline'
+/** Size variant for pill components */
+export type PillSize = 'sm' | 'md' | 'lg'
+
+// Calendar types
+/** Date selection behavior for calendar component */
+export type CalendarSelectionMode = 'none' | 'single' | 'range' | 'multiple'
+
+/** Visual marker displayed on a calendar date */
+export interface CalendarMarker {
+  /** Date to mark */
+  date: Date | string
+  /** Marker color (CSS color value) */
+  color?: string
+  /** Tooltip/label for the marker */
+  label?: string
+  /** Visual style of the marker */
+  type?: 'dot' | 'bar' | 'highlight'
+  /** Additional custom data */
+  customData?: Record<string, unknown>
+}
+
+/** Context object for a calendar day cell */
+export interface CalendarDayContext {
+  /** The date for this day */
+  date: Date
+  /** Day of month (1-31) */
+  dayOfMonth: number
+  /** True if this is today's date */
+  isToday: boolean
+  /** True if this date is currently selected */
+  isSelected: boolean
+  /** True if this date is within a selected range */
+  isInRange: boolean
+  /** True if this date cannot be selected */
+  isDisabled: boolean
+  /** True if this date is from an adjacent month */
+  isOutsideMonth: boolean
+  /** Markers configured for this date */
+  markers: CalendarMarker[]
+}
+
+// DataFrame types
+/** Sort direction (null means unsorted) */
+export type SortDirection = 'asc' | 'desc' | null
+
+/** Current sort state for a table column */
+export interface SortState {
+  /** Column key being sorted */
+  key: string
+  /** Sort direction */
+  direction: SortDirection
+}
+
+/** Column configuration for DataFrame component */
+export interface DataFrameColumn<T = Record<string, unknown>> {
+  /** Unique column key (supports nested keys like 'user.name') */
+  key: string
+  /** Display label for column header */
+  label: string
+  /** Enable sorting for this column */
+  sortable?: boolean
+  /** Text alignment */
+  align?: 'left' | 'center' | 'right'
+  /** Fixed column width */
+  width?: string | number
+  /** Minimum column width */
+  minWidth?: string | number
+  /** Truncate overflow text with ellipsis */
+  ellipsis?: boolean
+  /** Custom formatter for cell values */
+  formatter?: (value: unknown, row: T, index: number) => string
+}
+
+/** Pagination state for table data */
+export interface PaginationState {
+  /** Current page (1-indexed) */
+  page: number
+  /** Number of rows per page */
+  pageSize: number
+  /** Total number of rows across all pages */
+  total: number
+}

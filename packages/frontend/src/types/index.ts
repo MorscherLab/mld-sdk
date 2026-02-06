@@ -45,6 +45,18 @@ export type {
   // MultiSelect types
   MultiSelectOption,
   MultiSelectSize,
+  // Pill types
+  PillVariant,
+  PillSize,
+  // Calendar types
+  CalendarSelectionMode,
+  CalendarMarker,
+  CalendarDayContext,
+  // DataFrame types
+  SortDirection,
+  SortState,
+  DataFrameColumn,
+  PaginationState,
 } from './components'
 
 // Auth types

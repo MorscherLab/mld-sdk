@@ -23,6 +23,7 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 |-----------|-------------|
 | [BaseButton](/showcase/button) | 6 variants, 3 sizes, loading/disabled states |
 | [IconButton](/showcase/icon-button) | Icon-only button, 6 variants, 3 sizes |
+| [DropdownButton](/showcase/dropdown-button) | Button with dropdown menu for option selection |
 
 ## Form Inputs
 
@@ -51,6 +52,7 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 | [AlertBox](/showcase/alert) | 4 types: success, error, warning, info |
 | [ToastNotification](/showcase/toast) | Toast notifications via `useToast()` |
 | [Skeleton](/showcase/skeleton) | Loading placeholder component |
+| [BasePill](/showcase/pill) | Tags, status badges with 7 variants |
 
 ## Layout
 
@@ -63,6 +65,13 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 | [BaseModal](/showcase/modal) | 5 sizes, customizable close behavior |
 | [CollapsibleCard](/showcase/collapsible-card) | Expandable card with header |
 | [ThemeToggle](/showcase/theme-toggle) | Light/dark mode toggle button |
+
+## Data Display
+
+| Component | Description |
+|-----------|-------------|
+| [Calendar](/showcase/calendar) | Month calendar with selection and markers |
+| [DataFrame](/showcase/dataframe) | Data table with sorting, search, pagination |
 
 ## Lab Components
 

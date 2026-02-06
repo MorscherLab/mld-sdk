@@ -12,6 +12,10 @@ export { default as BaseTabs } from './BaseTabs.vue'
 export { default as BaseModal } from './BaseModal.vue'
 export { default as SegmentedControl } from './SegmentedControl.vue'
 export { default as MultiSelect } from './MultiSelect.vue'
+export { default as BasePill } from './BasePill.vue'
+export { default as DropdownButton } from './DropdownButton.vue'
+export { default as Calendar } from './Calendar.vue'
+export { default as DataFrame } from './DataFrame.vue'
 
 // Form components
 export { default as FormField } from './FormField.vue'

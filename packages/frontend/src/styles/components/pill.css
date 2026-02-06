@@ -1,0 +1,172 @@
+/* BasePill Component Styles */
+
+.mld-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Sizes */
+.mld-pill--sm {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+}
+
+.mld-pill--md {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+}
+
+.mld-pill--lg {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+/* Variants */
+.mld-pill--default {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.mld-pill--primary {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--color-primary);
+}
+
+html.dark .mld-pill--primary {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.mld-pill--success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--mld-success);
+}
+
+html.dark .mld-pill--success {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+.mld-pill--warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--mld-warning);
+}
+
+html.dark .mld-pill--warning {
+  background-color: rgba(245, 158, 11, 0.2);
+}
+
+.mld-pill--error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--mld-error);
+}
+
+html.dark .mld-pill--error {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+.mld-pill--info {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--mld-info);
+}
+
+html.dark .mld-pill--info {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+/* Outlined variants */
+.mld-pill--outline {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Disabled */
+.mld-pill--disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Icon slot */
+.mld-pill__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mld-pill--sm .mld-pill__icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.mld-pill--md .mld-pill__icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.mld-pill--lg .mld-pill__icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-pill__icon > svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Label */
+.mld-pill__label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Remove button */
+.mld-pill__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.0625rem;
+  margin-left: 0.125rem;
+  margin-right: -0.125rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.mld-pill__remove:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+html.dark .mld-pill__remove:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mld-pill__remove:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-pill__remove-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.mld-pill--sm .mld-pill__remove-icon {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+.mld-pill--lg .mld-pill__remove-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}

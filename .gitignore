@@ -49,5 +49,8 @@ htmlcov/
 .pytest_cache/
 .tox/
 
+# VitePress cache
+site/.vitepress/cache/
+
 # Lock files (optional - include if you want reproducible builds)
 # packages/frontend/package-lock.json

@@ -51,6 +51,11 @@ export {
   // Selection components
   SegmentedControl,
   MultiSelect,
+  // Pill / Dropdown components
+  BasePill,
+  DropdownButton,
+  Calendar,
+  DataFrame,
 } from './components'
 
 // Composables
@@ -129,6 +134,18 @@ export type {
   // MultiSelect types
   MultiSelectOption,
   MultiSelectSize,
+  // Pill types
+  PillVariant,
+  PillSize,
+  // Calendar types
+  CalendarSelectionMode,
+  CalendarMarker,
+  CalendarDayContext,
+  // DataFrame types
+  SortDirection,
+  SortState,
+  DataFrameColumn,
+  PaginationState,
   // Auth types
   AuthConfig,
   UserInfo,
