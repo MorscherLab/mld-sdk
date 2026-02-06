@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | number]
+  'update:modelValue': [value: string | number | null]
   focus: [event: FocusEvent]
   blur: [event: FocusEvent]
   keydown: [event: KeyboardEvent]
@@ -33,8 +33,10 @@ const emit = defineEmits<{
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
-  const value = props.type === 'number' ? Number(target.value) : target.value
-  emit('update:modelValue', value)
+  const value = props.type === 'number'
+    ? (target.value === '' ? null : Number(target.value))
+    : target.value
+  emit('update:modelValue', value as string | number)
 }
 </script>
 

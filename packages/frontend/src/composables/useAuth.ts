@@ -199,39 +199,46 @@ export function useAuth() {
   /**
    * Refresh the authentication token.
    * Called automatically before token expiration.
+   * Uses promise caching to prevent concurrent refresh requests.
    */
+  let refreshPromise: Promise<boolean> | null = null
+
   async function refreshToken(): Promise<boolean> {
-    if (!authStore.token || isRefreshing.value) {
-      return false
-    }
+    if (!authStore.token) return false
+    if (refreshPromise) return refreshPromise
 
-    isRefreshing.value = true
+    refreshPromise = (async () => {
+      isRefreshing.value = true
 
-    try {
-      const response = await axios.post<RefreshResponse>(
-        `${getApiBaseUrl()}/auth/refresh`,
-        {},
-        { headers: getAuthHeader() }
-      )
+      try {
+        const response = await axios.post<RefreshResponse>(
+          `${getApiBaseUrl()}/auth/refresh`,
+          {},
+          { headers: getAuthHeader() }
+        )
 
-      authStore.setToken(response.data.access_token, response.data.expires_in)
+        authStore.setToken(response.data.access_token, response.data.expires_in)
 
-      // Reschedule next refresh
-      scheduleTokenRefresh()
+        // Reschedule next refresh
+        scheduleTokenRefresh()
 
-      return true
-    } catch (error) {
-      // If refresh fails, the token may have been revoked
-      // Clear auth state and let user re-login
-      if (axios.isAxiosError(error) && error.response?.status === 401) {
-        console.warn('[Auth] Token refresh failed - session expired')
-        authStore.clearToken()
-        stopTokenRefresh()
+        return true
+      } catch (error) {
+        // If refresh fails, the token may have been revoked
+        // Clear auth state and let user re-login
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          console.warn('[Auth] Token refresh failed - session expired')
+          authStore.clearToken()
+          stopTokenRefresh()
+        }
+        return false
+      } finally {
+        isRefreshing.value = false
+        refreshPromise = null
       }
-      return false
-    } finally {
-      isRefreshing.value = false
-    }
+    })()
+
+    return refreshPromise
   }
 
   /**

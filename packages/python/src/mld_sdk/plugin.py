@@ -7,7 +7,7 @@ from, as well as lifecycle hooks and health status interfaces.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Optional
 
@@ -65,7 +65,7 @@ class PluginHealth:
     status: HealthStatus = HealthStatus.HEALTHY
     message: Optional[str] = None
     details: dict[str, Any] = field(default_factory=dict)
-    checked_at: datetime = field(default_factory=datetime.utcnow)
+    checked_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dict for API responses."""

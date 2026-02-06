@@ -120,6 +120,8 @@ function waitForJSME(): Promise<void> {
     win.__jsmeLoading__ = true
     const script = document.createElement('script')
     script.src = 'https://jsme-editor.github.io/dist/jsme/jsme.nocache.js'
+    script.integrity = 'sha384-l6tNzsc/eAJ7uql0dGAcHYI5ANVEV7DrJYjzXp3t13L+3OzLnfpzJO0Uio7mUSjY'
+    script.crossOrigin = 'anonymous'
     script.async = true
     script.setAttribute('data-jsme', 'true')
 

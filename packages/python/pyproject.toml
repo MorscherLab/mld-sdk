@@ -29,5 +29,9 @@ Repository = "https://github.com/MorscherLab/mld-sdk"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/mld_sdk"]

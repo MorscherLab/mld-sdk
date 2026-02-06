@@ -30,7 +30,7 @@ jobs:
         run: uv sync --all-extras
 
       - name: Run tests
-        run: uv run pytest -v || echo "No tests found"
+        run: uv run pytest -v
 
       - name: Build package
         run: uv build
@@ -54,6 +54,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run tests
+        run: npm run test
 
       - name: Type check
         run: npm run typecheck

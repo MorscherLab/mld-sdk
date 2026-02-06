@@ -6,7 +6,7 @@ interface Props {
   subtitle?: string
   defaultOpen?: boolean
   disabled?: boolean
-  icon?: string
+  icon?: string | string[]
   iconColor?: string
   iconBg?: string
   showToggle?: boolean
@@ -88,8 +88,12 @@ const toggleTrackStyle = computed(() => {
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            v-html="icon"
-          />
+          >
+            <template v-if="Array.isArray(icon)">
+              <path v-for="(d, i) in icon" :key="i" :d="d" />
+            </template>
+            <path v-else :d="icon" />
+          </svg>
         </div>
 
         <div class="mld-collapsible-card__titles">

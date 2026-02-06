@@ -93,7 +93,8 @@ class ValidationException(PluginException):
         if field:
             _details["field"] = field
         if value is not None:
-            _details["value"] = str(value)
+            value_str = str(value)
+            _details["value"] = value_str[:100] + ("..." if len(value_str) > 100 else "")
 
         super().__init__(message, code="VALIDATION_ERROR", details=_details)
         self.field = field
