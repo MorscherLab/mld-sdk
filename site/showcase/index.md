@@ -39,6 +39,9 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 | [ColorSlider](/showcase/color-slider) | Gradient slider with threshold coloring |
 | [NumberInput](/showcase/number-input) | Number input with +/- buttons |
 | [DatePicker](/showcase/date-picker) | Calendar-based date selection |
+| [TimePicker](/showcase/time-picker) | Clock-based time slot selection |
+| [DateTimePicker](/showcase/datetime-picker) | Combined date and time picker |
+| [TimeRangeInput](/showcase/time-range-input) | Start/end time range with duration |
 | [TagsInput](/showcase/tags-input) | Multiple tags/keywords entry |
 | [FileUploader](/showcase/file-uploader) | Drag-and-drop file upload |
 | [FormField](/showcase/form-field) | Wrapper with label, error, hint |
@@ -53,6 +56,10 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 | [ToastNotification](/showcase/toast) | Toast notifications via `useToast()` |
 | [Skeleton](/showcase/skeleton) | Loading placeholder component |
 | [BasePill](/showcase/pill) | Tags, status badges with 7 variants |
+| [LoadingSpinner](/showcase/loading-spinner) | Standalone spinner with size/variant options |
+| [ProgressBar](/showcase/progress-bar) | Determinate/indeterminate progress indicator |
+| [StatusIndicator](/showcase/status-indicator) | Colored dot with optional label and pulse animation |
+| [EmptyState](/showcase/empty-state) | Placeholder display for empty data states |
 
 ## Layout
 
@@ -65,6 +72,10 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 | [BaseModal](/showcase/modal) | 5 sizes, customizable close behavior |
 | [CollapsibleCard](/showcase/collapsible-card) | Expandable card with header |
 | [ThemeToggle](/showcase/theme-toggle) | Light/dark mode toggle button |
+| [Divider](/showcase/divider) | Horizontal/vertical separator with optional label |
+| [Breadcrumb](/showcase/breadcrumb) | Navigation breadcrumb trail |
+| [ConfirmDialog](/showcase/confirm-dialog) | Confirmation modal for destructive actions |
+| [SettingsModal](/showcase/settings-modal) | Tab-based settings modal with appearance settings |
 
 ## Data Display
 
@@ -72,6 +83,11 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 |-----------|-------------|
 | [Calendar](/showcase/calendar) | Month calendar with selection and markers |
 | [DataFrame](/showcase/dataframe) | Data table with sorting, search, pagination |
+| [Avatar](/showcase/avatar) | Circular badge with initials, image, or fallback |
+| [Tooltip](/showcase/tooltip) | Lightweight hover tooltip |
+| [ChartContainer](/showcase/chart-container) | Chart wrapper with loading, empty, toolbar, legend |
+| [ScientificNumber](/showcase/scientific-number) | Scientific notation with Unicode superscripts |
+| [ChemicalFormula](/showcase/chemical-formula) | Inline chemical formula rendering |
 
 ## Lab Components
 
@@ -87,6 +103,9 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 | [ReagentList](/showcase/reagent-list) | Reagent inventory table |
 | [SampleHierarchyTree](/showcase/sample-hierarchy-tree) | Hierarchical biological data tree |
 | [ProtocolStepEditor](/showcase/protocol-step-editor) | Template-based protocol step editor |
+| [FormulaInput](/showcase/formula-input) | Chemical formula entry with MW calculation |
+| [SequenceInput](/showcase/sequence-input) | DNA/RNA/protein sequence input with tools |
+| [UnitInput](/showcase/unit-input) | Number input with switchable unit dropdown |
 
 ## Sample Management
 
@@ -94,6 +113,21 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 |-----------|-------------|
 | [SampleSelector](/showcase/sample-selector) | Hierarchical sample grouping |
 | [GroupAssigner](/showcase/group-assigner) | Drag-and-drop group assignment |
+
+## Workflow
+
+| Component | Description |
+|-----------|-------------|
+| [StepWizard](/showcase/step-wizard) | Multi-step wizard with progress and validation |
+| [AuditTrail](/showcase/audit-trail) | Timestamped event log for change history |
+| [BatchProgressList](/showcase/batch-progress-list) | Multi-item progress tracking |
+
+## Scheduling
+
+| Component | Description |
+|-----------|-------------|
+| [ScheduleCalendar](/showcase/schedule-calendar) | Day/week/month calendar with drag-to-create and event management |
+| [ResourceCard](/showcase/resource-card) | Bookable resource card with status, specs, and compact mode |
 
 ## Composables
 
@@ -103,6 +137,10 @@ import { BaseButton, useToast } from '@morscherlab/mld-sdk'
 - `useTheme()` - Theme mode management
 - `useToast()` - Toast notification system
 - `usePlatformContext()` - Platform integration for plugins
+- `useChemicalFormula()` - Chemical formula parsing and MW calculation
+- `useSequenceUtils()` - DNA/RNA/protein sequence utilities
+- `useTimeUtils` - Time parsing, formatting, slot generation, and range utilities
+- `useScheduleDrag()` - Drag-to-create, resize, and move for schedule components
 
 ## Stores
 

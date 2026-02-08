@@ -1,0 +1,142 @@
+/* EmptyState Component Styles */
+
+.mld-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Sizes */
+.mld-empty-state--sm {
+  padding: 1rem;
+}
+
+.mld-empty-state--sm .mld-empty-state__icon {
+  width: 32px;
+  height: 32px;
+}
+
+.mld-empty-state--sm .mld-empty-state__title {
+  font-size: 0.875rem;
+}
+
+.mld-empty-state--md {
+  padding: 2rem;
+}
+
+.mld-empty-state--md .mld-empty-state__icon {
+  width: 48px;
+  height: 48px;
+}
+
+.mld-empty-state--md .mld-empty-state__title {
+  font-size: 1rem;
+}
+
+.mld-empty-state--lg {
+  padding: 3rem;
+}
+
+.mld-empty-state--lg .mld-empty-state__icon {
+  width: 64px;
+  height: 64px;
+}
+
+.mld-empty-state--lg .mld-empty-state__title {
+  font-size: 1.125rem;
+}
+
+/* Icon wrapper */
+.mld-empty-state__icon-wrapper {
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  padding: 0.75rem;
+}
+
+.mld-empty-state__icon-wrapper--primary {
+  background: var(--mld-info-bg);
+}
+
+.mld-empty-state__icon-wrapper--cta {
+  background: color-mix(in srgb, var(--color-cta) 10%, transparent);
+}
+
+.mld-empty-state__icon-wrapper--success {
+  background: var(--mld-success-bg);
+}
+
+.mld-empty-state__icon-wrapper--warning {
+  background: var(--mld-warning-bg);
+}
+
+.mld-empty-state__icon-wrapper--error {
+  background: var(--mld-error-bg);
+}
+
+.mld-empty-state__icon-wrapper--muted {
+  background: var(--bg-tertiary);
+}
+
+/* Icon colors */
+.mld-empty-state__icon--primary {
+  color: var(--color-primary);
+}
+
+.mld-empty-state__icon--cta {
+  color: var(--color-cta);
+}
+
+.mld-empty-state__icon--success {
+  color: var(--mld-success);
+}
+
+.mld-empty-state__icon--warning {
+  color: var(--mld-warning);
+}
+
+.mld-empty-state__icon--error {
+  color: var(--mld-error);
+}
+
+.mld-empty-state__icon--muted {
+  color: var(--text-muted);
+}
+
+/* Title */
+.mld-empty-state__title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+/* Description */
+.mld-empty-state__description {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  max-width: 24rem;
+  margin: 0;
+}
+
+/* Action */
+.mld-empty-state__action {
+  margin-top: 1rem;
+}
+
+.mld-empty-state__button {
+  background: var(--color-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.mld-empty-state__button:hover {
+  background: var(--color-primary-hover);
+}

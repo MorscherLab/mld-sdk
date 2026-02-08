@@ -1110,3 +1110,361 @@ type ProtocolStepStatus = 'pending' | 'in_progress' | 'completed' | 'failed' | '
 | `save` | `ProtocolStep` | Save step |
 | `save-template` | `StepTemplate` | Save as template |
 | `cancel` | - | Cancel editing |
+
+---
+
+## Utility Components
+
+### LoadingSpinner
+
+Standalone reusable spinner/loading indicator.
+
+```vue
+<LoadingSpinner size="md" variant="primary" />
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | Spinner size |
+| `variant` | `'primary' \| 'cta' \| 'muted'` | `'primary'` | Color variant |
+| `label` | `string` | `'Loading'` | Screen-reader label |
+
+---
+
+### Divider
+
+Horizontal or vertical separator line with optional label text.
+
+```vue
+<Divider />
+<Divider label="OR" />
+<Divider vertical />
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `vertical` | `boolean` | `false` | Render as vertical line |
+| `label` | `string` | - | Centered label text |
+| `spacing` | `'sm' \| 'md' \| 'lg'` | `'md'` | Margin spacing |
+
+---
+
+### StatusIndicator
+
+Colored dot with optional label for showing status.
+
+```vue
+<StatusIndicator status="success" label="Active" pulse />
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `status` | `'success' \| 'warning' \| 'error' \| 'info' \| 'muted'` | `'muted'` | Status type |
+| `label` | `string` | - | Label text |
+| `pulse` | `boolean` | `false` | Pulsing animation |
+| `color` | `string` | - | CSS color override |
+
+---
+
+### ProgressBar
+
+Determinate or indeterminate progress indicator.
+
+```vue
+<ProgressBar :value="75" label="Upload" showValue />
+<ProgressBar indeterminate label="Loading..." />
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `number` | `0` | Progress 0-100 |
+| `variant` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Color variant |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Track height |
+| `label` | `string` | - | Label above bar |
+| `showValue` | `boolean` | `false` | Show percentage |
+| `indeterminate` | `boolean` | `false` | Animated indeterminate mode |
+
+---
+
+### Avatar
+
+Circular badge with initials, image, or fallback icon.
+
+```vue
+<Avatar name="Jane Doe" size="md" />
+<Avatar src="/avatar.jpg" alt="Jane" />
+<Avatar initials="MLD" color="#3B82F6" />
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `name` | `string` | - | Full name (auto-generates initials and color) |
+| `initials` | `string` | - | Override initials |
+| `src` | `string` | - | Image URL |
+| `alt` | `string` | `''` | Alt text |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Avatar size |
+| `color` | `string` | - | Background color override |
+
+---
+
+### EmptyState
+
+Placeholder display when no data is available.
+
+```vue
+<EmptyState
+  title="No experiments found"
+  description="Create your first experiment to get started."
+  actionLabel="Create Experiment"
+  @action="handleCreate"
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Heading text |
+| `description` | `string` | - | Description text |
+| `iconPath` | `string` | - | SVG path d attribute |
+| `color` | `'primary' \| 'cta' \| 'success' \| 'warning' \| 'error' \| 'muted'` | `'muted'` | Color theme |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Content size |
+| `actionLabel` | `string` | - | Action button text |
+
+#### Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `action` | - | Action button clicked |
+
+#### Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | Extra content below description |
+| `icon` | Override default icon |
+
+---
+
+### Breadcrumb
+
+Navigation breadcrumb trail.
+
+```vue
+<Breadcrumb
+  :items="[
+    { label: 'Home' },
+    { label: 'Experiments' },
+    { label: 'EXP-001' }
+  ]"
+  @navigate="handleNav"
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `BreadcrumbItem[]` | - | Breadcrumb items |
+| `separator` | `string` | `'/'` | Separator character |
+
+#### BreadcrumbItem Type
+
+```typescript
+interface BreadcrumbItem {
+  label: string
+  to?: string
+  href?: string
+}
+```
+
+#### Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `navigate` | `BreadcrumbItem` | Item clicked |
+
+#### Slots
+
+| Slot | Props | Description |
+|------|-------|-------------|
+| `separator` | - | Custom separator |
+| `item` | `{ item, index, isLast }` | Custom item rendering |
+
+---
+
+### Tooltip
+
+Lightweight hover tooltip.
+
+```vue
+<Tooltip text="Save changes" position="top">
+  <BaseButton variant="primary">Save</BaseButton>
+</Tooltip>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `text` | `string` | required | Tooltip text |
+| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Position |
+| `delay` | `number` | `200` | Show delay in ms |
+
+#### Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | Trigger element |
+
+---
+
+### ConfirmDialog
+
+Confirmation modal for destructive or important actions. Wraps `BaseModal`.
+
+```vue
+<ConfirmDialog
+  v-model="showConfirm"
+  title="Delete experiment?"
+  message="This action cannot be undone."
+  variant="danger"
+  @confirm="handleDelete"
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `modelValue` | `boolean` | - | Open state (v-model) |
+| `title` | `string` | `'Confirm'` | Dialog title |
+| `message` | `string` | - | Message text |
+| `variant` | `'danger' \| 'warning' \| 'info'` | `'danger'` | Color variant |
+| `confirmLabel` | `string` | `'Confirm'` | Confirm button text |
+| `cancelLabel` | `string` | `'Cancel'` | Cancel button text |
+| `loading` | `boolean` | `false` | Loading state |
+
+#### Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `update:modelValue` | `boolean` | Open state changed |
+| `confirm` | - | Confirm clicked |
+| `cancel` | - | Cancel clicked |
+
+#### Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | Extra content below message |
+| `icon` | Override default icon |
+
+---
+
+### ChartContainer
+
+Generic wrapper for chart/visualization content.
+
+```vue
+<ChartContainer
+  title="Revenue"
+  description="Monthly revenue in USD"
+  :loading="isLoading"
+  :empty="!hasData"
+>
+  <template #toolbar>
+    <BaseButton variant="secondary" size="sm">Export</BaseButton>
+  </template>
+  <MyChart :data="chartData" />
+  <template #legend>
+    <span>Legend content</span>
+  </template>
+</ChartContainer>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Card title |
+| `description` | `string` | - | Description text |
+| `loading` | `boolean` | `false` | Show loading overlay |
+| `empty` | `boolean` | `false` | Show empty state |
+| `emptyMessage` | `string` | `'No data available'` | Empty state message |
+
+#### Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | Chart content |
+| `toolbar` | Controls above chart |
+| `legend` | Content below chart |
+| `empty` | Custom empty state |
+
+---
+
+### SettingsModal
+
+Tab-based settings modal with built-in appearance settings. Wraps `BaseModal`.
+
+```vue
+<SettingsModal
+  v-model="showSettings"
+  :tabs="[
+    { id: 'general', label: 'General' },
+    { id: 'notifications', label: 'Notifications' },
+  ]"
+>
+  <template #tab-general>
+    General settings content
+  </template>
+  <template #tab-notifications>
+    Notification settings content
+  </template>
+</SettingsModal>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `modelValue` | `boolean` | - | Open state (v-model) |
+| `title` | `string` | `'Settings'` | Modal title |
+| `tabs` | `SettingsTab[]` | `[]` | Custom tab definitions |
+| `showAppearance` | `boolean` | `true` | Show built-in appearance tab |
+| `size` | `'md' \| 'lg' \| 'xl'` | `'lg'` | Modal size |
+
+#### SettingsTab Type
+
+```typescript
+interface SettingsTab {
+  id: string
+  label: string
+  icon?: string
+}
+```
+
+#### Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `update:modelValue` | `boolean` | Open state changed |
+| `close` | - | Modal closed |
+
+#### Slots
+
+| Slot | Description |
+|------|-------------|
+| `tab-{id}` | Content for each custom tab |
+| `appearance` | Extend built-in appearance tab |

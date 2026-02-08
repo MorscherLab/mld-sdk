@@ -20,6 +20,7 @@ export { default as DataFrame } from './DataFrame.vue'
 // Form components
 export { default as FormField } from './FormField.vue'
 export { default as DatePicker } from './DatePicker.vue'
+export { default as TimePicker } from './TimePicker.vue'
 export { default as TagsInput } from './TagsInput.vue'
 export { default as NumberInput } from './NumberInput.vue'
 export { default as FileUploader } from './FileUploader.vue'
@@ -41,6 +42,17 @@ export { default as AppLayout } from './AppLayout.vue'
 
 // Utility components
 export { default as Skeleton } from './Skeleton.vue'
+export { default as LoadingSpinner } from './LoadingSpinner.vue'
+export { default as Divider } from './Divider.vue'
+export { default as StatusIndicator } from './StatusIndicator.vue'
+export { default as ProgressBar } from './ProgressBar.vue'
+export { default as Avatar } from './Avatar.vue'
+export { default as EmptyState } from './EmptyState.vue'
+export { default as Breadcrumb } from './Breadcrumb.vue'
+export { default as Tooltip } from './Tooltip.vue'
+export { default as ConfirmDialog } from './ConfirmDialog.vue'
+export { default as ChartContainer } from './ChartContainer.vue'
+export { default as SettingsModal } from './SettingsModal.vue'
 
 // Biological experiment components
 export { default as WellPlate } from './WellPlate.vue'
@@ -61,3 +73,23 @@ export { default as DoseCalculator } from './DoseCalculator.vue'
 export { default as ReagentList } from './ReagentList.vue'
 export { default as SampleHierarchyTree } from './SampleHierarchyTree.vue'
 export { default as ProtocolStepEditor } from './ProtocolStepEditor.vue'
+
+// Scientific display components
+export { default as ScientificNumber } from './ScientificNumber.vue'
+export { default as ChemicalFormula } from './ChemicalFormula.vue'
+
+// Scientific input components
+export { default as FormulaInput } from './FormulaInput.vue'
+export { default as SequenceInput } from './SequenceInput.vue'
+export { default as UnitInput } from './UnitInput.vue'
+
+// Workflow components
+export { default as StepWizard } from './StepWizard.vue'
+export { default as AuditTrail } from './AuditTrail.vue'
+export { default as BatchProgressList } from './BatchProgressList.vue'
+
+// Scheduling / booking components
+export { default as DateTimePicker } from './DateTimePicker.vue'
+export { default as TimeRangeInput } from './TimeRangeInput.vue'
+export { default as ScheduleCalendar } from './ScheduleCalendar.vue'
+export { default as ResourceCard } from './ResourceCard.vue'

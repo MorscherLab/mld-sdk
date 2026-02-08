@@ -396,3 +396,155 @@ export interface PaginationState {
   /** Total number of rows across all pages */
   total: number
 }
+
+// LoadingSpinner types
+export type SpinnerSize = 'xs' | 'sm' | 'md' | 'lg'
+export type SpinnerVariant = 'primary' | 'cta' | 'muted'
+
+// Divider types
+export type DividerSpacing = 'sm' | 'md' | 'lg'
+
+// StatusIndicator types
+export type StatusType = 'success' | 'warning' | 'error' | 'info' | 'muted'
+
+// ProgressBar types
+export type ProgressVariant = 'primary' | 'success' | 'warning' | 'error' | 'info'
+export type ProgressSize = 'sm' | 'md' | 'lg'
+
+// Avatar types
+export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+
+// EmptyState types
+export type EmptyStateColor = 'primary' | 'cta' | 'success' | 'warning' | 'error' | 'muted'
+export type EmptyStateSize = 'sm' | 'md' | 'lg'
+
+// Breadcrumb types
+export interface BreadcrumbItem {
+  label: string
+  to?: string
+  href?: string
+}
+
+// Tooltip types
+export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
+
+// ConfirmDialog types
+export type ConfirmVariant = 'danger' | 'warning' | 'info'
+
+// SettingsModal types
+export interface SettingsTab {
+  id: string
+  label: string
+  icon?: string
+}
+
+// ScientificNumber types
+export type NumberNotation = 'auto' | 'scientific' | 'engineering' | 'compact'
+
+// UnitInput types
+export interface UnitOption {
+  value: string
+  label: string
+  factor?: number
+  group?: string
+}
+
+// StepWizard types
+export interface WizardStep {
+  id: string
+  label: string
+  description?: string
+  icon?: string
+  optional?: boolean
+}
+
+export type WizardStepState = 'pending' | 'active' | 'completed' | 'disabled'
+
+// AuditTrail types
+export type AuditEntryType = 'create' | 'update' | 'delete' | 'system'
+
+export interface AuditEntry {
+  id: string
+  type: AuditEntryType
+  action: string
+  detail?: string
+  user?: string
+  timestamp: Date | string
+  metadata?: Record<string, unknown>
+}
+
+// BatchProgressList types
+export type BatchItemStatus = 'pending' | 'processing' | 'completed' | 'error' | 'skipped'
+
+export interface BatchItem {
+  id: string
+  label: string
+  status: BatchItemStatus
+  progress?: number
+  message?: string
+}
+
+export interface BatchSummary {
+  total: number
+  completed: number
+  processing: number
+  error: number
+  pending: number
+  skipped: number
+  percent: number
+}
+
+// TimePicker types
+export type TimePickerFormat = '12h' | '24h'
+
+export interface TimeRange {
+  start: string  // "HH:mm"
+  end: string    // "HH:mm"
+}
+
+// Schedule types
+export type ScheduleView = 'day' | 'week' | 'month'
+export type ScheduleEventStatus = 'confirmed' | 'pending' | 'cancelled' | 'in-progress'
+
+export interface ScheduleEvent {
+  id: string
+  start: string          // ISO 8601 datetime
+  end: string            // ISO 8601 datetime
+  title: string
+  color?: string
+  status?: ScheduleEventStatus
+  draggable?: boolean
+  resizable?: boolean
+  metadata?: Record<string, unknown>
+}
+
+export interface ScheduleBlockedSlot {
+  start: string
+  end: string
+  label?: string
+}
+
+export interface ScheduleSlotContext {
+  date: Date
+  hour: number
+  minute: number
+}
+
+export interface ScheduleEventCreateContext {
+  start: Date
+  end: Date
+}
+
+export interface ScheduleEventUpdateContext {
+  event: ScheduleEvent
+  newStart: Date
+  newEnd: Date
+}
+
+// Resource types
+export type ResourceStatus = 'available' | 'in-use' | 'maintenance' | 'offline'
+
+export interface ResourceSpec {
+  label: string
+  value: string
+}

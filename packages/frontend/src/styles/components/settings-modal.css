@@ -1,0 +1,93 @@
+/* SettingsModal Component Styles */
+
+.mld-settings-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mld-settings-modal__tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0;
+  margin-bottom: 0.5rem;
+}
+
+.mld-settings-modal__tab {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  margin-bottom: -1px;
+}
+
+.mld-settings-modal__tab:hover {
+  color: var(--text-primary);
+}
+
+.mld-settings-modal__tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.mld-settings-modal__content {
+  min-height: 12rem;
+}
+
+.mld-settings-modal__section {
+  margin-bottom: 1.5rem;
+}
+
+.mld-settings-modal__section-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.mld-settings-modal__option-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mld-settings-modal__option-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.mld-settings-modal__option-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.mld-settings-modal__option-btn--active {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+html.dark .mld-settings-modal__option-btn--active {
+  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.mld-settings-modal__note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.375rem 0 0 0;
+}

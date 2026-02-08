@@ -1,0 +1,67 @@
+/* LoadingSpinner Component Styles */
+
+.mld-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mld-spinner__svg {
+  animation: mld-spin 1s linear infinite;
+}
+
+/* Sizes */
+.mld-spinner--xs .mld-spinner__svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mld-spinner--sm .mld-spinner__svg {
+  width: 20px;
+  height: 20px;
+}
+
+.mld-spinner--md .mld-spinner__svg {
+  width: 24px;
+  height: 24px;
+}
+
+.mld-spinner--lg .mld-spinner__svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Variants */
+.mld-spinner--primary {
+  color: var(--color-primary);
+}
+
+.mld-spinner--cta {
+  color: var(--color-cta);
+}
+
+.mld-spinner--muted {
+  color: var(--text-muted);
+}
+
+/* Screen-reader only label */
+.mld-spinner__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@keyframes mld-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

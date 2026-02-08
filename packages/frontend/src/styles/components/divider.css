@@ -1,0 +1,62 @@
+/* Divider Component Styles */
+
+.mld-divider {
+  display: flex;
+  align-items: center;
+  border: none;
+}
+
+/* Horizontal without label - single line */
+.mld-divider:not(.mld-divider--vertical):not(:has(.mld-divider__label)) {
+  border-top: 1px solid var(--border-color);
+}
+
+/* Horizontal with label - line through text */
+.mld-divider__line {
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+.mld-divider__label {
+  padding: 0 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Vertical */
+.mld-divider--vertical {
+  display: inline-block;
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+  background-color: var(--border-color);
+  border: none;
+}
+
+/* Horizontal spacing */
+.mld-divider--sm:not(.mld-divider--vertical) {
+  margin: 0.5rem 0;
+}
+
+.mld-divider--md:not(.mld-divider--vertical) {
+  margin: 1rem 0;
+}
+
+.mld-divider--lg:not(.mld-divider--vertical) {
+  margin: 1.5rem 0;
+}
+
+/* Vertical spacing */
+.mld-divider--vertical.mld-divider--sm {
+  margin: 0 0.5rem;
+}
+
+.mld-divider--vertical.mld-divider--md {
+  margin: 0 1rem;
+}
+
+.mld-divider--vertical.mld-divider--lg {
+  margin: 0 1.5rem;
+}

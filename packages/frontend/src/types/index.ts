@@ -64,6 +64,57 @@ export type {
   SortState,
   DataFrameColumn,
   PaginationState,
+  // LoadingSpinner types
+  SpinnerSize,
+  SpinnerVariant,
+  // Divider types
+  DividerSpacing,
+  // StatusIndicator types
+  StatusType,
+  // ProgressBar types
+  ProgressVariant,
+  ProgressSize,
+  // Avatar types
+  AvatarSize,
+  // EmptyState types
+  EmptyStateColor,
+  EmptyStateSize,
+  // Breadcrumb types
+  BreadcrumbItem,
+  // Tooltip types
+  TooltipPosition,
+  // ConfirmDialog types
+  ConfirmVariant,
+  // SettingsModal types
+  SettingsTab,
+  // ScientificNumber types
+  NumberNotation,
+  // UnitInput types
+  UnitOption,
+  // StepWizard types
+  WizardStep,
+  WizardStepState,
+  // AuditTrail types
+  AuditEntryType,
+  AuditEntry,
+  // BatchProgressList types
+  BatchItemStatus,
+  BatchItem,
+  BatchSummary,
+  // TimePicker types
+  TimePickerFormat,
+  TimeRange,
+  // Schedule types
+  ScheduleView,
+  ScheduleEventStatus,
+  ScheduleEvent,
+  ScheduleBlockedSlot,
+  ScheduleSlotContext,
+  ScheduleEventCreateContext,
+  ScheduleEventUpdateContext,
+  // Resource types
+  ResourceStatus,
+  ResourceSpec,
 } from './components'
 
 // Auth types

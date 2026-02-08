@@ -1,0 +1,96 @@
+/* FormulaInput Component Styles */
+
+.mld-formula-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.mld-formula-input--disabled {
+  opacity: 0.5;
+}
+
+/* Input field */
+.mld-formula-input__field {
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mld-formula-input__field:focus-within {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-formula-input--error .mld-formula-input__field {
+  border-color: var(--mld-error);
+}
+
+.mld-formula-input--error .mld-formula-input__field:focus-within {
+  box-shadow: 0 0 0 2px var(--mld-error);
+}
+
+.mld-formula-input__input {
+  width: 100%;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: none;
+  outline: none;
+  font-family: 'Fira Code', monospace;
+}
+
+.mld-formula-input__input::placeholder {
+  color: var(--text-muted);
+  font-family: 'Fira Sans', system-ui, sans-serif;
+}
+
+.mld-formula-input__input--sm {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.875rem;
+}
+
+.mld-formula-input__input--md {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.mld-formula-input__input--lg {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+.mld-formula-input__input:disabled {
+  cursor: not-allowed;
+  background-color: var(--bg-tertiary);
+}
+
+/* Preview */
+.mld-formula-input__preview {
+  padding: 0.375rem 0.75rem;
+  background-color: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+  font-size: 1.125rem;
+  min-height: 1.75rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Molecular weight display */
+.mld-formula-input__mw {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding-left: 0.125rem;
+}
+
+.mld-formula-input__mw::before {
+  content: 'MW: ';
+  font-weight: 500;
+}
+
+/* Error text */
+.mld-formula-input__error-text {
+  font-size: 0.75rem;
+  color: var(--mld-error);
+  padding-left: 0.125rem;
+}

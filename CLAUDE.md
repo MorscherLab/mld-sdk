@@ -59,8 +59,8 @@ Tests run automatically on push to main and PRs. Release workflow triggers on `v
 
 | Directory | Contents |
 |-----------|----------|
-| `components/` | 39 Vue 3 components (base inputs, forms, feedback, layout, well plates) |
-| `composables/` | `useApi`, `useAuth`, `usePasskey`, `useTheme`, `useToast`, `usePlatformContext`, `useForm`, `useAsync`, `useWellPlateEditor`, `useConcentrationUnits`, `useDoseCalculator`, `useProtocolTemplates` |
+| `components/` | 70 Vue 3 components (base inputs, forms, feedback, layout, data display, scientific, lab, workflow, scheduling) |
+| `composables/` | `useApi`, `useAuth`, `usePasskey`, `useTheme`, `useToast`, `usePlatformContext`, `useForm`, `useAsync`, `useWellPlateEditor`, `useConcentrationUnits`, `useDoseCalculator`, `useProtocolTemplates`, `useChemicalFormula`, `useSequenceUtils`, `useTimeUtils`, `useScheduleDrag` |
 | `stores/` | `useAuthStore` (auth state), `useSettingsStore` (app settings) |
 | `types/` | TypeScript definitions for all components and platform types |
 | `styles/` | CSS with CSS variables for theming |
@@ -163,12 +163,22 @@ Both packages share the same version number. Current: 0.3.0
 
 **Skill distribution:** Skill files are packaged as `mld-sdk-skill-vX.Y.Z.zip` and attached to GitHub Releases automatically by the release workflow.
 
-### Current Component List (39)
+### Current Component List (70)
 
-**Base Inputs:** BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader
+**Base Inputs:** BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader, SegmentedControl, MultiSelect
 
-**Layout:** AppTopBar, AppSidebar, AppLayout, CollapsibleCard, FormField, Skeleton
+**Layout:** AppTopBar, AppSidebar, AppLayout, CollapsibleCard, FormField, Divider, Breadcrumb, ConfirmDialog, SettingsModal
 
-**Feedback:** AlertBox, ToastNotification, IconButton, ThemeToggle, SettingsButton
+**Feedback:** AlertBox, ToastNotification, LoadingSpinner, ProgressBar, StatusIndicator, EmptyState, BasePill
 
-**Lab/Domain:** WellPlate, PlateMapEditor, SampleLegend, ExperimentTimeline, SampleSelector, GroupAssigner, GroupingModal, MoleculeInput, ConcentrationInput, DoseCalculator, ReagentList, SampleHierarchyTree, ProtocolStepEditor
+**Action:** IconButton, ThemeToggle, SettingsButton, DropdownButton
+
+**Data Display:** Avatar, Tooltip, ChartContainer, DataFrame, Calendar, Skeleton, ScientificNumber, ChemicalFormula
+
+**Scientific Input:** FormulaInput, SequenceInput, UnitInput
+
+**Lab/Domain:** WellPlate, RackEditor, PlateMapEditor, SampleLegend, ExperimentTimeline, SampleSelector, GroupAssigner, GroupingModal, MoleculeInput, ConcentrationInput, DoseCalculator, ReagentList, SampleHierarchyTree, ProtocolStepEditor
+
+**Workflow:** StepWizard, AuditTrail, BatchProgressList
+
+**Scheduling:** TimePicker, DateTimePicker, TimeRangeInput, ScheduleCalendar, ResourceCard

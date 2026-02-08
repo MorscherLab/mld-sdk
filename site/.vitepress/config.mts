@@ -82,6 +82,7 @@ export default defineConfig({
             { text: 'ColorSlider', link: '/showcase/color-slider' },
             { text: 'NumberInput', link: '/showcase/number-input' },
             { text: 'DatePicker', link: '/showcase/date-picker' },
+            { text: 'TimePicker', link: '/showcase/time-picker' },
             { text: 'TagsInput', link: '/showcase/tags-input' },
             { text: 'FileUploader', link: '/showcase/file-uploader' },
             { text: 'FormField', link: '/showcase/form-field' },
@@ -96,6 +97,10 @@ export default defineConfig({
             { text: 'ToastNotification', link: '/showcase/toast' },
             { text: 'Skeleton', link: '/showcase/skeleton' },
             { text: 'BasePill', link: '/showcase/pill' },
+            { text: 'LoadingSpinner', link: '/showcase/loading-spinner' },
+            { text: 'ProgressBar', link: '/showcase/progress-bar' },
+            { text: 'StatusIndicator', link: '/showcase/status-indicator' },
+            { text: 'EmptyState', link: '/showcase/empty-state' },
           ],
         },
         {
@@ -108,6 +113,10 @@ export default defineConfig({
             { text: 'BaseModal', link: '/showcase/modal' },
             { text: 'CollapsibleCard', link: '/showcase/collapsible-card' },
             { text: 'ThemeToggle', link: '/showcase/theme-toggle' },
+            { text: 'Divider', link: '/showcase/divider' },
+            { text: 'Breadcrumb', link: '/showcase/breadcrumb' },
+            { text: 'ConfirmDialog', link: '/showcase/confirm-dialog' },
+            { text: 'SettingsModal', link: '/showcase/settings-modal' },
           ],
         },
         {
@@ -115,6 +124,11 @@ export default defineConfig({
           items: [
             { text: 'Calendar', link: '/showcase/calendar' },
             { text: 'DataFrame', link: '/showcase/dataframe' },
+            { text: 'Avatar', link: '/showcase/avatar' },
+            { text: 'Tooltip', link: '/showcase/tooltip' },
+            { text: 'ChartContainer', link: '/showcase/chart-container' },
+            { text: 'ScientificNumber', link: '/showcase/scientific-number' },
+            { text: 'ChemicalFormula', link: '/showcase/chemical-formula' },
           ],
         },
         {
@@ -131,6 +145,9 @@ export default defineConfig({
             { text: 'ReagentList', link: '/showcase/reagent-list' },
             { text: 'SampleHierarchyTree', link: '/showcase/sample-hierarchy-tree' },
             { text: 'ProtocolStepEditor', link: '/showcase/protocol-step-editor' },
+            { text: 'FormulaInput', link: '/showcase/formula-input' },
+            { text: 'SequenceInput', link: '/showcase/sequence-input' },
+            { text: 'UnitInput', link: '/showcase/unit-input' },
           ],
         },
         {
@@ -138,6 +155,23 @@ export default defineConfig({
           items: [
             { text: 'SampleSelector', link: '/showcase/sample-selector' },
             { text: 'GroupAssigner', link: '/showcase/group-assigner' },
+          ],
+        },
+        {
+          text: 'Workflow',
+          items: [
+            { text: 'StepWizard', link: '/showcase/step-wizard' },
+            { text: 'AuditTrail', link: '/showcase/audit-trail' },
+            { text: 'BatchProgressList', link: '/showcase/batch-progress-list' },
+          ],
+        },
+        {
+          text: 'Scheduling',
+          items: [
+            { text: 'DateTimePicker', link: '/showcase/datetime-picker' },
+            { text: 'TimeRangeInput', link: '/showcase/time-range-input' },
+            { text: 'ScheduleCalendar', link: '/showcase/schedule-calendar' },
+            { text: 'ResourceCard', link: '/showcase/resource-card' },
           ],
         },
       ],

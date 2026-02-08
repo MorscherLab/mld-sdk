@@ -1,0 +1,143 @@
+/* AuditTrail Component Styles */
+
+.mld-audit-trail {
+  position: relative;
+}
+
+.mld-audit-trail__filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mld-audit-trail__filter-select {
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+}
+
+.mld-audit-trail__list {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.mld-audit-trail__line {
+  position: absolute;
+  left: 0.4375rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border-color);
+}
+
+.mld-audit-trail__entry {
+  position: relative;
+  padding-bottom: 1.25rem;
+  cursor: pointer;
+}
+
+.mld-audit-trail__entry:last-child {
+  padding-bottom: 0;
+}
+
+.mld-audit-trail__dot {
+  position: absolute;
+  left: -1.5rem;
+  top: 0.25rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  border: 2px solid var(--bg-primary);
+  z-index: 1;
+}
+
+/* Dot colors by type */
+.mld-audit-trail__entry--create .mld-audit-trail__dot { background-color: var(--mld-success); }
+.mld-audit-trail__entry--update .mld-audit-trail__dot { background-color: var(--color-primary); }
+.mld-audit-trail__entry--delete .mld-audit-trail__dot { background-color: var(--mld-error); }
+.mld-audit-trail__entry--system .mld-audit-trail__dot { background-color: var(--text-muted); }
+
+.mld-audit-trail__content {
+  /* entry content container */
+}
+
+.mld-audit-trail__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.mld-audit-trail__avatar {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mld-audit-trail__user {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.mld-audit-trail__timestamp {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.mld-audit-trail__action {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.mld-audit-trail__detail {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.125rem;
+}
+
+.mld-audit-trail__metadata {
+  margin-top: 0.375rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+}
+
+.mld-audit-trail__metadata-item {
+  color: var(--text-secondary);
+}
+
+.mld-audit-trail__metadata-key {
+  color: var(--text-muted);
+  margin-right: 0.125rem;
+}
+
+.mld-audit-trail__empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* Size variants */
+.mld-audit-trail--sm .mld-audit-trail__action { font-size: 0.75rem; }
+.mld-audit-trail--sm .mld-audit-trail__detail { font-size: 0.6875rem; }
+.mld-audit-trail--sm .mld-audit-trail__entry { padding-bottom: 0.75rem; }
+
+.mld-audit-trail--lg .mld-audit-trail__action { font-size: 0.9375rem; }
+.mld-audit-trail--lg .mld-audit-trail__detail { font-size: 0.8125rem; }
+.mld-audit-trail--lg .mld-audit-trail__entry { padding-bottom: 1.5rem; }

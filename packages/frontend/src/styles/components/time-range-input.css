@@ -1,0 +1,42 @@
+/* TimeRangeInput Component Styles */
+
+.mld-time-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mld-time-range__start,
+.mld-time-range__end {
+  flex: 1;
+  min-width: 0;
+}
+
+.mld-time-range__separator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.mld-time-range__separator::before,
+.mld-time-range__separator::after {
+  content: '';
+  display: block;
+  width: 1rem;
+  height: 2px;
+  background-color: var(--border-color);
+}
+
+.mld-time-range__duration {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius, 0.375rem);
+  padding: 0.125rem 0.5rem;
+  white-space: nowrap;
+}
+
+.mld-time-range__duration--error {
+  color: var(--mld-error);
+}

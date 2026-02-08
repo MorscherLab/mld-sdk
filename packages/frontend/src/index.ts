@@ -19,6 +19,7 @@ export {
   BaseModal,
   FormField,
   DatePicker,
+  TimePicker,
   TagsInput,
   NumberInput,
   FileUploader,
@@ -57,6 +58,34 @@ export {
   DropdownButton,
   Calendar,
   DataFrame,
+  // Utility / UI primitives
+  LoadingSpinner,
+  Divider,
+  StatusIndicator,
+  ProgressBar,
+  Avatar,
+  EmptyState,
+  Breadcrumb,
+  Tooltip,
+  ConfirmDialog,
+  ChartContainer,
+  SettingsModal,
+  // Scientific display components
+  ScientificNumber,
+  ChemicalFormula,
+  // Scientific input components
+  FormulaInput,
+  SequenceInput,
+  UnitInput,
+  // Workflow components
+  StepWizard,
+  AuditTrail,
+  BatchProgressList,
+  // Scheduling / booking components
+  DateTimePicker,
+  TimeRangeInput,
+  ScheduleCalendar,
+  ResourceCard,
 } from './components'
 
 // Composables
@@ -72,6 +101,9 @@ export {
   useDoseCalculator,
   useProtocolTemplates,
   useRackEditor,
+  useChemicalFormula,
+  ATOMIC_WEIGHTS,
+  useSequenceUtils,
   type ApiClientOptions,
   type UseWellPlateEditorOptions,
   type UseWellPlateEditorReturn,
@@ -82,6 +114,24 @@ export {
   type VolumeValue,
   type VolumeUnit,
   type StepTemplate,
+  type FormulaParseResult,
+  type FormulaPart,
+  type SequenceType,
+  type SequenceStats,
+  // Time utilities
+  parseTime,
+  formatTime,
+  generateTimeSlots,
+  rangesOverlap,
+  durationMinutes,
+  formatDuration,
+  isTimeInRange,
+  findAvailableSlots,
+  snapToSlot,
+  addMinutes,
+  compareTime,
+  // Schedule drag
+  useScheduleDrag,
 } from './composables'
 
 // Stores
@@ -157,6 +207,57 @@ export type {
   SortState,
   DataFrameColumn,
   PaginationState,
+  // LoadingSpinner types
+  SpinnerSize,
+  SpinnerVariant,
+  // Divider types
+  DividerSpacing,
+  // StatusIndicator types
+  StatusType,
+  // ProgressBar types
+  ProgressVariant,
+  ProgressSize,
+  // Avatar types
+  AvatarSize,
+  // EmptyState types
+  EmptyStateColor,
+  EmptyStateSize,
+  // Breadcrumb types
+  BreadcrumbItem,
+  // Tooltip types
+  TooltipPosition,
+  // ConfirmDialog types
+  ConfirmVariant,
+  // SettingsModal types
+  SettingsTab,
+  // ScientificNumber types
+  NumberNotation,
+  // TimePicker types
+  TimePickerFormat,
+  TimeRange,
+  // Schedule types
+  ScheduleView,
+  ScheduleEventStatus,
+  ScheduleEvent,
+  ScheduleBlockedSlot,
+  ScheduleSlotContext,
+  ScheduleEventCreateContext,
+  ScheduleEventUpdateContext,
+  // Resource types
+  ResourceStatus,
+  ResourceSpec,
+  // UnitInput types
+  UnitOption,
+  // StepWizard types
+  WizardStep,
+  WizardStepState,
+  // AuditTrail types
+  AuditEntryType,
+  AuditEntry,
+  // BatchProgressList types
+  BatchItemStatus,
+  BatchItem,
+  BatchSummary,
   // Auth types
   AuthConfig,
   UserInfo,

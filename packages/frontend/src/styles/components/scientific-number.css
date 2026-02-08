@@ -1,0 +1,63 @@
+/* ScientificNumber Component Styles */
+
+.mld-sci-number {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.125rem;
+  font-family: 'Fira Code', monospace;
+  color: var(--text-primary);
+}
+
+.mld-sci-number__mantissa,
+.mld-sci-number__plain {
+  font-variant-numeric: tabular-nums;
+}
+
+.mld-sci-number__times {
+  margin: 0 0.125rem;
+  color: var(--text-muted);
+}
+
+.mld-sci-number__exponent {
+  font-size: 0.75em;
+}
+
+.mld-sci-number__suffix {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.mld-sci-number__unit {
+  color: var(--text-muted);
+  margin-left: 0.25rem;
+  font-size: 0.875em;
+}
+
+.mld-sci-number__copy-btn {
+  margin-left: 0.25rem;
+  padding: 0.125rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.mld-sci-number:hover .mld-sci-number__copy-btn {
+  opacity: 1;
+}
+
+.mld-sci-number__copy-btn:hover {
+  color: var(--color-primary);
+  background-color: var(--bg-hover);
+}
+
+.mld-sci-number__copy-btn--copied {
+  color: var(--color-success, #10b981);
+}

@@ -1,0 +1,138 @@
+/* UnitInput Component Styles */
+
+.mld-unit-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mld-unit-input__controls {
+  display: flex;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mld-unit-input__controls:focus-within {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-unit-input--error .mld-unit-input__controls {
+  border-color: var(--mld-error);
+}
+
+.mld-unit-input--error .mld-unit-input__controls:focus-within {
+  box-shadow: 0 0 0 2px var(--mld-error);
+}
+
+.mld-unit-input--disabled .mld-unit-input__controls {
+  opacity: 0.5;
+}
+
+/* Value input */
+.mld-unit-input__value {
+  flex: 1;
+  min-width: 0;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: none;
+  outline: none;
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.mld-unit-input__value::-webkit-outer-spin-button,
+.mld-unit-input__value::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.mld-unit-input__value::placeholder {
+  color: var(--text-muted);
+}
+
+.mld-unit-input__value--sm {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.875rem;
+}
+
+.mld-unit-input__value--md {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.mld-unit-input__value--lg {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+.mld-unit-input__value--disabled {
+  cursor: not-allowed;
+  background-color: var(--bg-tertiary);
+}
+
+/* Unit select */
+.mld-unit-input__unit {
+  position: relative;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border-color);
+}
+
+.mld-unit-input__unit-select {
+  height: 100%;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-weight: 500;
+  padding-right: 1.5rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.375rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+}
+
+.mld-unit-input__unit-select--sm {
+  padding: 0.375rem 1.5rem 0.375rem 0.5rem;
+  font-size: 0.75rem;
+  min-width: 4rem;
+}
+
+.mld-unit-input__unit-select--md {
+  padding: 0.5rem 1.75rem 0.5rem 0.625rem;
+  font-size: 0.875rem;
+  min-width: 4.5rem;
+}
+
+.mld-unit-input__unit-select--lg {
+  padding: 0.75rem 2rem 0.75rem 0.75rem;
+  font-size: 0.875rem;
+  min-width: 5rem;
+}
+
+.mld-unit-input__unit-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.mld-unit-input__unit-select:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+}
+
+/* Unit option group */
+.mld-unit-input__unit-group {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Conversion hint */
+.mld-unit-input__conversion-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding-left: 0.125rem;
+}

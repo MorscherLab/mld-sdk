@@ -58,3 +58,30 @@ export {
   type UseRackEditorOptions,
   type UseRackEditorReturn,
 } from './useRackEditor'
+export {
+  useChemicalFormula,
+  ATOMIC_WEIGHTS,
+  type ParsedElement,
+  type FormulaParseResult,
+  type FormulaPart,
+  type FormulaPartType,
+} from './useChemicalFormula'
+export {
+  useSequenceUtils,
+  type SequenceType,
+  type SequenceStats,
+} from './useSequenceUtils'
+export {
+  parseTime,
+  formatTime,
+  generateTimeSlots,
+  rangesOverlap,
+  durationMinutes,
+  formatDuration,
+  isTimeInRange,
+  findAvailableSlots,
+  snapToSlot,
+  addMinutes,
+  compareTime,
+} from './useTimeUtils'
+export { useScheduleDrag } from './useScheduleDrag'

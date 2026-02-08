@@ -1,0 +1,196 @@
+/* BatchProgressList Component Styles */
+
+.mld-batch-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mld-batch-progress__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mld-batch-progress__title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.mld-batch-progress__percent {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.mld-batch-progress__overall {
+  width: 100%;
+  height: 0.375rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.mld-batch-progress__overall-bar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.mld-batch-progress__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mld-batch-progress__summary-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.mld-batch-progress__summary-item--completed { background-color: var(--mld-success-bg); color: var(--mld-success); }
+.mld-batch-progress__summary-item--processing { background-color: var(--mld-info-bg); color: var(--mld-info); }
+.mld-batch-progress__summary-item--error { background-color: var(--mld-error-bg); color: var(--mld-error); }
+.mld-batch-progress__summary-item--pending { background-color: var(--bg-tertiary); color: var(--text-muted); }
+.mld-batch-progress__summary-item--skipped { background-color: var(--bg-tertiary); color: var(--text-muted); }
+
+.mld-batch-progress__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mld-batch-progress__item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.15s ease;
+}
+
+.mld-batch-progress__item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mld-batch-progress__item--processing {
+  border-color: rgba(59, 130, 246, 0.3);
+  background-color: var(--mld-info-bg);
+}
+
+.mld-batch-progress__item--error {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.mld-batch-progress__item--completed {
+  opacity: 0.7;
+}
+
+.mld-batch-progress__item-icon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-batch-progress__item-icon--pending { color: var(--text-muted); }
+.mld-batch-progress__item-icon--processing { color: var(--mld-info); animation: mld-batch-spin 1s linear infinite; }
+.mld-batch-progress__item-icon--completed { color: var(--mld-success); }
+.mld-batch-progress__item-icon--error { color: var(--mld-error); }
+.mld-batch-progress__item-icon--skipped { color: var(--text-muted); }
+
+@keyframes mld-batch-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.mld-batch-progress__item-label {
+  flex: 1;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mld-batch-progress__item-progress {
+  width: 4rem;
+  height: 0.25rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 9999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.mld-batch-progress__item-progress-bar {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.mld-batch-progress__item-error {
+  padding: 0.25rem 0 0 1.5rem;
+}
+
+.mld-batch-progress__error-toggle {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.mld-batch-progress__error-toggle:hover {
+  color: var(--text-secondary);
+}
+
+.mld-batch-progress__item-message {
+  font-size: 0.75rem;
+  color: var(--mld-error);
+  margin-top: 0.25rem;
+}
+
+.mld-batch-progress__item-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.mld-batch-progress__retry-btn,
+.mld-batch-progress__cancel-btn {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+.mld-batch-progress__retry-btn {
+  background-color: var(--mld-warning-bg);
+  color: var(--mld-warning);
+}
+.mld-batch-progress__retry-btn:hover {
+  background-color: rgba(245, 158, 11, 0.2);
+}
+
+.mld-batch-progress__cancel-btn {
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+}
+.mld-batch-progress__cancel-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}

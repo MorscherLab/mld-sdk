@@ -1,0 +1,59 @@
+/* StatusIndicator Component Styles */
+
+.mld-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mld-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Status colors */
+.mld-status__dot--success {
+  background-color: var(--mld-success);
+  color: var(--mld-success);
+}
+
+.mld-status__dot--warning {
+  background-color: var(--mld-warning);
+  color: var(--mld-warning);
+}
+
+.mld-status__dot--error {
+  background-color: var(--mld-error);
+  color: var(--mld-error);
+}
+
+.mld-status__dot--info {
+  background-color: var(--mld-info);
+  color: var(--mld-info);
+}
+
+.mld-status__dot--muted {
+  background-color: var(--text-muted);
+  color: var(--text-muted);
+}
+
+/* Pulse animation */
+.mld-status__dot--pulse {
+  animation: mld-status-pulse 2s ease-in-out infinite;
+}
+
+.mld-status__label {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+@keyframes mld-status-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 40%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 0%, transparent);
+  }
+}

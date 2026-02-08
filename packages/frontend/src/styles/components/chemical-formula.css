@@ -1,0 +1,46 @@
+/* ChemicalFormula Component Styles */
+
+.mld-chem-formula {
+  display: inline;
+  font-family: 'Fira Code', monospace;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.mld-chem-formula--block {
+  display: block;
+  font-size: 1.25em;
+  padding: 0.25rem 0;
+}
+
+.mld-chem-formula__element {
+  /* default styling inherited */
+}
+
+.mld-chem-formula__subscript {
+  vertical-align: sub;
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+.mld-chem-formula__superscript {
+  vertical-align: super;
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+.mld-chem-formula__paren {
+  color: var(--text-secondary);
+}
+
+.mld-chem-formula__dot {
+  margin: 0 0.125em;
+  color: var(--text-muted);
+}
+
+.mld-chem-formula__charge {
+  vertical-align: super;
+  font-size: 0.75em;
+  line-height: 0;
+  color: var(--text-secondary);
+}
