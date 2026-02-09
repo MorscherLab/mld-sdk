@@ -931,48 +931,193 @@ const tabs: TabItem[] = [
 </CollapsibleCard>
 ```
 
+### AppLayout
+
+Page layout shell combining topbar, sidebar, and main content area.
+
+```vue
+<AppLayout
+  v-model:sidebar-collapsed="collapsed"
+  floating
+  sidebar-position="left"
+  sidebar-width="240px"
+  sidebar-collapsed-width="64px"
+>
+  <template #topbar>
+    <AppTopBar plugin-name="My Plugin" title="Dashboard" variant="floating" />
+  </template>
+  <template #sidebar="{ collapsed, toggle }">
+    <AppSidebar
+      :items="navItems"
+      :active-id="activeId"
+      :collapsed="collapsed"
+      @select="handleNav"
+      @update:collapsed="toggle"
+    />
+  </template>
+  <router-view />
+</AppLayout>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `sidebarCollapsed` | `boolean` | `false` | Sidebar collapse state (v-model:sidebar-collapsed) |
+| `sidebarPosition` | `'left'\|'right'` | `'left'` | Sidebar position |
+| `sidebarWidth` | `string` | `'240px'` | Expanded sidebar width |
+| `sidebarCollapsedWidth` | `string` | `'64px'` | Collapsed sidebar width |
+| `floating` | `boolean` | `false` | Floating card layout with gaps |
+
+**Slots:**
+
+| Slot | Scoped Props | Description |
+|------|-------------|-------------|
+| `#topbar` | - | Top bar content |
+| `#sidebar` | `{ collapsed: boolean, toggle: () => void }` | Sidebar content |
+| `#default` | - | Main content area |
+
+---
+
 ### AppTopBar
+
+Top bar with breadcrumb navigation, page dropdown, center tabs, and action slots.
 
 ```vue
 <AppTopBar
-  title="My App"
-  :showLogo="true"
-  :sticky="true"
+  plugin-name="Mass Spec Analyzer"
+  title="Results"
+  variant="floating"
+  :pages="pages"
+  :current-page-id="currentPageId"
+  :tabs="tabs"
+  :current-tab-id="currentTabId"
+  @page-select="handlePageSelect"
+  @tab-select="handleTabSelect"
 >
-  <template #logo>
+  <template #icon>
     <img src="/logo.svg" alt="Logo" />
   </template>
-
-  <template #nav>
-    <nav>...</nav>
-  </template>
-
   <template #actions>
     <ThemeToggle />
-    <BaseButton>Login</BaseButton>
+    <BaseButton size="sm">Settings</BaseButton>
   </template>
 </AppTopBar>
 ```
 
-### AppLayout
+**Props:**
 
-Page layout shell combining topbar, sidebar, and main content.
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Current page title (shown in breadcrumb) |
+| `subtitle` | `string` | - | Subtitle (shown below title when no pluginName) |
+| `pluginName` | `string` | - | Plugin name (enables breadcrumb: pluginName > title) |
+| `variant` | `'floating'\|'card'\|'sticky'\|'default'` | `'card'` | Visual variant |
+| `showLogo` | `boolean` | `true` | Show default MLD logo |
+| `homePath` | `string` | `'/'` | Home link path |
+| `pages` | `TopBarPage[]` | - | Page dropdown items (under plugin name) |
+| `currentPageId` | `string` | - | Active page ID |
+| `tabs` | `TopBarTab[]` | - | Center tab items |
+| `currentTabId` | `string` | - | Active tab ID |
 
-```vue
-<AppLayout v-model:sidebar-collapsed="collapsed">
-  <template #topbar>
-    <AppTopBar variant="floating" />
-  </template>
-  <template #sidebar="{ collapsed: isCollapsed }">
-    <AppSidebar :floating="false" :collapsed="isCollapsed" :items="items" />
-  </template>
-  <main>Content</main>
-</AppLayout>
+**Events:**
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `page-select` | `TopBarPage` | Page selected from dropdown |
+| `tab-select` | `TopBarTab` | Tab clicked |
+| `tab-option-select` | `(TopBarTabOption, TopBarTab)` | Tab dropdown option selected |
+
+**Slots:** `#icon` / `#logo` (left icon), `#nav` (after title), `#actions` (right side)
+
+**TopBarPage type:**
+
+```typescript
+interface TopBarPage {
+  id: string
+  label: string
+  to?: string          // vue-router path
+  href?: string        // External link
+  description?: string // Subtitle in dropdown
+  disabled?: boolean
+}
 ```
 
-**Props:** `sidebarPosition` ('left'|'right'), `sidebarWidth` ('240px'), `sidebarCollapsedWidth` ('64px'), `sidebarCollapsed` (boolean, v-model)
+**TopBarTab type:**
 
-**Slots:** `#topbar`, `#sidebar` (scoped: `{ collapsed, toggle }`), `#default`
+```typescript
+interface TopBarTab {
+  id: string
+  label: string
+  to?: string
+  href?: string
+  disabled?: boolean
+  children?: TopBarTabOption[]  // Dropdown sub-items
+}
+```
+
+---
+
+### AppSidebar
+
+Navigation sidebar with collapsible sections, items mode and slot mode.
+
+```vue
+<!-- Items mode (recommended) -->
+<AppSidebar
+  :items="navItems"
+  :active-id="activeRoute"
+  v-model:collapsed="collapsed"
+  @select="handleNavigation"
+/>
+
+<!-- Slot mode (custom content) -->
+<AppSidebar v-model:collapsed="collapsed">
+  <custom-navigation />
+</AppSidebar>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `SidebarItem[]` | `[]` | Nav items (enables items mode) |
+| `activeId` | `string` | - | Currently active item ID |
+| `collapsed` | `boolean` | `false` | Collapse state (v-model:collapsed) |
+| `floating` | `boolean` | `true` | Floating (absolute) or static positioning |
+| `width` | `string` | `'240px'` | Expanded width |
+| `collapsedWidth` | `string` | `'64px'` | Collapsed width |
+| `side` | `'left'\|'right'` | `'left'` | Sidebar position |
+| `topOffset` | `string` | - | Top offset when floating (e.g., `'88px'`) |
+
+**Events:**
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `select` | `SidebarItem` | Navigation item clicked |
+| `update:collapsed` | `boolean` | Collapse state changed |
+
+**Slots:** `#header`, `#default` (when no items), `#footer`, `#icon-{itemId}` (per-item icon override)
+
+**SidebarItem type:**
+
+```typescript
+interface SidebarItem {
+  id: string
+  label: string
+  icon?: string              // Emoji or text, override with #icon-{id} slot
+  to?: string                // vue-router path
+  href?: string              // External link
+  children?: SidebarItem[]   // Renders as CollapsibleCard section
+  badge?: string | number    // Badge indicator
+  disabled?: boolean
+  defaultOpen?: boolean      // Initial collapsed state for sections (default: true)
+}
+```
+
+Items with `children` render as collapsible `CollapsibleCard` sections. When sidebar is collapsed, only icons are shown for parent items.
+
+---
 
 ### ToastNotification
 

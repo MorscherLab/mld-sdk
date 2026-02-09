@@ -283,6 +283,124 @@ app.use(router)
 app.mount('#app')
 ```
 
+**Basic plugin layout (src/App.vue):**
+
+Use `AppLayout` + `AppTopBar` + `AppSidebar` for a standard plugin shell with topbar, collapsible sidebar, and main content area.
+
+```vue
+<template>
+  <AppLayout v-model:sidebar-collapsed="sidebarCollapsed" floating>
+    <template #topbar>
+      <AppTopBar
+        plugin-name="My Plugin"
+        :title="currentPageTitle"
+        variant="floating"
+        :pages="pages"
+        :current-page-id="currentPageId"
+        :tabs="tabs"
+        :current-tab-id="currentTabId"
+        @page-select="handlePageSelect"
+        @tab-select="handleTabSelect"
+      >
+        <template #actions>
+          <ThemeToggle />
+        </template>
+      </AppTopBar>
+    </template>
+
+    <template #sidebar="{ collapsed }">
+      <AppSidebar
+        :items="navItems"
+        :active-id="activeNavId"
+        :collapsed="collapsed"
+        @select="handleNavSelect"
+        @update:collapsed="sidebarCollapsed = $event"
+      />
+    </template>
+
+    <router-view />
+  </AppLayout>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import {
+  AppLayout, AppTopBar, AppSidebar, ThemeToggle
+} from '@morscherlab/mld-sdk/components'
+import type { SidebarItem, TopBarPage, TopBarTab } from '@morscherlab/mld-sdk/types'
+
+const router = useRouter()
+const route = useRoute()
+const sidebarCollapsed = ref(false)
+
+// TopBar breadcrumb pages (dropdown under plugin name)
+const pages: TopBarPage[] = [
+  { id: 'dashboard', label: 'Dashboard', to: '/' },
+  { id: 'analysis', label: 'Analysis', to: '/analysis' },
+  { id: 'settings', label: 'Settings', to: '/settings' },
+]
+
+const currentPageId = computed(() => {
+  return pages.find(p => p.to === route.path)?.id ?? ''
+})
+const currentPageTitle = computed(() => {
+  return pages.find(p => p.id === currentPageId.value)?.label ?? ''
+})
+
+function handlePageSelect(page: TopBarPage) {
+  if (page.to) router.push(page.to)
+}
+
+// TopBar center tabs (optional)
+const tabs: TopBarTab[] = [
+  { id: 'overview', label: 'Overview', to: '/analysis' },
+  { id: 'results', label: 'Results', to: '/analysis/results' },
+]
+const currentTabId = computed(() => {
+  return tabs.find(t => t.to === route.path)?.id ?? ''
+})
+function handleTabSelect(tab: TopBarTab) {
+  if (tab.to) router.push(tab.to)
+}
+
+// Sidebar navigation with collapsible sections
+const navItems: SidebarItem[] = [
+  { id: 'home', label: 'Home', icon: '🏠', to: '/' },
+  {
+    id: 'data', label: 'Data', icon: '📊',
+    defaultOpen: true,
+    children: [
+      { id: 'experiments', label: 'Experiments', to: '/experiments' },
+      { id: 'samples', label: 'Samples', to: '/samples' },
+    ],
+  },
+  {
+    id: 'tools', label: 'Tools', icon: '🔧',
+    children: [
+      { id: 'plate-editor', label: 'Plate Editor', to: '/plate-editor' },
+      { id: 'calculator', label: 'Calculator', to: '/calculator' },
+    ],
+  },
+]
+
+const activeNavId = computed(() => {
+  const flatItems = navItems.flatMap(i => i.children ? [i, ...i.children] : [i])
+  return flatItems.find(i => i.to === route.path)?.id ?? ''
+})
+
+function handleNavSelect(item: SidebarItem) {
+  if (item.to) router.push(item.to)
+}
+</script>
+```
+
+**Key layout concepts:**
+- `AppLayout` orchestrates topbar + sidebar + main with `floating` variant (cards with gaps)
+- `AppTopBar` supports breadcrumb navigation (`pluginName` > `title`), page dropdown, center tabs, and action slots
+- `AppSidebar` renders navigation from an `items` array with collapsible `CollapsibleCard` sections
+- Sidebar collapse is two-way bound via `v-model:sidebar-collapsed` on `AppLayout`
+
 ### Step 5: Configure pyproject.toml
 
 ```toml
