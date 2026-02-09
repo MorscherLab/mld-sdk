@@ -152,7 +152,7 @@ if (!auth.isAuthenticated.value) {
 
 ## Version Coordination
 
-Both packages share the same version number. Current: 0.3.0
+Both packages share the same version number. Current: 0.3.4
 
 ## Documentation Sync
 

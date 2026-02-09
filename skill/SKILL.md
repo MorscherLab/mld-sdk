@@ -10,7 +10,11 @@ description: |
   - Implementing AnalysisPlugin subclass with metadata, routers, lifecycle methods
   - Accessing platform services via PlatformContext (experiments, compounds, artifacts)
   - Building Vue 3 frontends with @morscherlab/mld-sdk components
-  - Working with lab-specific components (WellPlate, PlateMapEditor, ExperimentTimeline)
+  - Working with lab-specific components (WellPlate, PlateMapEditor, ExperimentTimeline, RackEditor)
+  - Using scientific components (ChemicalFormula, FormulaInput, SequenceInput, MoleculeInput)
+  - Building workflow UIs (StepWizard, AuditTrail, BatchProgressList)
+  - Creating scheduling interfaces (ScheduleCalendar, ResourceCard, DateTimePicker)
+  - Using data display components (DataFrame, Calendar, BasePill, DropdownButton)
   - Configuring standalone vs integrated plugin modes
   - Setting up pyproject.toml with mld.plugins entry points
 
@@ -18,7 +22,12 @@ description: |
   "AnalysisPlugin", "PluginType", "@morscherlab/mld-sdk", "plugin frontend",
   "AppLayout", "WellPlate", "PlateMapEditor", "ExperimentTimeline", "MoleculeInput",
   "ConcentrationInput", "DoseCalculator", "ReagentList", "SampleHierarchyTree",
-  "ProtocolStepEditor", "useConcentrationUnits", "useDoseCalculator", "useProtocolTemplates"
+  "ProtocolStepEditor", "RackEditor", "StepWizard", "AuditTrail", "BatchProgressList",
+  "ScheduleCalendar", "ResourceCard", "DateTimePicker", "DataFrame", "Calendar",
+  "BasePill", "DropdownButton", "FormulaInput", "SequenceInput", "ChemicalFormula",
+  "useConcentrationUnits", "useDoseCalculator", "useProtocolTemplates",
+  "useForm", "useAsync", "useWellPlateEditor", "useRackEditor",
+  "useChemicalFormula", "useSequenceUtils", "useTimeUtils", "useScheduleDrag"
 ---
 
 ## Quick Start
@@ -465,6 +474,48 @@ SDK components use CSS variables. Always use dedicated classes:
   align-items: center;
   gap: var(--spacing-md, 1rem);
   padding: var(--spacing-md, 1rem);
+}
+```
+
+**CSS naming convention:** BEM with `mld-` prefix: `.mld-{component}__{element}--{modifier}`
+
+**Use `!important` with longhand properties for element resets:**
+
+When SDK components use semantic HTML elements (`<h3>`, `<h4>`, `<p>`, `<table>`), consumers' frameworks (VitePress, Tailwind preflight, normalize.css) may override SDK margins/padding. Use **longhand** `!important` properties (not shorthand):
+
+```css
+/* BAD: shorthand !important does NOT override longhand rules */
+.mld-component__title {
+  margin: 0 !important;  /* Won't override VitePress margin-top: 32px */
+}
+
+/* GOOD: longhand !important overrides any source */
+.mld-component__title {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+}
+```
+
+**Table reset pattern (for VitePress `.vp-doc` overrides):**
+
+```css
+.mld-component__table {
+  border-collapse: collapse !important;
+  border: none !important;
+  margin: 0 !important;
+}
+.mld-component__table tr {
+  border: none !important;
+  background: transparent !important;
+}
+.mld-component__table tr:nth-child(2n) {
+  background: transparent !important;  /* Reset VitePress zebra striping */
+}
+.mld-component__table th,
+.mld-component__table td {
+  border: none !important;
+  background: transparent !important;
 }
 ```
 

@@ -23,14 +23,19 @@ import '@morscherlab/mld-sdk/styles'
 
 ---
 
-## Component Catalog (39 total)
+## Component Catalog (70 total)
 
 | Category | Components |
 |----------|------------|
-| **Base Inputs** | BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader |
-| **Layout** | AppTopBar, AppSidebar, AppLayout, CollapsibleCard, FormField, Skeleton |
-| **Feedback** | AlertBox, ToastNotification, IconButton, ThemeToggle, SettingsButton |
-| **Lab/Domain** | WellPlate, PlateMapEditor, SampleLegend, ExperimentTimeline, SampleSelector, GroupAssigner, GroupingModal, MoleculeInput, ConcentrationInput, DoseCalculator, ReagentList, SampleHierarchyTree, ProtocolStepEditor |
+| **Base Inputs** | BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader, SegmentedControl, MultiSelect |
+| **Layout** | AppTopBar, AppSidebar, AppLayout, CollapsibleCard, FormField, Divider, Breadcrumb, ConfirmDialog, SettingsModal |
+| **Feedback** | AlertBox, ToastNotification, LoadingSpinner, ProgressBar, StatusIndicator, EmptyState, BasePill |
+| **Action** | IconButton, ThemeToggle, SettingsButton, DropdownButton |
+| **Data Display** | Avatar, Tooltip, ChartContainer, DataFrame, Calendar, Skeleton, ScientificNumber, ChemicalFormula |
+| **Scientific Input** | FormulaInput, SequenceInput, UnitInput |
+| **Lab/Domain** | WellPlate, RackEditor, PlateMapEditor, SampleLegend, ExperimentTimeline, SampleSelector, GroupAssigner, GroupingModal, MoleculeInput, ConcentrationInput, DoseCalculator, ReagentList, SampleHierarchyTree, ProtocolStepEditor |
+| **Workflow** | StepWizard, AuditTrail, BatchProgressList |
+| **Scheduling** | TimePicker, DateTimePicker, TimeRangeInput, ScheduleCalendar, ResourceCard |
 
 ---
 
@@ -1283,6 +1288,278 @@ if (!validation.valid) {
 
 ---
 
+### useForm
+
+Form state management with built-in validation rules.
+
+```typescript
+import { useForm } from '@morscherlab/mld-sdk/composables'
+
+const { data, errors, isValid, isDirty, isSubmitting, handleSubmit, getFieldProps, reset } = useForm(
+  { email: '', password: '', age: 0 },
+  {
+    email: { required: true, email: true },
+    password: { required: true, minLength: 8 },
+    age: { min: 18, max: 120 },
+  }
+)
+
+// In template - auto-binds v-model, error, blur handler
+// <BaseInput v-bind="getFieldProps('email')" label="Email" />
+// <BaseButton @click="handleSubmit(onSubmit)" :disabled="!isValid">Submit</BaseButton>
+```
+
+**Built-in Validation Rules:**
+
+| Rule | Type | Description |
+|------|------|-------------|
+| `required` | `boolean \| string` | Field must have a value |
+| `minLength` | `number \| { value, message }` | Minimum string length |
+| `maxLength` | `number \| { value, message }` | Maximum string length |
+| `min` | `number \| { value, message }` | Minimum numeric value |
+| `max` | `number \| { value, message }` | Maximum numeric value |
+| `pattern` | `RegExp \| { value, message }` | Regex pattern match |
+| `email` | `boolean \| string` | Email format validation |
+| `custom` | `ValidationRule \| ValidationRule[]` | Custom validator functions |
+
+**Methods:**
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `getFieldProps` | `(field) => { modelValue, onUpdate:modelValue, onBlur, error }` | Props for v-bind on inputs |
+| `handleSubmit` | `(onSubmit) => (event?) => Promise<void>` | Submit handler with validation |
+| `validate` | `() => boolean` | Validate all fields |
+| `validateField` | `(field) => boolean` | Validate single field |
+| `reset` | `(values?) => void` | Reset form to initial values |
+| `setFieldValue` | `(field, value) => void` | Set a field value |
+| `setFieldError` | `(field, error) => void` | Set a field error |
+
+---
+
+### useAsync
+
+Standardized async operation state management with loading, error, and success states.
+
+```typescript
+import { useAsync, useAsyncBatch } from '@morscherlab/mld-sdk/composables'
+
+// Basic usage
+const { data, isLoading, isError, error, execute } = useAsync(
+  async (id: string) => {
+    const response = await api.get(`/users/${id}`)
+    return response.data
+  }
+)
+await execute('user-123')
+
+// With options
+const { data, execute } = useAsync(fetchUser, {
+  immediate: true,
+  immediateArgs: ['default-user'],
+  onSuccess: (user) => toast.success(`Loaded ${user.name}`),
+  onError: (error) => toast.error(error.message),
+})
+
+// Batch parallel execution
+const { results, isLoading, execute: executeBatch } = useAsyncBatch([
+  () => fetchUser(userId),
+  () => fetchPosts(userId),
+  () => fetchComments(userId),
+])
+await executeBatch()
+// results.value = [user, posts, comments]
+```
+
+**State:** `idle` | `loading` | `success` | `error`
+
+**Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `immediate` | `boolean` | Execute on creation |
+| `immediateArgs` | `unknown[]` | Arguments for immediate execution |
+| `onSuccess` | `(data) => void` | Success callback |
+| `onError` | `(error) => void` | Error callback |
+| `resetOnExecute` | `boolean` | Clear data on new execution |
+| `transformError` | `(error) => AsyncError` | Custom error transformer |
+
+---
+
+### useWellPlateEditor
+
+Programmatic state management for the PlateMapEditor with undo/redo history.
+
+```typescript
+import { useWellPlateEditor } from '@morscherlab/mld-sdk/composables'
+
+const {
+  state, plates, activePlate, samples, selectedWells, activeSampleId,
+  canUndo, canRedo,
+  setActivePlate, setActiveSample, setSelectedWells,
+  addPlate, removePlate, addSample, removeSample,
+  assignSample, clearWells, undo, redo,
+  exportData, importData, reset,
+} = useWellPlateEditor(initialState, { maxHistory: 50, defaultFormat: 96 })
+
+// Add a sample type and assign to wells
+const sample = addSample('Treatment', '#10B981')
+assignSample(['A1', 'A2', 'A3'], sample.id)
+
+// Export plate map
+const csvData = exportData('csv')
+const jsonData = exportData('json')
+```
+
+**Methods:**
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `addPlate` | `(name?, format?) => PlateMap` | Add new plate |
+| `removePlate` | `(plateId) => void` | Remove plate |
+| `addSample` | `(name, color?) => SampleType` | Add sample type |
+| `removeSample` | `(sampleId) => void` | Remove sample (clears from wells) |
+| `assignSample` | `(wellIds, sampleId) => void` | Assign sample to wells |
+| `clearWells` | `(wellIds) => void` | Clear well assignments |
+| `undo/redo` | `() => void` | Undo/redo operations |
+| `exportData` | `(format: 'json' \| 'csv') => string` | Export plate data |
+| `importData` | `(data, format) => boolean` | Import plate data |
+
+---
+
+### useRackEditor
+
+Manage multiple sample racks with well data, injection volumes, and slot positions.
+
+```typescript
+import { useRackEditor } from '@morscherlab/mld-sdk/composables'
+
+const {
+  racks, activeRack, activeRackId, totalSampleCount,
+  addRack, removeRack, reorderRacks, updateRack, setActiveRack,
+  setWellData, clearWell, clearAllWells, fillSeries,
+  getAllWells, reset,
+} = useRackEditor([], { defaultFormat: 54, defaultInjectionVolume: 5, maxRacks: 10 })
+
+// Add racks and fill with samples
+const rack = addRack('Sample Rack')
+fillSeries(rack.id, 'S')  // Fill with S001, S002, ...
+
+// Set individual well data
+setWellData(rack.id, 'A1', { sampleType: 'sample', metadata: { label: 'Control' } })
+```
+
+**Slot Positions:** `R` (Red), `G` (Green), `B` (Blue), `Y` (Yellow) - auto-cycled per rack.
+
+---
+
+### useChemicalFormula
+
+Parse chemical formulas, calculate molecular weights, and render formula parts for display.
+
+```typescript
+import { useChemicalFormula } from '@morscherlab/mld-sdk/composables'
+
+const { parseFormula, calculateMW, renderFormulaParts } = useChemicalFormula()
+
+// Parse formula
+const result = parseFormula('Ca(OH)2')
+// { elements: { Ca: 1, O: 2, H: 2 }, valid: true }
+
+// Calculate molecular weight
+const mw = calculateMW(result.elements)  // 74.093
+
+// Render for display (subscripts, superscripts)
+const parts = renderFormulaParts('H2SO4')
+// [{ type: 'element', text: 'H' }, { type: 'subscript', text: '2' }, ...]
+
+// Supports hydrates: CuSO4·5H2O
+const hydrate = parseFormula('CuSO4·5H2O')
+```
+
+---
+
+### useSequenceUtils
+
+Biological sequence utilities for DNA, RNA, and protein sequences.
+
+```typescript
+import { useSequenceUtils } from '@morscherlab/mld-sdk/composables'
+
+const { detectSequenceType, validateSequence, reverseComplement, calculateStats, formatFasta } = useSequenceUtils()
+
+// Auto-detect sequence type
+detectSequenceType('ATCGATCG')    // 'dna'
+detectSequenceType('AUCGAUCG')    // 'rna'
+detectSequenceType('MVLSPADKTNV') // 'protein'
+
+// Validate and clean sequence
+validateSequence('ATCG--XX', 'dna')  // 'ATCG'
+
+// Reverse complement
+reverseComplement('ATCG', 'dna')  // 'CGAT'
+
+// Calculate stats
+calculateStats('ATCGATCG', 'dna')
+// { length: 8, gcPercent: 50, molecularWeight: 2640 }
+```
+
+---
+
+### useTimeUtils
+
+Time parsing, formatting, range calculations, and slot generation for scheduling components.
+
+```typescript
+import {
+  parseTime, formatTime, generateTimeSlots, rangesOverlap,
+  durationMinutes, formatDuration, findAvailableSlots, snapToSlot,
+  addMinutes, compareTime
+} from '@morscherlab/mld-sdk/composables'
+
+// Generate time slots
+const slots = generateTimeSlots('08:00', '18:00', 30)
+// ['08:00', '08:30', '09:00', ...]
+
+// Check overlap
+rangesOverlap(
+  { start: '09:00', end: '10:00' },
+  { start: '09:30', end: '11:00' }
+)  // true
+
+// Find available slots
+const available = findAvailableSlots('08:00', '18:00', occupied, 30)
+
+// Format duration
+formatDuration(90)  // '1h 30m'
+```
+
+---
+
+### useScheduleDrag
+
+Drag interaction logic for ScheduleCalendar (create, move, resize events).
+
+```typescript
+import { useScheduleDrag } from '@morscherlab/mld-sdk/composables'
+
+const { isDragging, ghost, startCreate, startMove, startResize } = useScheduleDrag({
+  slotDuration: ref(30),
+  dayStartHour: ref(8),
+  dayEndHour: ref(18),
+  readonly: ref(false),
+  slotHeight: ref(40),
+  onCreateComplete: (start, end) => addEvent(start, end),
+  onMoveComplete: (event, newStart, newEnd) => updateEvent(event, newStart, newEnd),
+  onResizeComplete: (event, newStart, newEnd) => resizeEvent(event, newStart, newEnd),
+})
+
+// ghost provides computed position/style for the drag preview element
+```
+
+**Drag Types:** `create` (click-drag empty slot), `move` (drag existing event), `resize-top` / `resize-bottom` (resize edges).
+
+---
+
 ## Stores Reference
 
 ### useAuthStore
@@ -1393,6 +1670,12 @@ import type {
 
   // Protocol Step Editor
   ProtocolTemplate,
+
+  // Rack Editor
+  Rack, SlotPosition,
+
+  // Scheduling
+  ScheduleEvent, TimeRange,
 
   // Auth
   AuthConfig, UserInfo, LoginResponse,
