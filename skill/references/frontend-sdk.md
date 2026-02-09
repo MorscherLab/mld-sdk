@@ -1119,6 +1119,90 @@ Items with `children` render as collapsible `CollapsibleCard` sections. When sid
 
 ---
 
+### SettingsModal
+
+Tabbed settings modal with custom content tabs and a built-in Appearance tab (theme, color palette, table density). Uses `useSettingsStore` internally for appearance settings.
+
+```vue
+<SettingsModal
+  v-model="showSettings"
+  title="Plugin Settings"
+  :tabs="[{ id: 'general', label: 'General' }, { id: 'advanced', label: 'Advanced' }]"
+  show-appearance
+  size="lg"
+>
+  <!-- Custom tab content via #tab-{id} slots -->
+  <template #tab-general>
+    <FormField label="API Endpoint">
+      <BaseInput v-model="apiEndpoint" placeholder="https://..." />
+    </FormField>
+  </template>
+
+  <template #tab-advanced>
+    <FormField label="Timeout (ms)">
+      <NumberInput v-model="timeout" :min="1000" :max="60000" />
+    </FormField>
+  </template>
+
+  <!-- Extra content appended to the built-in Appearance tab -->
+  <template #appearance>
+    <FormField label="Custom Color">
+      <ColorSlider v-model="accentColor" />
+    </FormField>
+  </template>
+</SettingsModal>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `modelValue` | `boolean` | - | Open state (v-model) |
+| `title` | `string` | `'Settings'` | Modal title |
+| `tabs` | `SettingsTab[]` | `[]` | Custom tab definitions (`{ id, label }`) |
+| `showAppearance` | `boolean` | `true` | Show built-in Appearance tab |
+| `size` | `'md'\|'lg'\|'xl'` | `'lg'` | Modal size |
+
+**Slots:**
+
+| Slot | Description |
+|------|-------------|
+| `#tab-{id}` | Content for each custom tab (matched by tab `id`) |
+| `#appearance` | Extra content appended to the Appearance tab |
+
+**Built-in Appearance tab provides:**
+- **Theme** - Light / Dark / System (persisted via `useSettingsStore`)
+- **Color Palette** - Default, Colorblind, Viridis, Pastel
+- **Table Density** - Compact, Normal, Comfortable
+
+---
+
+### SettingsButton
+
+Gear icon button typically placed in the topbar `#actions` slot. Emits `click` to open a settings modal.
+
+```vue
+<SettingsButton size="md" @click="showSettings = true" />
+```
+
+**Props:** `size` (`'sm'` | `'md'` | `'lg'`, default `'md'`)
+
+**Events:** `click` (MouseEvent)
+
+---
+
+### ThemeToggle
+
+Sun/moon icon button that toggles light and dark mode. Uses `useTheme` composable internally.
+
+```vue
+<ThemeToggle size="md" />
+```
+
+**Props:** `size` (`'sm'` | `'md'` | `'lg'`, default `'md'`)
+
+---
+
 ### ToastNotification
 
 ```vue

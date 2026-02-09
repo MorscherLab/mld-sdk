@@ -303,7 +303,16 @@ Use `AppLayout` + `AppTopBar` + `AppSidebar` for a standard plugin shell with to
         @tab-select="handleTabSelect"
       >
         <template #actions>
+          <!-- Standalone mode indicator -->
+          <BasePill v-if="!isIntegrated" variant="warning" size="sm">Standalone</BasePill>
+
+          <!-- Admin panel link (visible only to admins) -->
+          <BaseButton v-if="authStore.isAdmin" variant="ghost" size="sm" @click="router.push('/admin')">
+            Admin
+          </BaseButton>
+
           <ThemeToggle />
+          <SettingsButton @click="showSettings = true" />
         </template>
       </AppTopBar>
     </template>
@@ -319,6 +328,25 @@ Use `AppLayout` + `AppTopBar` + `AppSidebar` for a standard plugin shell with to
     </template>
 
     <router-view />
+
+    <!-- Settings modal with custom tabs + built-in appearance -->
+    <SettingsModal
+      v-model="showSettings"
+      title="Plugin Settings"
+      :tabs="settingsTabs"
+      show-appearance
+    >
+      <template #tab-general>
+        <div class="settings-section">
+          <FormField label="API Endpoint">
+            <BaseInput v-model="apiEndpoint" placeholder="https://..." />
+          </FormField>
+          <FormField label="Max Results">
+            <NumberInput v-model="maxResults" :min="1" :max="1000" />
+          </FormField>
+        </div>
+      </template>
+    </SettingsModal>
   </AppLayout>
 </template>
 
@@ -326,19 +354,33 @@ Use `AppLayout` + `AppTopBar` + `AppSidebar` for a standard plugin shell with to
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
-  AppLayout, AppTopBar, AppSidebar, ThemeToggle
+  AppLayout, AppTopBar, AppSidebar, ThemeToggle, SettingsButton,
+  SettingsModal, FormField, BaseInput, BaseButton, BasePill, NumberInput,
 } from '@morscherlab/mld-sdk/components'
+import { usePlatformContext } from '@morscherlab/mld-sdk/composables'
+import { useAuthStore } from '@morscherlab/mld-sdk/stores'
 import type { SidebarItem, TopBarPage, TopBarTab } from '@morscherlab/mld-sdk/types'
 
 const router = useRouter()
 const route = useRoute()
 const sidebarCollapsed = ref(false)
 
-// TopBar breadcrumb pages (dropdown under plugin name)
+// --- Platform context (standalone vs integrated) ---
+const { isIntegrated } = usePlatformContext()
+
+// --- Auth store (admin check) ---
+const authStore = useAuthStore()
+
+// --- Settings ---
+const showSettings = ref(false)
+const settingsTabs = [{ id: 'general', label: 'General' }]
+const apiEndpoint = ref('https://api.example.com')
+const maxResults = ref(100)
+
+// --- TopBar breadcrumb pages (dropdown under plugin name) ---
 const pages: TopBarPage[] = [
   { id: 'dashboard', label: 'Dashboard', to: '/' },
   { id: 'analysis', label: 'Analysis', to: '/analysis' },
-  { id: 'settings', label: 'Settings', to: '/settings' },
 ]
 
 const currentPageId = computed(() => {
@@ -352,7 +394,7 @@ function handlePageSelect(page: TopBarPage) {
   if (page.to) router.push(page.to)
 }
 
-// TopBar center tabs (optional)
+// --- TopBar center tabs (optional) ---
 const tabs: TopBarTab[] = [
   { id: 'overview', label: 'Overview', to: '/analysis' },
   { id: 'results', label: 'Results', to: '/analysis/results' },
@@ -364,8 +406,8 @@ function handleTabSelect(tab: TopBarTab) {
   if (tab.to) router.push(tab.to)
 }
 
-// Sidebar navigation with collapsible sections
-const navItems: SidebarItem[] = [
+// --- Sidebar navigation with collapsible sections ---
+const navItems = computed<SidebarItem[]>(() => [
   { id: 'home', label: 'Home', icon: '🏠', to: '/' },
   {
     id: 'data', label: 'Data', icon: '📊',
@@ -382,10 +424,18 @@ const navItems: SidebarItem[] = [
       { id: 'calculator', label: 'Calculator', to: '/calculator' },
     ],
   },
-]
+  // Admin section (only visible to admins)
+  ...(authStore.isAdmin ? [{
+    id: 'admin', label: 'Admin', icon: '🔑',
+    children: [
+      { id: 'users', label: 'Users', to: '/admin/users' },
+      { id: 'config', label: 'Configuration', to: '/admin/config' },
+    ],
+  }] : []),
+])
 
 const activeNavId = computed(() => {
-  const flatItems = navItems.flatMap(i => i.children ? [i, ...i.children] : [i])
+  const flatItems = navItems.value.flatMap(i => i.children ? [i, ...i.children] : [i])
   return flatItems.find(i => i.to === route.path)?.id ?? ''
 })
 
@@ -400,6 +450,12 @@ function handleNavSelect(item: SidebarItem) {
 - `AppTopBar` supports breadcrumb navigation (`pluginName` > `title`), page dropdown, center tabs, and action slots
 - `AppSidebar` renders navigation from an `items` array with collapsible `CollapsibleCard` sections
 - Sidebar collapse is two-way bound via `v-model:sidebar-collapsed` on `AppLayout`
+- `BasePill` with `variant="warning"` shows a "Standalone" label when `!isIntegrated` (from `usePlatformContext`)
+- `BaseButton` with `v-if="authStore.isAdmin"` shows an Admin link only for admin users (from `useAuthStore`)
+- Admin sidebar section is conditionally included via computed `navItems` based on `authStore.isAdmin`
+- `ThemeToggle` toggles light/dark mode (uses `useTheme` composable internally)
+- `SettingsButton` is a gear icon button placed in `#actions` to open the settings modal
+- `SettingsModal` provides a tabbed modal with custom `#tab-{id}` slots plus a built-in Appearance tab (theme, color palette, table density) via `showAppearance`
 
 ### Step 5: Configure pyproject.toml
 
