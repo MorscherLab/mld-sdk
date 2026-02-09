@@ -21,9 +21,15 @@
 .mld-form-field__error {
   font-size: 0.875rem;
   color: var(--mld-error);
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
 }
 
 .mld-form-field__hint {
   font-size: 0.875rem;
   color: var(--text-muted);
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
 }

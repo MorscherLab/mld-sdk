@@ -61,12 +61,17 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 0.25rem;
+  margin-top: 0 !important;
+  margin-bottom: 0.25rem !important;
+  padding: 0 !important;
 }
 
 .mld-alert__message {
   font-size: 0.875rem;
   color: var(--text-secondary);
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
 }
 
 .mld-alert__dismiss {

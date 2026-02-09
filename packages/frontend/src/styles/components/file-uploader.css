@@ -70,6 +70,9 @@
 .mld-file-uploader__text {
   color: var(--text-primary);
   font-weight: 500;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
 }
 
 .mld-file-uploader__text--sm {
@@ -90,7 +93,9 @@
 
 .mld-file-uploader__hint {
   color: var(--text-muted);
-  margin-top: 0.25rem;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
 }
 
 .mld-file-uploader__hint--sm {

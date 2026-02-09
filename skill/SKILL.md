@@ -1,7 +1,7 @@
 ---
 name: mld-sdk-plugin
-version: 0.3.3
-sdk_version: 0.3.3
+version: 0.3.4
+sdk_version: 0.3.4
 description: |
   Build full-stack analysis plugins for MorscherLabDatabase platform using mld-sdk.
 

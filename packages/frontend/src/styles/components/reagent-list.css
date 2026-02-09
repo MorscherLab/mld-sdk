@@ -84,10 +84,12 @@
 .mld-reagent-list__table {
   display: table !important;
   overflow: visible !important;
-  width: 100%;
-  border-collapse: collapse;
+  width: 100% !important;
+  border-collapse: collapse !important;
   border: none !important;
   margin: 0 !important;
+  border-radius: 0 !important;
+  border-spacing: 0 !important;
 }
 
 .mld-reagent-list__table thead {
@@ -99,22 +101,32 @@
 }
 
 .mld-reagent-list__table tr {
+  display: table-row !important;
   border: none !important;
+  background: transparent !important;
+}
+
+.mld-reagent-list__table tr:nth-child(2n) {
+  background: transparent !important;
 }
 
 .mld-reagent-list__table thead {
-  background-color: var(--bg-tertiary);
+  background-color: var(--bg-tertiary) !important;
 }
 
 .mld-reagent-list__table th {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.625rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  text-align: left;
-  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.625rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: var(--text-muted) !important;
+  text-align: left !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  background: transparent !important;
 }
 
 .mld-reagent-list__table th.mld-reagent-list__col--sortable {
@@ -150,7 +162,7 @@
 }
 
 .mld-reagent-list__row:not(:last-child) td {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color) !important;
 }
 
 /* Row status indicators */
@@ -168,10 +180,12 @@
 
 /* Cell */
 .mld-reagent-list__cell {
-  padding: 0.625rem 0.75rem;
-  font-size: 0.875rem;
-  color: var(--text-primary);
-  vertical-align: middle;
+  padding: 0.625rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  color: var(--text-primary) !important;
+  vertical-align: middle !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 .mld-reagent-list__cell--name {
@@ -335,7 +349,9 @@
 .mld-reagent-list__empty-text {
   font-size: 0.875rem;
   color: var(--text-muted);
-  margin-bottom: 0.75rem;
+  margin-top: 0 !important;
+  margin-bottom: 0.75rem !important;
+  padding: 0 !important;
 }
 
 .mld-reagent-list__empty-btn {

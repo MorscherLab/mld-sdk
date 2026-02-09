@@ -46,13 +46,17 @@
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 0.25rem 0;
+  margin-top: 0 !important;
+  margin-bottom: 0.25rem !important;
+  padding: 0 !important;
 }
 
 .mld-confirm__message {
   font-size: 0.875rem;
   color: var(--text-muted);
-  margin: 0;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
   line-height: 1.5;
 }
 

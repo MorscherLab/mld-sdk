@@ -2,7 +2,7 @@
 
 This skill provides AI-assisted plugin development for the MLD (MorscherLab Database) platform.
 
-**Current Version:** 0.3.3
+**Current Version:** 0.3.4
 
 ## What's Included
 
@@ -18,13 +18,13 @@ This skill provides AI-assisted plugin development for the MLD (MorscherLab Data
 
 ```bash
 # Download the latest skill package
-curl -LO https://github.com/MorscherLab/mld-sdk/releases/latest/download/mld-sdk-skill-v0.3.3.zip
+curl -LO https://github.com/MorscherLab/mld-sdk/releases/latest/download/mld-sdk-skill-v0.3.4.zip
 
 # Extract to Claude skills directory
-unzip mld-sdk-skill-v0.3.3.zip -d ~/.claude/skills/mld-sdk-plugin/
+unzip mld-sdk-skill-v0.3.4.zip -d ~/.claude/skills/mld-sdk-plugin/
 
 # Clean up
-rm mld-sdk-skill-v0.3.3.zip
+rm mld-sdk-skill-v0.3.4.zip
 ```
 
 ### Option 2: Clone from Repository

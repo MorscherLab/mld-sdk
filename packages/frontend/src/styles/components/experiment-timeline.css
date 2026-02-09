@@ -296,7 +296,9 @@
 
 .mld-timeline__description {
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+  padding: 0 !important;
 }
 
 .mld-timeline__description--sm {
@@ -448,7 +450,9 @@
 
 .mld-timeline__empty-text {
   color: var(--text-muted);
-  margin-bottom: 0.5rem;
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+  padding: 0 !important;
 }
 
 .mld-timeline__empty-btn {

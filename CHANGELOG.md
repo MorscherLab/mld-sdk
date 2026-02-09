@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-02-09
+
+### Fixed
+
+- **Frontend SDK** - Fix VitePress/consumer CSS overriding SDK component styles for semantic HTML elements (`h3`, `h4`, `p`) across 16 components by using longhand `margin-top`/`margin-bottom` with `!important`
+- **Frontend SDK** - Fix table styling in ReagentList and DataFrame being overridden by VitePress `.vp-doc` table rules (zebra striping, padding, borders)
+
 ## [0.3.3] - 2026-02-06
 
 ### Added
