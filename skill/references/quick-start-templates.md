@@ -118,6 +118,81 @@ packages = ["src/mld_plugin_example"]
 
 ---
 
+## Plugin with Local Database
+
+For plugins that need persistent local storage (settings, cached data, instrument readings):
+
+```python
+# src/mld_plugin_example/plugin.py
+from mld_sdk import AnalysisPlugin, PluginMetadata, LocalDatabaseConfig
+from mld_sdk.context import PlatformContext
+from sqlmodel import SQLModel, Field, select
+from fastapi import APIRouter
+
+router = APIRouter(tags=["example"])
+
+
+class InstrumentReading(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    experiment_id: str = Field(index=True)
+    intensity: float
+    channel: str
+
+
+class ExamplePlugin(AnalysisPlugin):
+    @property
+    def metadata(self) -> PluginMetadata:
+        return PluginMetadata(
+            name="example-local-db",
+            version="1.0.0",
+            description="Example plugin with local database",
+            analysis_type="example",
+            routes_prefix="/example",
+        )
+
+    def get_routers(self) -> list[tuple[APIRouter, str]]:
+        return [(router, self.metadata.routes_prefix)]
+
+    def get_local_models(self) -> list[type]:
+        return [InstrumentReading]
+
+    async def initialize(self, context: PlatformContext | None) -> None:
+        self._context = context
+        self._setup_local_database()
+
+        # High-level: key-value settings
+        self.local_db.set("default_channel", "A", namespace="settings")
+
+    async def shutdown(self) -> None:
+        self._teardown_local_database()
+
+    def store_reading(self, exp_id: str, intensity: float, channel: str):
+        with self.local_db.get_session() as session:
+            session.add(InstrumentReading(
+                experiment_id=exp_id, intensity=intensity, channel=channel
+            ))
+            session.commit()
+
+    def get_readings(self, exp_id: str) -> list[InstrumentReading]:
+        with self.local_db.get_session() as session:
+            return list(session.exec(
+                select(InstrumentReading).where(
+                    InstrumentReading.experiment_id == exp_id
+                )
+            ).all())
+```
+
+**pyproject.toml** addition for local-db dependency:
+
+```toml
+dependencies = [
+    "mld-sdk[local-db]>=0.3.4",
+    "fastapi>=0.109.0",
+]
+```
+
+---
+
 ## Plugin with Service Layer
 
 ### Directory Structure
@@ -398,7 +473,7 @@ app.mount('#app')
 <template>
   <AppLayout floating v-model:sidebar-collapsed="collapsed">
     <template #topbar>
-      <AppTopBar title="My Analysis Plugin">
+      <AppTopBar title="My Analysis Plugin" variant="default">
         <template #actions>
           <ThemeToggle />
         </template>
@@ -416,7 +491,16 @@ app.mount('#app')
       />
     </template>
 
-    <router-view />
+    <!-- Single card (simple pages) -->
+    <AppContainer scrollable>
+      <router-view />
+    </AppContainer>
+
+    <!-- Multi-panel layout (use direction prop) -->
+    <!-- <AppContainer direction="row">
+      <AppContainer scrollable style="width: 280px; flex: none;">List</AppContainer>
+      <AppContainer scrollable>Detail</AppContainer>
+    </AppContainer> -->
 
     <ToastNotification />
   </AppLayout>
@@ -429,6 +513,7 @@ import {
   AppLayout,
   AppTopBar,
   AppSidebar,
+  AppContainer,
   ThemeToggle,
   ToastNotification,
 } from '@morscherlab/mld-sdk/components'

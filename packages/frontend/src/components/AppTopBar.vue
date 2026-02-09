@@ -1,38 +1,41 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import type { TopBarPage, TopBarTab, TopBarTabOption } from '../types/components'
-
-type TopBarVariant = 'floating' | 'card' | 'sticky' | 'default'
+import type { TopBarPage, TopBarTab, TopBarTabOption, TopBarSettingsConfig, TopBarVariant } from '../types/components'
+import ThemeToggle from './ThemeToggle.vue'
+import SettingsModal from './SettingsModal.vue'
+import { usePlatformContext } from '../composables/usePlatformContext'
 
 interface Props {
   title?: string
   subtitle?: string
   showLogo?: boolean
   variant?: TopBarVariant
-  /** @deprecated Use variant="floating" instead */
-  floating?: boolean
-  /** @deprecated Use variant="sticky" instead */
-  sticky?: boolean
   pluginName?: string
   pages?: TopBarPage[]
   currentPageId?: string
   tabs?: TopBarTab[]
   currentTabId?: string
   homePath?: string
+  showThemeToggle?: boolean
+  showSettings?: boolean
+  settingsConfig?: TopBarSettingsConfig
+  showStandaloneLabel?: boolean
+  standaloneLabel?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showLogo: true,
   variant: 'card',
   homePath: '/',
+  showThemeToggle: false,
+  showSettings: false,
+  showStandaloneLabel: true,
+  standaloneLabel: 'Standalone',
 })
 
-const effectiveVariant = computed<TopBarVariant>(() => {
-  if (props.variant) return props.variant
-  if (props.floating) return 'floating'
-  if (props.sticky) return 'sticky'
-  return 'default'
-})
+const settingsOpen = ref(false)
+const { isIntegrated } = usePlatformContext()
+const isStandalone = computed(() => !isIntegrated.value)
 
 const emit = defineEmits<{
   'page-select': [page: TopBarPage]
@@ -50,23 +53,15 @@ function togglePagesDropdown() {
   openTabDropdown.value = null
 }
 
-function closeDropdown() {
-  showPagesDropdown.value = false
-}
-
 function handlePageClick(page: TopBarPage) {
   if (page.disabled) return
   emit('page-select', page)
-  closeDropdown()
+  showPagesDropdown.value = false
 }
 
 function toggleTabDropdown(tabId: string) {
   showPagesDropdown.value = false
   openTabDropdown.value = openTabDropdown.value === tabId ? null : tabId
-}
-
-function closeTabDropdown() {
-  openTabDropdown.value = null
 }
 
 function handleTabClick(tab: TopBarTab) {
@@ -75,14 +70,14 @@ function handleTabClick(tab: TopBarTab) {
     toggleTabDropdown(tab.id)
   } else {
     emit('tab-select', tab)
-    closeTabDropdown()
+    openTabDropdown.value = null
   }
 }
 
 function handleTabOptionClick(option: TopBarTabOption, tab: TopBarTab) {
   if (option.disabled) return
   emit('tab-option-select', option, tab)
-  closeTabDropdown()
+  openTabDropdown.value = null
 }
 
 function setTabDropdownRef(el: HTMLElement | null, tabId: string) {
@@ -95,20 +90,15 @@ function setTabDropdownRef(el: HTMLElement | null, tabId: string) {
 
 function handleClickOutside(event: MouseEvent) {
   const target = event.target as Node
-  // Only close pages dropdown if it's actually open and click is outside
+
   if (showPagesDropdown.value && dropdownRef.value && !dropdownRef.value.contains(target)) {
-    closeDropdown()
+    showPagesDropdown.value = false
   }
-  // Only close tab dropdowns if one is actually open and click is outside
+
   if (openTabDropdown.value !== null) {
-    let clickedInsideTabDropdown = false
-    tabDropdownRefs.value.forEach((el) => {
-      if (el.contains(target)) {
-        clickedInsideTabDropdown = true
-      }
-    })
-    if (!clickedInsideTabDropdown) {
-      closeTabDropdown()
+    const clickedInside = Array.from(tabDropdownRefs.value.values()).some((el) => el.contains(target))
+    if (!clickedInside) {
+      openTabDropdown.value = null
     }
   }
 }
@@ -126,7 +116,7 @@ onUnmounted(() => {
   <header
     :class="[
       'mld-topbar',
-      `mld-topbar--${effectiveVariant}`,
+      `mld-topbar--${props.variant}`,
     ]"
   >
     <div class="mld-topbar__container">
@@ -240,7 +230,7 @@ onUnmounted(() => {
                 v-if="page.href"
                 :href="page.href"
                 :class="['mld-topbar-dropdown-item', { 'mld-topbar-dropdown-item--active': page.id === currentPageId, 'mld-topbar-dropdown-item--disabled': page.disabled }]"
-                @click="closeDropdown"
+                @click="showPagesDropdown = false"
               >
                 <span class="mld-topbar-dropdown-item__label">{{ page.label }}</span>
                 <span v-if="page.description" class="mld-topbar-dropdown-item__description">{{ page.description }}</span>
@@ -249,7 +239,7 @@ onUnmounted(() => {
                 v-else-if="page.to"
                 :to="page.to"
                 :class="['mld-topbar-dropdown-item', { 'mld-topbar-dropdown-item--active': page.id === currentPageId, 'mld-topbar-dropdown-item--disabled': page.disabled }]"
-                @click="closeDropdown"
+                @click="showPagesDropdown = false"
               >
                 <span class="mld-topbar-dropdown-item__label">{{ page.label }}</span>
                 <span v-if="page.description" class="mld-topbar-dropdown-item__description">{{ page.description }}</span>
@@ -356,7 +346,7 @@ onUnmounted(() => {
                     { 'mld-topbar-dropdown-item--active': option.id === currentTabId },
                     { 'mld-topbar-dropdown-item--disabled': option.disabled }
                   ]"
-                  @click="closeTabDropdown"
+                  @click="openTabDropdown = null"
                 >
                   <span class="mld-topbar-dropdown-item__label">{{ option.label }}</span>
                   <span v-if="option.description" class="mld-topbar-dropdown-item__description">{{ option.description }}</span>
@@ -369,7 +359,7 @@ onUnmounted(() => {
                     { 'mld-topbar-dropdown-item--active': option.id === currentTabId },
                     { 'mld-topbar-dropdown-item--disabled': option.disabled }
                   ]"
-                  @click="closeTabDropdown"
+                  @click="openTabDropdown = null"
                 >
                   <span class="mld-topbar-dropdown-item__label">{{ option.label }}</span>
                   <span v-if="option.description" class="mld-topbar-dropdown-item__description">{{ option.description }}</span>
@@ -395,11 +385,43 @@ onUnmounted(() => {
 
       <!-- Right section: Actions -->
       <div class="mld-topbar__right">
+        <span v-if="showStandaloneLabel && isStandalone" class="mld-topbar__standalone-badge">
+          {{ standaloneLabel }}
+        </span>
         <!-- Actions slot (right side) -->
         <slot name="actions" />
+        <button
+          v-if="showSettings"
+          type="button"
+          class="mld-topbar__settings-btn"
+          aria-label="Open settings"
+          @click="settingsOpen = true"
+        >
+          <svg class="mld-topbar__settings-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+        <ThemeToggle v-if="showThemeToggle" size="sm" />
       </div>
     </div>
   </header>
+
+  <SettingsModal
+    v-if="showSettings"
+    v-model="settingsOpen"
+    :title="settingsConfig?.title"
+    :tabs="settingsConfig?.tabs"
+    :show-appearance="settingsConfig?.showAppearance ?? true"
+    :size="settingsConfig?.size"
+  >
+    <template v-for="tab in (settingsConfig?.tabs ?? [])" :key="tab.id" #[`tab-${tab.id}`]>
+      <slot :name="`settings-tab-${tab.id}`" />
+    </template>
+    <template #appearance>
+      <slot name="settings-appearance" />
+    </template>
+  </SettingsModal>
 </template>
 
 <style>

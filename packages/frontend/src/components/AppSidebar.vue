@@ -24,6 +24,15 @@
  * <AppSidebar v-model:collapsed="collapsed">
  *   <custom-navigation />
  * </AppSidebar>
+ *
+ * <!-- With page-specific settings panel -->
+ * <AppSidebar :items="navItems" :active-id="currentPage" @select="handleNav">
+ *   <template #panel="{ activeId }">
+ *     <div v-if="activeId === 'dashboard'">
+ *       <BaseSelect label="Time range" :options="timeRanges" />
+ *     </div>
+ *   </template>
+ * </AppSidebar>
  * ```
  */
 import { computed } from 'vue'
@@ -45,8 +54,6 @@ interface Props {
   collapsedWidth?: string
   /** Position sidebar on left or right side */
   side?: 'left' | 'right'
-  /** Top offset when floating, useful when used with a floating AppTopBar (e.g., '88px') */
-  topOffset?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -76,7 +83,6 @@ const sidebarClasses = computed(() => [
 
 const sidebarStyle = computed(() => ({
   width: sidebarWidth.value,
-  ...(props.floating && { top: props.topOffset || '1rem' }),
 }))
 
 /** Prevent default navigation for vue-router items; consumer handles routing via @select event */
@@ -174,6 +180,11 @@ function getItemClasses(item: SidebarItem) {
     <!-- Content slot (when no nav items provided) -->
     <div v-else-if="$slots.default" class="mld-sidebar__content">
       <slot />
+    </div>
+
+    <!-- Page-specific settings panel (scoped with activeId) -->
+    <div v-if="$slots.panel && !props.collapsed" class="mld-sidebar__panel">
+      <slot name="panel" :active-id="props.activeId" />
     </div>
 
     <!-- Footer slot -->

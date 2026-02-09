@@ -62,6 +62,10 @@ export default defineConfig({
           link: '/showcase/',
         },
         {
+          text: 'Live Demo',
+          link: '/showcase/live-demo',
+        },
+        {
           text: 'Buttons',
           items: [
             { text: 'BaseButton', link: '/showcase/button' },

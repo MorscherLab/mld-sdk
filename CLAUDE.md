@@ -43,6 +43,7 @@ Tests run automatically on push to main and PRs. Release workflow triggers on `v
 | `models.py` | `PluginMetadata`, `PluginCapabilities`, `PluginType` |
 | `context.py` | `PlatformContext` - platform services interface |
 | `repositories.py` | Protocol-based data access (experiments, users, compounds, etc.) |
+| `local_database.py` | `LocalDatabase`, `LocalDatabaseConfig` - per-plugin SQLite storage |
 | `exceptions.py` | Exception hierarchy with serialization support |
 
 **Plugin system:**
@@ -152,7 +153,7 @@ if (!auth.isAuthenticated.value) {
 
 ## Version Coordination
 
-Both packages share the same version number. Current: 0.3.4
+Both packages share the same version number. Current: 0.4.0
 
 ## Documentation Sync
 
@@ -163,11 +164,11 @@ Both packages share the same version number. Current: 0.3.4
 
 **Skill distribution:** Skill files are packaged as `mld-sdk-skill-vX.Y.Z.zip` and attached to GitHub Releases automatically by the release workflow.
 
-### Current Component List (70)
+### Current Component List (71)
 
 **Base Inputs:** BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader, SegmentedControl, MultiSelect
 
-**Layout:** AppTopBar, AppSidebar, AppLayout, CollapsibleCard, FormField, Divider, Breadcrumb, ConfirmDialog, SettingsModal
+**Layout:** AppTopBar, AppSidebar, AppLayout, AppContainer, CollapsibleCard, FormField, Divider, Breadcrumb, ConfirmDialog, SettingsModal
 
 **Feedback:** AlertBox, ToastNotification, LoadingSpinner, ProgressBar, StatusIndicator, EmptyState, BasePill
 

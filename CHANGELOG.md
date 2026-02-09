@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-02-09
+
+### Added
+
+- **AppContainer layout mode** - `direction` prop (`'row'` | `'column'`) turns AppContainer into a transparent flex wrapper for composing multi-panel layouts without manual flex boilerplate. New `gap` prop controls spacing between children.
+- **AppContainer `ContainerDirection` type** - Exported from `@morscherlab/mld-sdk/types`
+- **AppSidebar panel slot** - New `#panel` scoped slot with `activeId` for page-specific sidebar settings (filters, toggles, config per page)
+- **AppTopBar built-in actions** - `showThemeToggle`, `showSettings`, `showStandaloneLabel` props with integrated ThemeToggle, SettingsModal, and standalone mode indicator
+- **AppLayout auto-width sidebar** - `sidebarWidth` and `sidebarCollapsedWidth` now default to `'auto'` (fit content)
+- **Python SDK LocalDatabase** - Per-plugin SQLite storage with key-value/JSON API and raw SQLModel access (`LocalDatabase`, `LocalDatabaseConfig`). Optional `sqlmodel` dependency via `mld-sdk[local-db]`
+- **Live demo page** - Full-page interactive showcase at `/showcase/live-demo` demonstrating 4 layout patterns (split, master-detail, toolbar+content, scrollable)
+
+### Changed
+
+- **AppTopBar** - Removed deprecated `floating`/`sticky` props; use `variant` instead. Added `TopBarSettingsConfig` type.
+- **AppLayout** - Sidebar width defaults changed from `240px`/`64px` to `auto`
+
+### Fixed
+
+- **AppContainer CSS** - Split monolithic `.mld-container` into base + card role + layout role to support dual-purpose rendering
+
 ## [0.3.4] - 2026-02-09
 
 ### Fixed

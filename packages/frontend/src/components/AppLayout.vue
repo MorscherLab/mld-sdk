@@ -23,9 +23,9 @@ import { computed } from 'vue'
 interface Props {
   /** Position of sidebar (left or right side of screen) */
   sidebarPosition?: 'left' | 'right'
-  /** Width of expanded sidebar */
+  /** Width of expanded sidebar (use 'auto' to fit content) */
   sidebarWidth?: string
-  /** Width of collapsed sidebar */
+  /** Width of collapsed sidebar (use 'auto' to fit content) */
   sidebarCollapsedWidth?: string
   /** Whether sidebar is collapsed (use v-model:sidebarCollapsed for two-way binding) */
   sidebarCollapsed?: boolean
@@ -35,8 +35,8 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   sidebarPosition: 'left',
-  sidebarWidth: '240px',
-  sidebarCollapsedWidth: '64px',
+  sidebarWidth: 'auto',
+  sidebarCollapsedWidth: 'auto',
   sidebarCollapsed: false,
   floating: false,
 })
@@ -51,6 +51,11 @@ const layoutClasses = computed(() => [
   props.sidebarPosition === 'right' ? 'mld-layout--sidebar-right' : '',
   props.floating ? 'mld-layout--floating' : '',
 ])
+
+const sidebarStyle = computed(() => {
+  const width = props.sidebarCollapsed ? props.sidebarCollapsedWidth : props.sidebarWidth
+  return width !== 'auto' ? { width } : undefined
+})
 
 function toggleSidebar() {
   emit('update:sidebarCollapsed', !props.sidebarCollapsed)
@@ -67,7 +72,7 @@ function toggleSidebar() {
       <div
         v-if="$slots.sidebar"
         class="mld-layout__sidebar"
-        :style="{ width: props.sidebarCollapsed ? props.sidebarCollapsedWidth : props.sidebarWidth }"
+        :style="sidebarStyle"
       >
         <slot
           name="sidebar"

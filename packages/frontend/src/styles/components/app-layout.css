@@ -3,7 +3,8 @@
 .mld-layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .mld-layout__topbar {
@@ -22,13 +23,19 @@
 
 .mld-layout__sidebar {
   flex-shrink: 0;
+  overflow-y: auto;
+  min-width: 3rem;
+  max-width: 24rem;
   transition: width 0.2s ease;
 }
 
 .mld-layout__main {
   flex: 1;
-  overflow-y: auto;
   min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Floating variant: all sections appear as separate cards on a background */
@@ -58,15 +65,15 @@
 }
 
 .mld-layout--floating .mld-layout__main {
-  border-radius: var(--radius-lg, 0.75rem);
-  overflow-y: auto;
-  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
-  border: 1px solid var(--border-color, var(--mld-border, #e5e7eb));
-  background-color: var(--bg-card, var(--mld-bg-card, #ffffff));
+  gap: 1rem;
 }
 
-/* When floating, sidebar doesn't need its own border since the wrapper provides it */
+/* When floating, inner components don't need borders since the wrapper provides them */
 .mld-layout--floating .mld-sidebar {
   border-right: none;
   border-left: none;
+}
+
+.mld-layout--floating .mld-topbar {
+  border: none;
 }

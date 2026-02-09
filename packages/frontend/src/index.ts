@@ -32,6 +32,7 @@ export {
   AppTopBar,
   AppSidebar,
   AppLayout,
+  AppContainer,
   Skeleton,
   // Biological experiment components
   WellPlate,
@@ -145,6 +146,7 @@ export {
 // Types
 export type {
   // Component types
+  ContainerDirection,
   ButtonVariant,
   ButtonSize,
   InputType,
@@ -161,6 +163,7 @@ export type {
   TopBarPage,
   TopBarTab,
   TopBarTabOption,
+  TopBarSettingsConfig,
   // Well Plate types
   WellPlateFormat,
   WellState,

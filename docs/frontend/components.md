@@ -487,15 +487,27 @@ Expandable card section.
 
 ### AppTopBar
 
-Application header bar.
+Application header bar with breadcrumb navigation, tabs, and built-in theme toggle and settings modal support.
 
 ```vue
-<AppTopBar :pages="pages" :tabs="tabs" variant="floating">
+<AppTopBar
+  plugin-name="My Plugin"
+  title="Dashboard"
+  :pages="pages"
+  :tabs="tabs"
+  variant="card"
+  show-theme-toggle
+  show-settings
+  :settings-config="{ tabs: [{ id: 'general', label: 'General' }] }"
+>
   <template #logo>
     <img src="/logo.svg" alt="Logo" />
   </template>
   <template #actions>
-    <ThemeToggle />
+    <BaseButton size="sm">Export</BaseButton>
+  </template>
+  <template #settings-tab-general>
+    <p>Custom settings content</p>
   </template>
 </AppTopBar>
 ```
@@ -504,10 +516,39 @@ Application header bar.
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
+| `title` | `string` | - | Current page title |
+| `subtitle` | `string` | - | Subtitle text |
+| `pluginName` | `string` | - | Plugin name for breadcrumb |
 | `pages` | `TopBarPage[]` | `[]` | Page navigation items |
 | `tabs` | `TopBarTab[]` | `[]` | Tab navigation items |
-| `variant` | `TopBarVariant` | `'default'` | Visual variant |
-| `showThemeToggle` | `boolean` | `false` | Show theme toggle |
+| `currentPageId` | `string` | - | Active page ID |
+| `currentTabId` | `string` | - | Active tab ID |
+| `variant` | `'card' \| 'default'` | `'card'` | Visual variant |
+| `showLogo` | `boolean` | `true` | Show default MLD logo |
+| `homePath` | `string` | `'/'` | Home link path |
+| `showThemeToggle` | `boolean` | `false` | Show built-in theme toggle |
+| `showSettings` | `boolean` | `false` | Show settings button and modal |
+| `settingsConfig` | `TopBarSettingsConfig` | - | Settings modal configuration |
+| `showStandaloneLabel` | `boolean` | `true` | Show standalone mode badge |
+| `standaloneLabel` | `string` | `'Standalone'` | Custom standalone label text |
+
+#### Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `page-select` | `TopBarPage` | Page selected from dropdown |
+| `tab-select` | `TopBarTab` | Tab clicked |
+| `tab-option-select` | `(option, tab)` | Tab dropdown option selected |
+
+#### Slots
+
+| Slot | Description |
+|------|-------------|
+| `icon` / `logo` | Custom logo/icon in left section |
+| `nav` | Additional navigation content after title |
+| `actions` | Action buttons before theme toggle and settings |
+| `settings-tab-{id}` | Custom content for each settings tab |
+| `settings-appearance` | Extra content appended to Appearance tab |
 
 ---
 
@@ -539,7 +580,6 @@ Sidebar navigation with collapsible sections. Parent items with `children` rende
 | `width` | `string` | `'240px'` | Expanded width |
 | `collapsedWidth` | `string` | `'64px'` | Collapsed width |
 | `side` | `'left' \| 'right'` | `'left'` | Sidebar side |
-| `topOffset` | `string` | - | Top offset when floating |
 
 #### SidebarItem Type
 
@@ -568,7 +608,7 @@ interface SidebarItem {
 
 ### AppLayout
 
-Page layout shell combining topbar, sidebar, and main content area.
+Fixed-viewport layout shell with topbar, sidebar, and main content area. The root element uses `height: 100vh; overflow: hidden` so the page never scrolls — only individual containers (sidebar, main content panels) scroll internally.
 
 ```vue
 <AppLayout v-model:sidebar-collapsed="collapsed">
@@ -578,17 +618,19 @@ Page layout shell combining topbar, sidebar, and main content area.
   <template #sidebar="{ collapsed: isCollapsed }">
     <AppSidebar :floating="false" :collapsed="isCollapsed" :items="items" />
   </template>
-  <main>Page content</main>
+  <div class="my-content">Page content (consumers handle own scrolling)</div>
 </AppLayout>
 ```
+
+The main content area (`<slot />`) is a flex column container with `overflow: hidden`. Consumers compose their own scrollable panels inside it.
 
 #### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `sidebarPosition` | `'left' \| 'right'` | `'left'` | Sidebar side |
-| `sidebarWidth` | `string` | `'240px'` | Expanded sidebar width |
-| `sidebarCollapsedWidth` | `string` | `'64px'` | Collapsed sidebar width |
+| `sidebarWidth` | `string` | `'auto'` | Expanded sidebar width (use 'auto' to fit content) |
+| `sidebarCollapsedWidth` | `string` | `'auto'` | Collapsed sidebar width (use 'auto' to fit content) |
 | `sidebarCollapsed` | `boolean` | `false` | Collapsed state (v-model) |
 | `floating` | `boolean` | `false` | Floating style: sections as separate cards |
 
@@ -599,6 +641,48 @@ Page layout shell combining topbar, sidebar, and main content area.
 | `topbar` | - | Top bar area (optional) |
 | `sidebar` | `{ collapsed, toggle }` | Sidebar with scoped props |
 | `default` | - | Main content area |
+
+---
+
+### AppContainer
+
+Dual-purpose component: either a **card** (default) or a **layout container** (transparent flex wrapper). Without a `direction` prop, it renders as a card with rounded corners, shadow, and border. With `direction`, it becomes a transparent flex container for composing multi-panel layouts.
+
+```vue
+<!-- Single card (default) -->
+<AppContainer scrollable>
+  <div>Card content</div>
+</AppContainer>
+
+<!-- Multi-panel layout: 1 left + 2 right stacked -->
+<AppContainer direction="row">
+  <AppContainer scrollable>Left panel</AppContainer>
+  <AppContainer direction="column">
+    <AppContainer>Top right</AppContainer>
+    <AppContainer scrollable>Bottom right</AppContainer>
+  </AppContainer>
+</AppContainer>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `scrollable` | `boolean` | `false` | Enable vertical scrolling (`overflow-y: auto`). Ignored when `direction` is set. |
+| `direction` | `'row' \| 'column'` | - | Renders as a transparent flex container instead of a card |
+| `gap` | `string` | `'1rem'` | Flex gap between children. Only applies when `direction` is set. |
+
+#### Types
+
+```typescript
+type ContainerDirection = 'row' | 'column'
+```
+
+#### Slots
+
+| Slot | Props | Description |
+|------|-------|-------------|
+| `default` | - | Container content |
 
 ---
 

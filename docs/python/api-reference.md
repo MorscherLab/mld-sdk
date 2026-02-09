@@ -39,6 +39,15 @@ from mld_sdk import AnalysisPlugin
 | `get_frontend_config()` | Returns frontend configuration dict |
 | `get_frontend_dir()` | Returns path to built frontend directory |
 | `get_compatible_platform_versions()` | Returns `(min_version, max_version)` tuple |
+| `get_local_models()` | Returns list of SQLModel classes for custom local tables |
+| `get_local_database_config()` | Returns `LocalDatabaseConfig` or `None` for defaults |
+
+#### Local Database Helpers
+
+| Method | Description |
+|--------|-------------|
+| `_setup_local_database()` | Initialize local database. Call from `initialize()` |
+| `_teardown_local_database()` | Close local database. Call from `shutdown()` |
 
 #### Properties
 
@@ -46,6 +55,7 @@ from mld_sdk import AnalysisPlugin
 |----------|------|-------------|
 | `context` | `PlatformContext \| None` | Platform context (None if standalone) |
 | `is_standalone` | `bool` | True if running without platform |
+| `local_db` | `LocalDatabase \| None` | Local database instance (None if not set up) |
 
 #### Example
 
@@ -120,6 +130,7 @@ from mld_sdk import PluginCapabilities
 | `requires_auth` | `bool` | `False` | Requires authentication |
 | `requires_database` | `bool` | `False` | Requires database access |
 | `requires_experiments` | `bool` | `False` | Requires experiment repository |
+| `requires_local_database` | `bool` | `False` | Requires local SQLite database |
 | `requires_compound_lists` | `bool` | `False` | Requires compound list access |
 | `supports_experiment_linking` | `bool` | `False` | Supports experiment linking |
 
@@ -242,6 +253,116 @@ from mld_sdk import LifecycleHookResult
 | `success` | `bool` | `True` | Hook succeeded |
 | `message` | `str \| None` | `None` | Result message |
 | `data` | `dict[str, Any]` | `{}` | Additional data |
+
+---
+
+## Local Database
+
+Per-plugin local SQLite storage using SQLModel. Requires optional dependency: `pip install mld-sdk[local-db]`
+
+### LocalDatabaseConfig
+
+Configuration for a plugin's local database.
+
+```python
+from mld_sdk import LocalDatabaseConfig
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `storage_dir` | `Path \| None` | `None` | Custom storage directory (default: `~/.mld/plugins/{name}/`) |
+| `db_filename` | `str` | `"data.db"` | Database filename |
+| `echo_sql` | `bool` | `False` | Echo SQL statements for debugging |
+
+---
+
+### LocalDatabase
+
+Per-plugin local SQLite database with high-level key-value API and low-level SQLModel access.
+
+```python
+from mld_sdk import LocalDatabase, LocalDatabaseConfig
+```
+
+#### Lifecycle Methods
+
+| Method | Description |
+|--------|-------------|
+| `initialize(models=None)` | Create database and tables. Pass custom SQLModel classes in `models`. |
+| `close()` | Dispose engine and reset state |
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `is_initialized` | `bool` | Whether the database has been initialized |
+| `db_path` | `Path` | Resolved path to the SQLite file |
+| `engine` | `Engine` | SQLAlchemy engine (raises if not initialized) |
+
+#### Low-Level API
+
+| Method | Description |
+|--------|-------------|
+| `get_session()` | Context manager yielding a SQLModel `Session` |
+
+#### High-Level Key-Value API
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `set(key, value, namespace="default")` | `None` | Store a JSON-serializable value |
+| `get(key, namespace="default", default=None)` | `Any` | Retrieve value or default |
+| `delete(key, namespace="default")` | `bool` | Delete key, returns True if existed |
+| `list_keys(namespace="default")` | `list[str]` | List all keys in namespace |
+| `get_all(namespace="default")` | `dict[str, Any]` | Get all key-value pairs in namespace |
+| `clear(namespace=None)` | `int` | Clear entries, returns count deleted |
+
+#### Example: High-Level API
+
+```python
+from mld_sdk import AnalysisPlugin, LocalDatabaseConfig
+
+class MyPlugin(AnalysisPlugin):
+    def get_local_database_config(self):
+        return LocalDatabaseConfig()  # uses default path
+
+    async def initialize(self, context=None):
+        self._context = context
+        self._setup_local_database()
+
+        # Store settings
+        self.local_db.set("threshold", 0.05, namespace="settings")
+        self.local_db.set("last_run", "2024-01-15")
+
+    async def shutdown(self):
+        self._teardown_local_database()
+```
+
+#### Example: Custom Tables
+
+```python
+from sqlmodel import SQLModel, Field
+
+class InstrumentReading(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    experiment_id: str = Field(index=True)
+    intensity: float
+    channel: str
+
+class MyPlugin(AnalysisPlugin):
+    def get_local_models(self):
+        return [InstrumentReading]
+
+    async def initialize(self, context=None):
+        self._context = context
+        self._setup_local_database()
+
+    async def store_reading(self, exp_id, intensity, channel):
+        with self.local_db.get_session() as session:
+            session.add(InstrumentReading(
+                experiment_id=exp_id, intensity=intensity, channel=channel
+            ))
+            session.commit()
+```
 
 ---
 

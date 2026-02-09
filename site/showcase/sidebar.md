@@ -23,7 +23,6 @@ A sidebar navigation component with collapsible sections, badges, collapse/expan
 | `width` | `string` | `'240px'` | Expanded width |
 | `collapsedWidth` | `string` | `'64px'` | Collapsed width |
 | `side` | `'left' \| 'right'` | `'left'` | Which side the sidebar appears on |
-| `topOffset` | `string` | - | Top offset when floating (e.g., `'88px'` for use with AppTopBar) |
 
 ## Events
 

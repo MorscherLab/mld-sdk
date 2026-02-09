@@ -65,6 +65,9 @@ from mld_sdk.exceptions import (
     PluginLifecycleException,
 )
 
+# Local database (optional dependency)
+from mld_sdk.local_database import LocalDatabase, LocalDatabaseConfig
+
 # Repository protocols and data models
 from mld_sdk.repositories import (
     # Data models
@@ -105,6 +108,9 @@ __all__ = [
     "NotFoundException",
     "ConflictException",
     "PluginLifecycleException",
+    # Local database
+    "LocalDatabase",
+    "LocalDatabaseConfig",
     # Data models
     "Experiment",
     "PluginExperimentData",

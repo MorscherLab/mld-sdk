@@ -75,9 +75,11 @@ import '@morscherlab/mld-sdk/styles'
 | Component | Description |
 |-----------|-------------|
 | `CollapsibleCard` | Expandable card sections |
-| `AppTopBar` | Application header |
-| `AppSidebar` | Sidebar navigation |
+| `AppTopBar` | Application header with breadcrumb, tabs, theme toggle, and settings modal |
+| `AppSidebar` | Sidebar navigation with collapsible sections |
+| `AppLayout` | Page layout shell combining topbar, sidebar, and content |
 | `Skeleton` | Loading placeholder |
+| `SettingsModal` | Tabbed settings modal with built-in Appearance tab |
 
 ### Biological Experiment Components
 
@@ -677,6 +679,40 @@ interface SidebarItem {
   children?: SidebarItem[]
   badge?: string | number
   disabled?: boolean
+}
+
+interface TopBarPage {
+  id: string
+  label: string
+  to?: string
+  href?: string
+  description?: string
+  disabled?: boolean
+}
+
+interface TopBarTab {
+  id: string
+  label: string
+  to?: string
+  href?: string
+  disabled?: boolean
+  children?: TopBarTabOption[]
+}
+
+interface TopBarTabOption {
+  id: string
+  label: string
+  to?: string
+  href?: string
+  description?: string
+  disabled?: boolean
+}
+
+interface TopBarSettingsConfig {
+  title?: string                   // Modal title (default: 'Settings')
+  tabs?: SettingsTab[]             // Custom tabs ({ id, label })
+  showAppearance?: boolean         // Show Appearance tab (default: true)
+  size?: 'md' | 'lg' | 'xl'       // Modal size (default: 'lg')
 }
 ```
 

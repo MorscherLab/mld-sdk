@@ -64,7 +64,7 @@ if (isIntegrated.value) {
 
 ## Dual-Mode Patterns
 
-### Settings Persistence
+### Settings Persistence (In-Memory Fallback)
 
 ```python
 class AnalysisService:
@@ -83,6 +83,30 @@ class AnalysisService:
         else:
             await self._context.set_plugin_config(settings)
 ```
+
+### Settings Persistence (Local Database)
+
+For persistent storage that works in both modes, use the local database:
+
+```python
+from mld_sdk import AnalysisPlugin
+
+class MyPlugin(AnalysisPlugin):
+    async def initialize(self, context=None):
+        self._context = context
+        self._setup_local_database()
+
+    async def get_settings(self) -> dict:
+        return self.local_db.get_all(namespace="settings")
+
+    async def save_setting(self, key: str, value) -> None:
+        self.local_db.set(key, value, namespace="settings")
+
+    async def shutdown(self):
+        self._teardown_local_database()
+```
+
+This eliminates the standalone vs integrated split for plugin-internal data -- settings persist across restarts in both modes.
 
 ### Authentication
 

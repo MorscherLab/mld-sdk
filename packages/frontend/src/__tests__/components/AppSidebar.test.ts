@@ -27,11 +27,11 @@ describe('AppSidebar', () => {
       expect(wrapper.find('.mld-sidebar').attributes('style')).toContain('width: 64px')
     })
 
-    it('should apply default top offset when floating', () => {
+    it('should not apply top offset (topOffset prop removed)', () => {
       const wrapper = mount(AppSidebar, {
         props: { floating: true },
       })
-      expect(wrapper.find('.mld-sidebar').attributes('style')).toContain('top: 1rem')
+      expect(wrapper.find('.mld-sidebar').attributes('style')).not.toContain('top:')
     })
   })
 
@@ -73,11 +73,11 @@ describe('AppSidebar', () => {
       expect(wrapper.find('.mld-sidebar').attributes('style')).not.toContain('top:')
     })
 
-    it('should apply custom top offset when floating', () => {
+    it('should not have topOffset prop (removed)', () => {
       const wrapper = mount(AppSidebar, {
-        props: { floating: true, topOffset: '88px' },
+        props: { floating: true },
       })
-      expect(wrapper.find('.mld-sidebar').attributes('style')).toContain('top: 88px')
+      expect(wrapper.find('.mld-sidebar').attributes('style')).not.toContain('top:')
     })
   })
 

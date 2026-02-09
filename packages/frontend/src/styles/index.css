@@ -7,6 +7,7 @@
 
 /* Component styles - alphabetically ordered */
 @import './components/alert-box.css';
+@import './components/app-container.css';
 @import './components/app-layout.css';
 @import './components/app-sidebar.css';
 @import './components/app-top-bar.css';

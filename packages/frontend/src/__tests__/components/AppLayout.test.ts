@@ -121,22 +121,22 @@ describe('AppLayout', () => {
   })
 
   describe('sidebar width styling', () => {
-    it('should apply default sidebar width when expanded', () => {
+    it('should not apply inline width when default auto is used (expanded)', () => {
       const wrapper = mount(AppLayout, {
         props: { sidebarCollapsed: false },
         slots: { sidebar: '<div>Nav</div>' },
       })
       const sidebar = wrapper.find('.mld-layout__sidebar')
-      expect(sidebar.attributes('style')).toContain('width: 240px')
+      expect(sidebar.attributes('style')).toBeUndefined()
     })
 
-    it('should apply default collapsed width when collapsed', () => {
+    it('should not apply inline width when default auto is used (collapsed)', () => {
       const wrapper = mount(AppLayout, {
         props: { sidebarCollapsed: true },
         slots: { sidebar: '<div>Nav</div>' },
       })
       const sidebar = wrapper.find('.mld-layout__sidebar')
-      expect(sidebar.attributes('style')).toContain('width: 64px')
+      expect(sidebar.attributes('style')).toBeUndefined()
     })
 
     it('should apply custom sidebar width', () => {

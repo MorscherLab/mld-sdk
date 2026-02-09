@@ -1,3 +1,6 @@
+// Container types
+export type ContainerDirection = 'row' | 'column'
+
 // Button types
 export type ButtonVariant = 'primary' | 'secondary' | 'cta' | 'danger' | 'success' | 'ghost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -73,7 +76,7 @@ export interface CollapsibleState {
 }
 
 // TopBar types
-export type TopBarVariant = 'floating' | 'card' | 'sticky' | 'default'
+export type TopBarVariant = 'card' | 'default'
 
 // TopBar page navigation types
 export interface TopBarPage {
@@ -104,6 +107,14 @@ export interface TopBarTabOption {
   href?: string
   description?: string
   disabled?: boolean
+}
+
+// TopBar settings config (pass-through for built-in SettingsModal)
+export interface TopBarSettingsConfig {
+  title?: string
+  tabs?: SettingsTab[]
+  showAppearance?: boolean
+  size?: 'md' | 'lg' | 'xl'
 }
 
 // Well Plate types

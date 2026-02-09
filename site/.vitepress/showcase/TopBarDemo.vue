@@ -145,11 +145,10 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
     </div>
   </DemoSection>
 
-  <!-- Floating Style -->
-  <DemoSection title="Floating Style">
+  <!-- Card Style -->
+  <DemoSection title="Card Style">
     <p class="text-sm text-text-secondary mb-4">
-      When <code>floating</code> is true, the topbar has rounded corners with shadow and uses fixed positioning.
-      In this demo, we simulate the styling without fixed positioning.
+      The <code>card</code> variant renders the topbar as an inline card with rounded corners and shadow.
     </p>
     <div class="bg-bg-primary p-4 rounded-mld">
       <div class="rounded-xl shadow-sm border border-border overflow-hidden">
@@ -190,10 +189,10 @@ function handleTabOptionSelect(option: TopBarTabOption, tab: TopBarTab) {
     <p class="mt-2 text-sm text-text-secondary">Current tab: {{ currentTab }}</p>
   </DemoSection>
 
-  <!-- Floating with Tabs -->
-  <DemoSection title="Floating with Tabs">
+  <!-- Card with Tabs -->
+  <DemoSection title="Card with Tabs">
     <p class="text-sm text-text-secondary mb-4">
-      Demonstrates floating style with tabs (simulated without fixed positioning).
+      Demonstrates card style with tabs.
     </p>
     <div class="bg-bg-primary p-4 rounded-mld">
       <div class="rounded-xl shadow-sm border border-border">

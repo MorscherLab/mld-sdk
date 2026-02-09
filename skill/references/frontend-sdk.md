@@ -23,12 +23,12 @@ import '@morscherlab/mld-sdk/styles'
 
 ---
 
-## Component Catalog (70 total)
+## Component Catalog (71 total)
 
 | Category | Components |
 |----------|------------|
 | **Base Inputs** | BaseButton, BaseInput, BaseSelect, BaseTabs, BaseTextarea, BaseCheckbox, BaseRadioGroup, BaseToggle, BaseSlider, BaseModal, NumberInput, TagsInput, DatePicker, ColorSlider, FileUploader, SegmentedControl, MultiSelect |
-| **Layout** | AppTopBar, AppSidebar, AppLayout, CollapsibleCard, FormField, Divider, Breadcrumb, ConfirmDialog, SettingsModal |
+| **Layout** | AppTopBar, AppSidebar, AppLayout, AppContainer, CollapsibleCard, FormField, Divider, Breadcrumb, ConfirmDialog, SettingsModal |
 | **Feedback** | AlertBox, ToastNotification, LoadingSpinner, ProgressBar, StatusIndicator, EmptyState, BasePill |
 | **Action** | IconButton, ThemeToggle, SettingsButton, DropdownButton |
 | **Data Display** | Avatar, Tooltip, ChartContainer, DataFrame, Calendar, Skeleton, ScientificNumber, ChemicalFormula |
@@ -933,18 +933,12 @@ const tabs: TabItem[] = [
 
 ### AppLayout
 
-Page layout shell combining topbar, sidebar, and main content area.
+Fixed-viewport layout shell with topbar, sidebar, and flex main content area. The root uses `height: 100vh; overflow: hidden` — the page never scrolls. Only individual containers (sidebar, main content panels) scroll internally. The main slot is a flex column container with `overflow: hidden`, so consumers compose their own scrollable panels.
 
 ```vue
-<AppLayout
-  v-model:sidebar-collapsed="collapsed"
-  floating
-  sidebar-position="left"
-  sidebar-width="240px"
-  sidebar-collapsed-width="64px"
->
+<AppLayout v-model:sidebar-collapsed="collapsed" floating>
   <template #topbar>
-    <AppTopBar plugin-name="My Plugin" title="Dashboard" variant="floating" />
+    <AppTopBar plugin-name="My Plugin" title="Dashboard" variant="card" />
   </template>
   <template #sidebar="{ collapsed, toggle }">
     <AppSidebar
@@ -965,8 +959,8 @@ Page layout shell combining topbar, sidebar, and main content area.
 |------|------|---------|-------------|
 | `sidebarCollapsed` | `boolean` | `false` | Sidebar collapse state (v-model:sidebar-collapsed) |
 | `sidebarPosition` | `'left'\|'right'` | `'left'` | Sidebar position |
-| `sidebarWidth` | `string` | `'240px'` | Expanded sidebar width |
-| `sidebarCollapsedWidth` | `string` | `'64px'` | Collapsed sidebar width |
+| `sidebarWidth` | `string` | `'auto'` | Expanded sidebar width ('auto' fits content) |
+| `sidebarCollapsedWidth` | `string` | `'auto'` | Collapsed sidebar width ('auto' fits content) |
 | `floating` | `boolean` | `false` | Floating card layout with gaps |
 
 **Slots:**
@@ -975,23 +969,54 @@ Page layout shell combining topbar, sidebar, and main content area.
 |------|-------------|-------------|
 | `#topbar` | - | Top bar content |
 | `#sidebar` | `{ collapsed: boolean, toggle: () => void }` | Sidebar content |
-| `#default` | - | Main content area |
+| `#default` | - | Main content area (transparent flex container in floating mode) |
+
+### AppContainer
+
+Dual-purpose: **card** (default) or **layout container** (transparent flex wrapper via `direction` prop). Without `direction`, renders as a card with rounded corners, shadow, and border. With `direction`, becomes a transparent flex container for multi-panel layouts.
+
+```vue
+<!-- Single card -->
+<AppContainer scrollable>Content</AppContainer>
+
+<!-- Multi-panel layout -->
+<AppContainer direction="row">
+  <AppContainer scrollable>Left panel</AppContainer>
+  <AppContainer direction="column">
+    <AppContainer>Top right</AppContainer>
+    <AppContainer scrollable>Bottom right</AppContainer>
+  </AppContainer>
+</AppContainer>
+```
+
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `scrollable` | `boolean` | `false` | Enable vertical scrolling. Ignored when `direction` is set. |
+| `direction` | `'row' \| 'column'` | - | Transparent flex container instead of card |
+| `gap` | `string` | `'1rem'` | Flex gap between children (layout mode only) |
 
 ---
 
 ### AppTopBar
 
-Top bar with breadcrumb navigation, page dropdown, center tabs, and action slots.
+Top bar with breadcrumb navigation, page dropdown, center tabs, and action slots. Includes built-in theme toggle and settings modal support.
 
 ```vue
 <AppTopBar
   plugin-name="Mass Spec Analyzer"
   title="Results"
-  variant="floating"
+  variant="card"
   :pages="pages"
   :current-page-id="currentPageId"
   :tabs="tabs"
   :current-tab-id="currentTabId"
+  show-theme-toggle
+  show-settings
+  :settings-config="settingsConfig"
+  show-standalone-label
+  standalone-label="Dev Mode"
   @page-select="handlePageSelect"
   @tab-select="handleTabSelect"
 >
@@ -999,8 +1024,12 @@ Top bar with breadcrumb navigation, page dropdown, center tabs, and action slots
     <img src="/logo.svg" alt="Logo" />
   </template>
   <template #actions>
-    <ThemeToggle />
-    <BaseButton size="sm">Settings</BaseButton>
+    <BaseButton size="sm">Export</BaseButton>
+  </template>
+  <template #settings-tab-general>
+    <FormField label="API Key">
+      <BaseInput v-model="apiKey" type="password" />
+    </FormField>
   </template>
 </AppTopBar>
 ```
@@ -1012,13 +1041,18 @@ Top bar with breadcrumb navigation, page dropdown, center tabs, and action slots
 | `title` | `string` | - | Current page title (shown in breadcrumb) |
 | `subtitle` | `string` | - | Subtitle (shown below title when no pluginName) |
 | `pluginName` | `string` | - | Plugin name (enables breadcrumb: pluginName > title) |
-| `variant` | `'floating'\|'card'\|'sticky'\|'default'` | `'card'` | Visual variant |
+| `variant` | `'card'\|'default'` | `'card'` | Visual variant |
 | `showLogo` | `boolean` | `true` | Show default MLD logo |
 | `homePath` | `string` | `'/'` | Home link path |
 | `pages` | `TopBarPage[]` | - | Page dropdown items (under plugin name) |
 | `currentPageId` | `string` | - | Active page ID |
 | `tabs` | `TopBarTab[]` | - | Center tab items |
 | `currentTabId` | `string` | - | Active tab ID |
+| `showThemeToggle` | `boolean` | `false` | Show built-in theme toggle button |
+| `showSettings` | `boolean` | `false` | Show settings button with modal |
+| `settingsConfig` | `TopBarSettingsConfig` | - | Settings modal configuration |
+| `showStandaloneLabel` | `boolean` | `true` | Show "Standalone" badge when not integrated |
+| `standaloneLabel` | `string` | `'Standalone'` | Custom label for standalone badge |
 
 **Events:**
 
@@ -1028,7 +1062,12 @@ Top bar with breadcrumb navigation, page dropdown, center tabs, and action slots
 | `tab-select` | `TopBarTab` | Tab clicked |
 | `tab-option-select` | `(TopBarTabOption, TopBarTab)` | Tab dropdown option selected |
 
-**Slots:** `#icon` / `#logo` (left icon), `#nav` (after title), `#actions` (right side)
+**Slots:**
+- `#icon` / `#logo` (left icon)
+- `#nav` (after title)
+- `#actions` (right side, before theme toggle and settings)
+- `#settings-tab-{id}` (custom settings tab content)
+- `#settings-appearance` (extra content in Appearance tab)
 
 **TopBarPage type:**
 
@@ -1055,6 +1094,23 @@ interface TopBarTab {
   children?: TopBarTabOption[]  // Dropdown sub-items
 }
 ```
+
+**TopBarSettingsConfig type:**
+
+```typescript
+interface TopBarSettingsConfig {
+  title?: string                   // Modal title (default: 'Settings')
+  tabs?: SettingsTab[]             // Custom tabs
+  showAppearance?: boolean         // Show Appearance tab (default: true)
+  size?: 'md' | 'lg' | 'xl'       // Modal size (default: 'lg')
+}
+```
+
+**Built-in features:**
+- Theme toggle button displays sun/moon icon, uses `useTheme()` composable
+- Settings button displays gear icon, opens `SettingsModal` with custom tabs
+- Standalone badge automatically appears when `usePlatformContext().isIntegrated` is `false`
+- Settings tab content forwarded via `#settings-tab-{id}` slots
 
 ---
 
@@ -1088,7 +1144,6 @@ Navigation sidebar with collapsible sections, items mode and slot mode.
 | `width` | `string` | `'240px'` | Expanded width |
 | `collapsedWidth` | `string` | `'64px'` | Collapsed width |
 | `side` | `'left'\|'right'` | `'left'` | Sidebar position |
-| `topOffset` | `string` | - | Top offset when floating (e.g., `'88px'`) |
 
 **Events:**
 

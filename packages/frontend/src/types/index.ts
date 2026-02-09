@@ -1,5 +1,6 @@
 // Component types
 export type {
+  ContainerDirection,
   ButtonVariant,
   ButtonSize,
   InputType,
@@ -16,6 +17,7 @@ export type {
   TopBarPage,
   TopBarTab,
   TopBarTabOption,
+  TopBarSettingsConfig,
   // Well Plate types
   WellPlateFormat,
   WellState,

@@ -309,6 +309,93 @@ async def get_calibration_curves(self, experiment_id: str):
     )
 ```
 
+## Local Database
+
+Plugins can use a per-plugin local SQLite database for persistent storage that works in both standalone and integrated modes. This is ideal for plugin-specific settings, intermediate calculations, raw instrument readings, and cached data that doesn't belong in the main MLD database.
+
+### Installation
+
+```bash
+pip install mld-sdk[local-db]
+```
+
+### Simple Key-Value Storage
+
+The high-level API provides namespaced key-value storage with JSON serialization:
+
+```python
+class MyPlugin(AnalysisPlugin):
+    async def initialize(self, context=None):
+        self._context = context
+        self._setup_local_database()
+
+        # Store and retrieve values
+        self.local_db.set("threshold", 0.05, namespace="settings")
+        self.local_db.set("columns", ["name", "intensity", "rt"])
+
+        threshold = self.local_db.get("threshold", namespace="settings")
+        all_settings = self.local_db.get_all(namespace="settings")
+
+    async def shutdown(self):
+        self._teardown_local_database()
+```
+
+### Custom Tables
+
+For structured data, define SQLModel tables and use the low-level session API:
+
+```python
+from sqlmodel import SQLModel, Field
+
+class InstrumentReading(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    experiment_id: str = Field(index=True)
+    intensity: float
+    channel: str
+
+class MyPlugin(AnalysisPlugin):
+    def get_local_models(self):
+        return [InstrumentReading]
+
+    async def initialize(self, context=None):
+        self._context = context
+        self._setup_local_database()
+
+    async def store_reading(self, exp_id, intensity, channel):
+        with self.local_db.get_session() as session:
+            session.add(InstrumentReading(
+                experiment_id=exp_id, intensity=intensity, channel=channel
+            ))
+            session.commit()
+
+    async def get_readings(self, exp_id):
+        from sqlmodel import select
+        with self.local_db.get_session() as session:
+            statement = select(InstrumentReading).where(
+                InstrumentReading.experiment_id == exp_id
+            )
+            return session.exec(statement).all()
+```
+
+### Custom Configuration
+
+Override `get_local_database_config()` to customize the storage path:
+
+```python
+from mld_sdk import LocalDatabaseConfig
+
+class MyPlugin(AnalysisPlugin):
+    def get_local_database_config(self):
+        return LocalDatabaseConfig(
+            storage_dir=Path("/data/my-plugin"),
+            db_filename="analysis.db",
+        )
+```
+
+Default path: `~/.mld/plugins/{plugin-name}/data.db`
+
+---
+
 ## Frontend Integration
 
 ### Providing Frontend Configuration
