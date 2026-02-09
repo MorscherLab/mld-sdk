@@ -17,6 +17,8 @@ from mld_sdk.models import PluginMetadata
 if TYPE_CHECKING:
     from fastapi import APIRouter
 
+    from mld_sdk.local_database import LocalDatabase, LocalDatabaseConfig
+
 
 class HealthStatus(str, Enum):
     """Plugin health status values."""
@@ -151,6 +153,7 @@ class AnalysisPlugin(ABC):
     """
 
     _context: Optional[PlatformContext] = None
+    _local_db: Optional["LocalDatabase"] = None
 
     @property
     @abstractmethod
@@ -371,3 +374,54 @@ class AnalysisPlugin(ABC):
                 return ("1.0.0", "2.0.0")  # Compatible with 1.x
         """
         return None
+
+    # --- Local database support ---
+
+    @property
+    def local_db(self) -> Optional["LocalDatabase"]:
+        """Get the local database instance, or None if not set up."""
+        return self._local_db
+
+    def get_local_models(self) -> list[type]:
+        """Return SQLModel classes for custom local tables.
+
+        Override this to register plugin-specific SQLModel tables
+        that will be created in the local database.
+
+        Returns:
+            List of SQLModel table classes.
+        """
+        return []
+
+    def get_local_database_config(self) -> Optional["LocalDatabaseConfig"]:
+        """Return configuration for the local database.
+
+        Override this to customize the storage directory or filename.
+        Returns None to use defaults (~/.mld/plugins/{plugin-name}/data.db).
+        """
+        return None
+
+    def _setup_local_database(self, storage_dir: "Path | None" = None) -> None:
+        """Initialize the local database. Call from initialize().
+
+        Args:
+            storage_dir: Override the storage directory for the database.
+                         Used by the platform to place DBs in its data directory.
+                         If None, uses the plugin's config or default path.
+        """
+        if self._local_db is not None and self._local_db.is_initialized:
+            return  # Already set up (idempotent)
+
+        from mld_sdk.local_database import LocalDatabase, LocalDatabaseConfig
+
+        config = self.get_local_database_config() or LocalDatabaseConfig()
+        if storage_dir is not None:
+            config.storage_dir = storage_dir
+        self._local_db = LocalDatabase(self.metadata.name, config)
+        self._local_db.initialize(models=self.get_local_models())
+
+    def _teardown_local_database(self) -> None:
+        """Close the local database. Call from shutdown()."""
+        if self._local_db is not None:
+            self._local_db.close()
+            self._local_db = None
