@@ -13,18 +13,6 @@ const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
-const sizeClasses = {
-  sm: 'p-1.5',
-  md: 'p-2',
-  lg: 'p-3',
-}
-
-const iconSizeClasses = {
-  sm: 'w-4 h-4',
-  md: 'w-5 h-5',
-  lg: 'w-6 h-6',
-}
-
 const isOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 
@@ -53,16 +41,13 @@ onUnmounted(() => {
   <div ref="dropdownRef" class="mld-settings-button">
     <button
       type="button"
-      :class="[
-        'inline-flex items-center justify-center rounded-mld bg-transparent hover:bg-bg-hover text-text-secondary hover:text-text-primary transition-colors duration-mld focus:outline-none focus:ring-2 focus:ring-mld-primary focus:ring-offset-2',
-        sizeClasses[size],
-      ]"
+      :class="['mld-settings-button__trigger', `mld-settings-button__trigger--${size}`]"
       aria-label="Settings"
       @click.stop="toggle"
     >
       <!-- Settings/Gear icon -->
       <svg
-        :class="iconSizeClasses[size]"
+        :class="`mld-settings-button__icon--${size}`"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

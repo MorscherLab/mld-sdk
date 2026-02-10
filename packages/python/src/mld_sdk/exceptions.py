@@ -17,7 +17,7 @@ Exception Hierarchy:
 Usage:
     from mld_sdk.exceptions import ValidationException, NotFoundException
 
-    async def get_experiment(self, experiment_id: str) -> Experiment:
+    async def get_experiment(self, experiment_id: int) -> Experiment:
         if not experiment_id:
             raise ValidationException("experiment_id is required")
 
@@ -68,15 +68,15 @@ class ValidationException(PluginException):
     Raised when input validation fails.
 
     Use for:
-    - Invalid parameter formats (bad UUIDs, malformed data)
+    - Invalid parameter formats or malformed data
     - Missing required fields
     - Out-of-range values
     - Schema validation failures
 
     Example:
-        if not is_valid_uuid(experiment_id):
+        if experiment_id <= 0:
             raise ValidationException(
-                "Invalid experiment ID format",
+                "Invalid experiment ID",
                 field="experiment_id",
                 value=experiment_id,
             )

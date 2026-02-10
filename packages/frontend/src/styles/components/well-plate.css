@@ -190,6 +190,17 @@
   cursor: grabbing;
 }
 
+/* Well label */
+.mld-well-plate__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  padding: 0 2px;
+  pointer-events: none;
+  color: var(--text-primary);
+}
+
 /* Sample type indicator */
 .mld-well-plate__indicator {
   font-weight: 700;

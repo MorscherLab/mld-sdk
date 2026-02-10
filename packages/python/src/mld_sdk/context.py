@@ -3,37 +3,19 @@ Platform context interface for plugins.
 
 Plugins receive a PlatformContext when running integrated with the platform,
 which provides access to platform services like auth, experiments, etc.
-
-Example:
-    class MyPlugin(AnalysisPlugin):
-        async def initialize(self, context: Optional[PlatformContext] = None) -> None:
-            self._context = context
-            if context:
-                # Running integrated - access platform services
-                self.experiment_repo = context.get_experiment_repository()
-            else:
-                # Running standalone - no platform services
-
-        async def get_experiment(self, experiment_id: str) -> Optional[Experiment]:
-            if self.experiment_repo is None:
-                raise ConfigurationException("Experiment repository not available")
-            return await self.experiment_repo.get_by_id(experiment_id)
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Callable, Optional
+from contextlib import asynccontextmanager
+from typing import Any, AsyncGenerator, Callable, Optional
 
 from mld_sdk.repositories import (
-    AnalysisArtifactRepository,
     ExperimentRepository,
-    MetadataTemplateRepository,
     PlatformConfig,
     PluginDataRepository,
+    PluginRoleRepository,
     UserRepository,
 )
-
-if TYPE_CHECKING:
-    pass
 
 
 class PlatformContext(ABC):
@@ -46,173 +28,75 @@ class PlatformContext(ABC):
     Repository availability depends on plugin type and platform configuration:
     - ANALYSIS plugins get read-only experiment access
     - EXPERIMENT_DESIGN plugins get full CRUD access
-    - Some repositories may be None in "none" database mode
-
-    Example:
-        # In your plugin
-        async def analyze(self, experiment_id: str) -> dict:
-            experiment_repo = self.context.get_experiment_repository()
-            if experiment_repo is None:
-                raise ConfigurationException("Experiments not available")
-
-            experiment = await experiment_repo.get_by_id(experiment_id)
-            if experiment is None:
-                raise NotFoundException("Experiment not found", entity="experiment")
-
-            # Perform analysis...
-            result = await self.run_analysis(experiment)
-
-            # Save result
-            data_repo = self.context.get_plugin_data_repository()
-            await data_repo.save_analysis_result(
-                experiment_id=experiment_id,
-                plugin_id=self.metadata.name,
-                result=result,
-            )
-
-            return result
     """
 
     @property
     @abstractmethod
     def is_authenticated(self) -> bool:
-        """Check if the current request is authenticated.
-
-        Returns:
-            True if user is authenticated, False otherwise.
-
-        Note:
-            This reflects the platform auth state, not plugin-specific auth.
-            In dev mode (devMode: true), this may always return False.
-        """
+        """Check if the current request is authenticated."""
         pass
 
     @abstractmethod
     def get_current_user_dependency(self) -> Callable:
-        """Get FastAPI dependency for current user.
-
-        Returns:
-            FastAPI dependency function that returns current user dict.
-
-        Usage:
-            @router.get("/protected")
-            async def protected_route(
-                user: dict = Depends(context.get_current_user_dependency())
-            ):
-                return {"user": user["username"]}
-
-        Raises:
-            HTTPException(401): If user not authenticated (when auth enabled)
-        """
+        """Get FastAPI dependency for current user."""
         pass
 
     @abstractmethod
     def get_optional_user_dependency(self) -> Callable:
-        """Get FastAPI dependency for optional user.
-
-        Returns:
-            FastAPI dependency function that returns user dict or None.
-
-        Usage:
-            @router.get("/public")
-            async def public_route(
-                user: dict | None = Depends(context.get_optional_user_dependency())
-            ):
-                if user:
-                    return {"greeting": f"Hello, {user['username']}"}
-                return {"greeting": "Hello, guest"}
-        """
+        """Get FastAPI dependency for optional user."""
         pass
 
     @abstractmethod
     def get_user_repository(self) -> Optional[UserRepository]:
-        """Get the user repository for user lookups.
-
-        Returns:
-            UserRepository instance, or None if not available.
-
-        Note:
-            Returns None in "none" database mode.
-
-        Raises:
-            RepositoryException: On database errors during operations.
-        """
+        """Get the user repository for user lookups."""
         pass
 
     @abstractmethod
     def get_experiment_repository(self) -> Optional[ExperimentRepository]:
         """Get the experiment repository for experiment management.
 
-        Returns:
-            ExperimentRepository instance, or None if not available.
-
-        Note:
-            - For ANALYSIS plugins: Returns read-only wrapper that blocks
-              create/update/delete operations.
-            - For EXPERIMENT_DESIGN plugins: Returns full access.
-            - Returns None in "none" database mode.
-
-        Raises:
-            RepositoryException: On database errors during operations.
-            PermissionException: On write operations for ANALYSIS plugins.
+        For ANALYSIS plugins: Returns read-only wrapper.
+        For EXPERIMENT_DESIGN plugins: Returns full access.
         """
         pass
 
     @abstractmethod
     def get_plugin_data_repository(self) -> Optional[PluginDataRepository]:
-        """Get the plugin data repository for experiment data and analysis results.
-
-        Returns:
-            PluginDataRepository instance, or None if not available.
-
-        Note:
-            This repository is available to all plugin types.
-            - EXPERIMENT_DESIGN plugins: Save experiment data
-            - ANALYSIS plugins: Read experiment data, save analysis results
-
-        Raises:
-            RepositoryException: On database errors during operations.
-        """
+        """Get the plugin data repository for experiment data and analysis results."""
         pass
 
     @abstractmethod
-    def get_metadata_template_repository(self) -> Optional[MetadataTemplateRepository]:
-        """Get the metadata template repository.
+    def get_plugin_role_repository(self) -> Optional["PluginRoleRepository"]:
+        """Get the plugin role repository for plugin-scoped user roles."""
 
-        Returns:
-            MetadataTemplateRepository instance, or None if not available.
+    @abstractmethod
+    def require_plugin_role(self, *allowed_roles: str) -> Any:
+        """Return a FastAPI Depends() that checks plugin role for current plugin.
 
-        Note:
-            Returns None in "none" database mode.
+        Platform admins automatically bypass plugin role checks.
+
+        Usage::
+
+            @router.get("/admin/settings")
+            async def settings(user=context.require_plugin_role("admin")):
+                ...
         """
-        pass
 
     @abstractmethod
     def get_config(self) -> PlatformConfig:
-        """Get platform configuration.
-
-        Returns:
-            Dict containing platform settings. Structure varies by platform
-            version, but typically includes:
-            - auth: Authentication settings
-            - database: Database configuration
-            - features: Enabled feature flags
-            - plugins: Plugin-specific settings
-        """
+        """Get platform configuration."""
         pass
 
     @abstractmethod
-    def get_analysis_artifact_repository(self) -> Optional[AnalysisArtifactRepository]:
-        """Get repository for storing analysis artifacts.
+    @asynccontextmanager
+    async def get_shared_db_session(self) -> AsyncGenerator[Any, None]:
+        """Get an async database session scoped to the plugin's schema.
 
-        Returns:
-            AnalysisArtifactRepository instance, or None if not available.
+        Used by plugins that declare `requires_shared_database=True`.
+        The session's search_path is set to the plugin's schema so
+        plugin tables are accessible without schema-qualifying names.
 
-        Note:
-            Available to all plugins. Use for persisting analysis outputs
-            like processed results, calibration curves, etc.
-
-        Raises:
-            RepositoryException: On database errors during operations.
+        Yields:
+            AsyncSession bound to the plugin's Postgres schema.
         """
-        pass
+        yield  # type: ignore[misc]

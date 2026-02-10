@@ -11,21 +11,7 @@ const iconPaths: Record<Toast['type'], string> = {
   info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
 }
 
-const bgColors: Record<Toast['type'], string> = {
-  success: 'rgba(16, 185, 129, 0.15)',
-  error: 'rgba(239, 68, 68, 0.15)',
-  warning: 'rgba(245, 158, 11, 0.15)',
-  info: 'rgba(59, 130, 246, 0.15)',
-}
-
-const borderColors: Record<Toast['type'], string> = {
-  success: 'rgba(16, 185, 129, 0.4)',
-  error: 'rgba(239, 68, 68, 0.4)',
-  warning: 'rgba(245, 158, 11, 0.4)',
-  info: 'rgba(59, 130, 246, 0.4)',
-}
-
-const iconColors: Record<Toast['type'], string> = {
+const accentColors: Record<Toast['type'], string> = {
   success: '#10B981',
   error: '#EF4444',
   warning: '#F59E0B',
@@ -35,30 +21,28 @@ const iconColors: Record<Toast['type'], string> = {
 
 <template>
   <Teleport to="body">
-    <div class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
+    <div class="mld-toast__container">
       <TransitionGroup name="toast">
         <div
           v-for="toast in toasts"
           :key="toast.id"
-          class="flex items-center gap-2 px-4 py-3 rounded-mld shadow-mld-lg pointer-events-auto cursor-pointer max-w-sm"
+          :class="['mld-toast__item', `mld-toast__item--${toast.type}`]"
           :style="{
-            backgroundColor: bgColors[toast.type],
-            border: `1px solid ${borderColors[toast.type]}`,
-            backdropFilter: 'blur(8px)',
+            borderLeftColor: accentColors[toast.type],
           }"
           role="alert"
           @click="dismiss(toast.id)"
         >
           <svg
-            class="w-4 h-4 flex-shrink-0"
+            class="mld-toast__icon"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            :style="{ color: iconColors[toast.type] }"
+            :style="{ color: accentColors[toast.type] }"
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="iconPaths[toast.type]" />
           </svg>
-          <span class="text-sm text-text-primary">{{ toast.message }}</span>
+          <span class="mld-toast__message">{{ toast.message }}</span>
         </div>
       </TransitionGroup>
     </div>

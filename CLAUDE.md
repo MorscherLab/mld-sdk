@@ -26,6 +26,8 @@ npm run build              # Build for distribution
 npm run typecheck          # Type check with vue-tsc
 npm run dev                # Watch mode build
 npm run clean              # Remove dist/
+npm run story:dev          # Component stories dev server
+npm run story:build        # Build stories for deployment
 ```
 
 ### CI/CD
@@ -43,7 +45,7 @@ Tests run automatically on push to main and PRs. Release workflow triggers on `v
 | `models.py` | `PluginMetadata`, `PluginCapabilities`, `PluginType` |
 | `context.py` | `PlatformContext` - platform services interface |
 | `repositories.py` | Protocol-based data access (experiments, users, compounds, etc.) |
-| `local_database.py` | `LocalDatabase`, `LocalDatabaseConfig` - per-plugin SQLite storage |
+| `local_database.py` | `LocalDatabase`, `LocalDatabaseConfig` - standalone SQLite with async support via aiosqlite |
 | `exceptions.py` | Exception hierarchy with serialization support |
 
 **Plugin system:**
@@ -51,8 +53,12 @@ Tests run automatically on push to main and PRs. Release workflow triggers on `v
 - Dual-mode operation: standalone (no context) or integrated (full platform access)
 - `PluginType.ANALYSIS` = read-only experiment access; `PluginType.EXPERIMENT_DESIGN` = full CRUD
 - Plugins provide FastAPI `APIRouter` objects mounted at configurable prefixes
+- `requires_shared_database` capability — plugin declares it needs DB access
+- `get_plugin_db_session()` — unified async DB access (PostgreSQL when integrated, SQLite when standalone)
+- All ID fields are `int` (not `str`)
+- Plugin-scoped roles via `require_plugin_role()` dependency
 
-**Repository protocols:** `ExperimentRepository`, `PluginDataRepository`, `UserRepository`, `AnalysisArtifactRepository`, `CompoundListRepository`, `MetadataTemplateRepository`, `TracingPresetRepository`
+**Repository protocols:** `ExperimentRepository`, `PluginDataRepository`, `UserRepository`, `PluginRoleRepository`
 
 ### Frontend SDK
 
@@ -60,8 +66,8 @@ Tests run automatically on push to main and PRs. Release workflow triggers on `v
 
 | Directory | Contents |
 |-----------|----------|
-| `components/` | 70 Vue 3 components (base inputs, forms, feedback, layout, data display, scientific, lab, workflow, scheduling) |
-| `composables/` | `useApi`, `useAuth`, `usePasskey`, `useTheme`, `useToast`, `usePlatformContext`, `useForm`, `useAsync`, `useWellPlateEditor`, `useConcentrationUnits`, `useDoseCalculator`, `useProtocolTemplates`, `useChemicalFormula`, `useSequenceUtils`, `useTimeUtils`, `useScheduleDrag` |
+| `components/` | 71 Vue 3 components (base inputs, forms, feedback, layout, data display, scientific, lab, workflow, scheduling) |
+| `composables/` | `useApi`, `useAuth`, `usePasskey`, `useTheme`, `useToast`, `usePlatformContext`, `useForm`, `useAsync`, `useWellPlateEditor`, `useConcentrationUnits`, `useDoseCalculator`, `useProtocolTemplates`, `useRackEditor`, `useChemicalFormula`, `useSequenceUtils`, `useTimeUtils`, `useScheduleDrag` |
 | `stores/` | `useAuthStore` (auth state), `useSettingsStore` (app settings) |
 | `types/` | TypeScript definitions for all components and platform types |
 | `styles/` | CSS with CSS variables for theming |
@@ -146,7 +152,7 @@ if (!auth.isAuthenticated.value) {
 
 ## Tech Stack
 
-- **Python**: 3.12+, FastAPI, Pydantic 2.x, uv package manager
+- **Python**: 3.12+, FastAPI, Pydantic 2.x, aiosqlite, uv package manager
 - **Frontend**: Vue 3.4+, TypeScript 5.3+, Pinia, Vite, Tailwind CSS 4.x
 - **Build**: Hatchling (Python), Vite library mode (frontend)
 - **Registry**: GitHub Packages (both npm and PyPI)

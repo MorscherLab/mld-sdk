@@ -13,19 +13,19 @@ class PluginType(str, Enum):
     EXPERIMENT_DESIGN = "experiment_design"
 
 
-@dataclass
+@dataclass(slots=True)
 class PluginCapabilities:
     """Declares what platform features a plugin needs."""
 
     requires_auth: bool = False
     requires_database: bool = False
     requires_experiments: bool = False
-    requires_local_database: bool = False
+    requires_shared_database: bool = False
     # Optional integrations
     supports_experiment_linking: bool = False
 
 
-@dataclass
+@dataclass(slots=True)
 class PluginMetadata:
     """Metadata describing an analysis plugin."""
 

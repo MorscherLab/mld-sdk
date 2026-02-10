@@ -37,14 +37,14 @@ description: |
 **Step 1: Create plugin class**
 ```python
 # src/mld_plugin_example/plugin.py
-from mld_sdk import AnalysisPlugin, PluginMetadata, PluginCapabilities, PluginType
+from mld_sdk import AnalysisPlugin, PluginMetadata, PluginCapabilities, PluginType, PluginHealth, HealthStatus
 from mld_sdk.context import PlatformContext
 from fastapi import APIRouter
 
 router = APIRouter()
 
 @router.get("/analyze/{experiment_id}")
-async def analyze(experiment_id: str):
+async def analyze(experiment_id: int):
     return {"status": "analyzed", "experiment_id": experiment_id}
 
 class ExamplePlugin(AnalysisPlugin):
@@ -56,14 +56,10 @@ class ExamplePlugin(AnalysisPlugin):
             description="Example analysis plugin",
             analysis_type="example",
             routes_prefix="/example",
-        )
-
-    @property
-    def capabilities(self) -> PluginCapabilities:
-        return PluginCapabilities(
             plugin_type=PluginType.ANALYSIS,
-            requires_auth=False,
-            requires_database=False,
+            capabilities=PluginCapabilities(
+                requires_auth=False,
+            ),
         )
 
     def get_routers(self) -> list[tuple[APIRouter, str]]:
@@ -103,10 +99,10 @@ Need user authentication?
 ├── Yes → requires_auth=True, use useAuth composable
 └── No  → requires_auth=False (anonymous access)
 
-Need to persist plugin settings?
-├── Yes (platform) → requires_database=True, use context.get_plugin_config()
-└── Yes (local)    → Use in-memory dict, JSON file, or localStorage
-└── No             → Skip settings management
+Need to persist plugin data/settings?
+├── Yes (shared DB) → requires_shared_database=True, use get_plugin_db_session()
+└── Yes (local)     → Use standalone_db (SQLite), JSON file, or localStorage
+└── No              → Skip persistence
 
 Need a frontend UI?
 ├── Yes → Create frontend/ with Vue 3 + @morscherlab/mld-sdk
@@ -134,16 +130,11 @@ def metadata(self) -> PluginMetadata:
         description="Description",  # User-facing description
         analysis_type="my-type",    # Category (e.g., "mass-spec", "genomics")
         routes_prefix="/my-plugin", # API route prefix
-        frontend_route="/my-plugin",# Frontend URL path (if has UI)
-    )
-
-@property
-def capabilities(self) -> PluginCapabilities:
-    return PluginCapabilities(
         plugin_type=PluginType.ANALYSIS,  # or EXPERIMENT_DESIGN
-        requires_auth=True,               # Needs user login
-        requires_database=True,           # Needs platform DB access
-        supported_file_types=[".csv", ".xlsx"],  # Files this plugin handles
+        capabilities=PluginCapabilities(
+            requires_auth=True,               # Needs user login
+            requires_shared_database=True,    # Needs shared DB access
+        ),
     )
 ```
 
@@ -202,12 +193,12 @@ async def shutdown(self) -> None:
     if hasattr(self, '_service'):
         await self._service.cleanup()
 
-async def check_health(self) -> dict:
-    """Optional health check. Returns status dict."""
-    return {
-        "status": "healthy",
-        "mode": "integrated" if self._context else "standalone",
-    }
+async def check_health(self) -> PluginHealth:
+    """Optional health check. Returns PluginHealth."""
+    return PluginHealth(
+        status=HealthStatus.HEALTHY,
+        details={"mode": "integrated" if self._context else "standalone"},
+    )
 ```
 
 ### Step 4: Add Frontend (if needed)
@@ -231,7 +222,7 @@ frontend/
 ```json
 {
   "dependencies": {
-    "@morscherlab/mld-sdk": "^0.3.0",
+    "@morscherlab/mld-sdk": "^0.4.0",
     "vue": "^3.4.0",
     "vue-router": "^4.0.0",
     "pinia": "^2.1.0"
@@ -465,7 +456,7 @@ name = "mld-plugin-example"
 version = "1.0.0"
 requires-python = ">=3.12"
 dependencies = [
-    "mld-sdk>=0.3.0",
+    "mld-sdk>=0.4.0",
     "fastapi>=0.109.0",
 ]
 
@@ -491,7 +482,7 @@ packages = ["src/mld_plugin_example"]
 | Need to... | Read |
 |------------|------|
 | Understand PluginMetadata/Capabilities fields | [python-backend.md](references/python-backend.md) |
-| Use repository protocols (experiments, artifacts) | [python-backend.md](references/python-backend.md) |
+| Use repository protocols (experiments, plugin data, roles) | [python-backend.md](references/python-backend.md) |
 | Handle exceptions properly | [python-backend.md](references/python-backend.md) |
 | Use SDK components (buttons, inputs, modals) | [frontend-sdk.md](references/frontend-sdk.md) |
 | Work with WellPlate, PlateMapEditor, Timeline | [frontend-sdk.md](references/frontend-sdk.md) |
@@ -508,7 +499,7 @@ packages = ["src/mld_plugin_example"]
 
 ```python
 # In your service class
-async def get_experiment_data(self, experiment_id: str):
+async def get_experiment_data(self, experiment_id: int):
     if self._context is None:
         raise HTTPException(503, "Not available in standalone mode")
 
@@ -608,7 +599,7 @@ class AnalysisService:
 
         if context is not None:
             self._experiment_repo = context.get_experiment_repository()
-            self._artifact_repo = context.get_analysis_artifact_repository()
+            self._plugin_data_repo = context.get_plugin_data_repository()
 
     @property
     def is_standalone(self) -> bool:
@@ -617,13 +608,8 @@ class AnalysisService:
     async def get_settings(self) -> dict:
         if self.is_standalone:
             return self._settings
-        return await self._context.get_plugin_config() or {}
-
-    async def save_settings(self, settings: dict) -> None:
-        if self.is_standalone:
-            self._settings = settings
-        else:
-            await self._context.set_plugin_config(settings)
+        config = self._context.get_config()
+        return config.get("plugin_settings", {})
 ```
 
 ---

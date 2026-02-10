@@ -5,6 +5,55 @@
   display: inline-flex;
 }
 
+.mld-settings-button__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--mld-radius, 0.5rem);
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.mld-settings-button__trigger:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.mld-settings-button__trigger:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.mld-settings-button__trigger--sm {
+  padding: 0.375rem;
+}
+
+.mld-settings-button__trigger--md {
+  padding: 0.5rem;
+}
+
+.mld-settings-button__trigger--lg {
+  padding: 0.75rem;
+}
+
+.mld-settings-button__icon--sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mld-settings-button__icon--md {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.mld-settings-button__icon--lg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .mld-settings-dropdown {
   position: absolute;
   top: calc(100% + 0.5rem);

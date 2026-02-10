@@ -17,7 +17,7 @@ async def hello():
     return {"message": "Hello from example plugin!"}
 
 @router.get("/analyze/{experiment_id}")
-async def analyze(experiment_id: str):
+async def analyze(experiment_id: int):
     return {"status": "analyzed", "experiment_id": experiment_id}
 
 
@@ -33,14 +33,10 @@ class ExamplePlugin(AnalysisPlugin):
             description="Example analysis plugin",
             analysis_type="example",
             routes_prefix="/example",
-        )
-
-    @property
-    def capabilities(self) -> PluginCapabilities:
-        return PluginCapabilities(
             plugin_type=PluginType.ANALYSIS,
-            requires_auth=False,
-            requires_database=False,
+            capabilities=PluginCapabilities(
+                requires_auth=False,
+            ),
         )
 
     def get_routers(self) -> list[tuple[APIRouter, str]]:
@@ -90,7 +86,7 @@ description = "Example MLD analysis plugin"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "mld-sdk>=0.3.0",
+    "mld-sdk>=0.4.0",
     "fastapi>=0.109.0",
 ]
 
@@ -134,7 +130,7 @@ router = APIRouter(tags=["example"])
 
 class InstrumentReading(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    experiment_id: str = Field(index=True)
+    experiment_id: int = Field(index=True)
     intensity: float
     channel: str
 
@@ -153,28 +149,28 @@ class ExamplePlugin(AnalysisPlugin):
     def get_routers(self) -> list[tuple[APIRouter, str]]:
         return [(router, self.metadata.routes_prefix)]
 
-    def get_local_models(self) -> list[type]:
+    def get_shared_models(self) -> list[type]:
         return [InstrumentReading]
 
     async def initialize(self, context: PlatformContext | None) -> None:
         self._context = context
-        self._setup_local_database()
+        self._setup_standalone_db()
 
         # High-level: key-value settings
-        self.local_db.set("default_channel", "A", namespace="settings")
+        self.standalone_db.set("default_channel", "A", namespace="settings")
 
     async def shutdown(self) -> None:
-        self._teardown_local_database()
+        self._teardown_standalone_db()
 
-    def store_reading(self, exp_id: str, intensity: float, channel: str):
-        with self.local_db.get_session() as session:
+    def store_reading(self, exp_id: int, intensity: float, channel: str):
+        with self.standalone_db.get_session() as session:
             session.add(InstrumentReading(
                 experiment_id=exp_id, intensity=intensity, channel=channel
             ))
             session.commit()
 
-    def get_readings(self, exp_id: str) -> list[InstrumentReading]:
-        with self.local_db.get_session() as session:
+    def get_readings(self, exp_id: int) -> list[InstrumentReading]:
+        with self.standalone_db.get_session() as session:
             return list(session.exec(
                 select(InstrumentReading).where(
                     InstrumentReading.experiment_id == exp_id
@@ -182,11 +178,13 @@ class ExamplePlugin(AnalysisPlugin):
             ).all())
 ```
 
+> **Note:** For unified async database access (e.g., in route handlers), use `get_plugin_db_session()` which yields an async SQLAlchemy session from either the standalone or platform database.
+
 **pyproject.toml** addition for local-db dependency:
 
 ```toml
 dependencies = [
-    "mld-sdk[local-db]>=0.3.4",
+    "mld-sdk[local-db]>=0.4.0",
     "fastapi>=0.109.0",
 ]
 ```
@@ -232,7 +230,7 @@ class AnalysisService:
     def is_standalone(self) -> bool:
         return self._context is None
 
-    async def run_analysis(self, experiment_id: str, params: dict) -> dict:
+    async def run_analysis(self, experiment_id: int, params: dict) -> dict:
         if self.is_standalone:
             return {"mode": "standalone", "experiment_id": experiment_id}
 
@@ -244,13 +242,13 @@ class AnalysisService:
     async def get_settings(self) -> dict:
         if self.is_standalone:
             return self._settings
-        return await self._context.get_plugin_config() or {}
+        config = self._context.get_config()
+        return config.get("plugin_settings", {})
 
     async def save_settings(self, settings: dict) -> None:
         if self.is_standalone:
             self._settings = settings
-        else:
-            await self._context.set_plugin_config(settings)
+        # In integrated mode, settings are managed by the platform
 
     async def cleanup(self) -> None:
         pass
@@ -280,7 +278,7 @@ def get_service() -> AnalysisService:
 
 
 class AnalysisRequest(BaseModel):
-    experiment_id: str
+    experiment_id: int
     parameters: dict = {}
 
 
@@ -316,7 +314,10 @@ async def update_settings(
 
 ```python
 # plugin.py
-from mld_sdk import AnalysisPlugin, PluginMetadata, PluginCapabilities, PluginType
+from mld_sdk import (
+    AnalysisPlugin, PluginMetadata, PluginCapabilities, PluginType,
+    PluginHealth, HealthStatus,
+)
 from mld_sdk.context import PlatformContext
 from fastapi import APIRouter
 
@@ -337,14 +338,11 @@ class MyAnalysisPlugin(AnalysisPlugin):
             description="My analysis plugin",
             analysis_type="custom",
             routes_prefix="/my-analysis",
-        )
-
-    @property
-    def capabilities(self) -> PluginCapabilities:
-        return PluginCapabilities(
             plugin_type=PluginType.ANALYSIS,
-            requires_auth=True,
-            requires_database=True,
+            capabilities=PluginCapabilities(
+                requires_auth=True,
+                requires_database=True,
+            ),
         )
 
     def get_routers(self) -> list[tuple[APIRouter, str]]:
@@ -364,12 +362,14 @@ class MyAnalysisPlugin(AnalysisPlugin):
         if self._service:
             await self._service.cleanup()
 
-    async def check_health(self) -> dict:
-        return {
-            "status": "healthy",
-            "mode": "integrated" if self._context else "standalone",
-            "version": self.metadata.version,
-        }
+    async def check_health(self) -> PluginHealth:
+        return PluginHealth(
+            status=HealthStatus.HEALTHY,
+            details={
+                "mode": "integrated" if self._context else "standalone",
+                "version": self.metadata.version,
+            },
+        )
 ```
 
 ---
@@ -390,7 +390,7 @@ class MyAnalysisPlugin(AnalysisPlugin):
     "preview": "vite preview"
   },
   "dependencies": {
-    "@morscherlab/mld-sdk": "^0.3.0",
+    "@morscherlab/mld-sdk": "^0.4.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.0",
     "vue-router": "^4.2.5"

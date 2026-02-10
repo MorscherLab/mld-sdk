@@ -145,11 +145,11 @@ const dragSelectedWells = computed(() => {
 // Size presets with pixel values for reliable sizing
 const sizeConfig = computed(() => {
   const sizes = {
-    sm: { cellWidth: '40px', cellHeight: '40px', headerWidth: '32px', headerHeight: '32px', text: 'text-[10px]', gap: '2px' },
-    md: { cellWidth: '56px', cellHeight: '32px', headerWidth: '32px', headerHeight: '24px', text: 'text-xs', gap: '3px' },
-    lg: { cellWidth: '80px', cellHeight: '40px', headerWidth: '40px', headerHeight: '32px', text: 'text-sm', gap: '4px' },
-    xl: { cellWidth: '96px', cellHeight: '48px', headerWidth: '48px', headerHeight: '40px', text: 'text-base', gap: '4px' },
-    fill: { cellWidth: '100%', cellHeight: '32px', headerWidth: '32px', headerHeight: '24px', text: 'text-xs', gap: '2px' },
+    sm: { cellWidth: '40px', cellHeight: '40px', headerWidth: '32px', headerHeight: '32px', fontSize: '0.625rem', gap: '2px' },
+    md: { cellWidth: '56px', cellHeight: '32px', headerWidth: '32px', headerHeight: '24px', fontSize: '0.75rem', gap: '3px' },
+    lg: { cellWidth: '80px', cellHeight: '40px', headerWidth: '40px', headerHeight: '32px', fontSize: '0.875rem', gap: '4px' },
+    xl: { cellWidth: '96px', cellHeight: '48px', headerWidth: '48px', headerHeight: '40px', fontSize: '1rem', gap: '4px' },
+    fill: { cellWidth: '100%', cellHeight: '32px', headerWidth: '32px', headerHeight: '24px', fontSize: '0.75rem', gap: '2px' },
   }
   return sizes[props.size]
 })
@@ -202,27 +202,25 @@ function getWellClasses(well: Well): string[] {
   const isDragSource = dragSourceWell.value === well.id
   const isDragTarget = dragTargetWell.value === well.id
 
-  const selectionClass = isDragSource ? 'ring-2 ring-amber-500 opacity-50'
-    : isDragTarget ? 'ring-2 ring-emerald-500 ring-offset-1 bg-emerald-500/20'
-    : isWellSelected ? 'ring-2 ring-emerald-500 ring-offset-1'
-    : isDragOver ? 'ring-2 ring-indigo-500 bg-indigo-500/20'
-    : isHovered && !props.readonly ? 'ring-2 ring-emerald-500/50'
-    : ''
+  const classes = [
+    'mld-well-plate__well',
+    props.wellShape === 'circle' ? 'mld-well-plate__well--circle' : 'mld-well-plate__well--rounded',
+  ]
 
-  const cursorClass = props.selectionMode === 'drag' && well.sampleType
-    ? 'cursor-grab active:cursor-grabbing'
-    : 'cursor-pointer'
+  if (props.selectionMode === 'drag' && well.sampleType) {
+    classes.push('mld-well-plate__well--draggable')
+  }
 
-  return [
-    'transition-all duration-150 relative',
-    cursorClass,
-    'flex items-center justify-center',
-    sizeConfig.value.text,
-    'font-medium',
-    props.wellShape === 'circle' ? 'rounded-full' : 'rounded-lg',
-    selectionClass,
-    isDisabled ? 'opacity-50 cursor-not-allowed' : '',
-  ].filter(Boolean)
+  if (isDragSource) classes.push('mld-well-plate__well--drag-source')
+  else if (isDragTarget) classes.push('mld-well-plate__well--drag-target')
+  else if (isWellSelected) classes.push('mld-well-plate__well--selected')
+  else if (isDragOver) classes.push('mld-well-plate__well--drag-over')
+  else if (isHovered && !props.readonly) classes.push('mld-well-plate__well--hovered')
+
+  if (isDisabled) classes.push('mld-well-plate__well--disabled')
+  if (well.state === 'filled') classes.push('mld-well-plate__well--filled')
+
+  return classes
 }
 
 function getWellStyle(well: Well): Record<string, string> {
@@ -497,9 +495,8 @@ const tableStyle = computed(() => ({
             <th
               v-for="col in colLabels"
               :key="col"
-              :class="[sizeConfig.text, 'font-medium text-center']"
-              :style="{ height: sizeConfig.headerHeight }"
-              style="color: var(--text-muted)"
+              class="mld-well-plate__col-header"
+              :style="{ height: sizeConfig.headerHeight, fontSize: sizeConfig.fontSize }"
             >
               {{ col }}
             </th>
@@ -510,14 +507,14 @@ const tableStyle = computed(() => ({
             <!-- Row header -->
             <td
               v-if="props.showLabels"
-              :class="[sizeConfig.text, 'font-medium text-center align-middle']"
-              :style="{ width: sizeConfig.headerWidth, height: sizeConfig.cellHeight, minWidth: sizeConfig.headerWidth, minHeight: sizeConfig.cellHeight, color: 'var(--text-muted)' }"
+              class="mld-well-plate__row-header"
+              :style="{ width: sizeConfig.headerWidth, height: sizeConfig.cellHeight, minWidth: sizeConfig.headerWidth, minHeight: sizeConfig.cellHeight, fontSize: sizeConfig.fontSize }"
             >
               {{ rowLabels[rowIndex] }}
             </td>
 
             <!-- Wells -->
-            <td v-for="well in row" :key="well.id" class="p-0">
+            <td v-for="well in row" :key="well.id" class="mld-well-plate__cell">
               <div
                 role="gridcell"
                 tabindex="0"
@@ -532,6 +529,7 @@ const tableStyle = computed(() => ({
                   minWidth: isFillMode ? '0' : sizeConfig.cellWidth,
                   minHeight: sizeConfig.cellHeight,
                   boxSizing: 'border-box',
+                  fontSize: sizeConfig.fontSize,
                   ...getWellStyle(well),
                 }"
                 :title="`${well.id}${well.sampleType ? `: ${well.sampleType}` : ''}${getWellLabel(well) ? ` - ${getWellLabel(well)}` : ''}`"
@@ -551,24 +549,21 @@ const tableStyle = computed(() => ({
                 <!-- Well label text (from metadata.label) -->
                 <span
                   v-if="getWellLabel(well)"
-                  class="truncate px-0.5 max-w-full pointer-events-none"
-                  style="color: var(--text-primary)"
+                  class="mld-well-plate__label"
                 >
                   {{ getWellLabel(well) }}
                 </span>
                 <!-- Sample type indicator (S/B/Q/C) -->
                 <span
                   v-else-if="getSampleTypeIndicator(well)"
-                  class="font-bold pointer-events-none"
-                  style="color: var(--text-primary)"
+                  class="mld-well-plate__indicator"
                 >
                   {{ getSampleTypeIndicator(well) }}
                 </span>
                 <!-- Well ID -->
                 <span
                   v-else-if="props.showWellIds"
-                  :class="[sizeConfig.text, 'font-medium pointer-events-none']"
-                  style="color: var(--text-primary)"
+                  class="mld-well-plate__well-id"
                 >
                   {{ well.id }}
                 </span>

@@ -90,6 +90,14 @@
   padding: 0.75rem;
 }
 
+.mld-icon-button__icon--sm,
+.mld-icon-button__icon--md,
+.mld-icon-button__icon--lg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .mld-icon-button__icon--sm {
   width: 1rem;
   height: 1rem;

@@ -6,10 +6,11 @@ from, as well as lifecycle hooks and health status interfaces.
 """
 
 from abc import ABC, abstractmethod
+from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Optional
 
 from mld_sdk.context import PlatformContext
 from mld_sdk.models import PluginMetadata
@@ -17,7 +18,7 @@ from mld_sdk.models import PluginMetadata
 if TYPE_CHECKING:
     from fastapi import APIRouter
 
-    from mld_sdk.local_database import LocalDatabase, LocalDatabaseConfig
+    from mld_sdk.local_database import LocalDatabase
 
 
 class HealthStatus(str, Enum):
@@ -29,40 +30,9 @@ class HealthStatus(str, Enum):
     UNKNOWN = "unknown"
 
 
-@dataclass
+@dataclass(slots=True)
 class PluginHealth:
-    """
-    Plugin health status report.
-
-    Returned by check_health() to indicate the plugin's operational state.
-    The platform uses this for monitoring and load balancing decisions.
-
-    Example:
-        async def check_health(self) -> PluginHealth:
-            try:
-                # Check critical dependencies
-                if not self.db_connection.is_alive():
-                    return PluginHealth(
-                        status=HealthStatus.UNHEALTHY,
-                        message="Database connection lost",
-                        details={"db_host": self.db_host},
-                    )
-
-                # Check non-critical services
-                cache_ok = await self.check_cache()
-                if not cache_ok:
-                    return PluginHealth(
-                        status=HealthStatus.DEGRADED,
-                        message="Cache unavailable, performance may be reduced",
-                    )
-
-                return PluginHealth(status=HealthStatus.HEALTHY)
-            except Exception as e:
-                return PluginHealth(
-                    status=HealthStatus.UNKNOWN,
-                    message=f"Health check failed: {e}",
-                )
-    """
+    """Plugin health status report."""
 
     status: HealthStatus = HealthStatus.HEALTHY
     message: Optional[str] = None
@@ -82,27 +52,9 @@ class PluginHealth:
         return result
 
 
-@dataclass
+@dataclass(slots=True)
 class LifecycleHookResult:
-    """
-    Result from a lifecycle hook.
-
-    Hooks can return success/failure with optional message and data.
-
-    Example:
-        async def on_before_experiment_save(
-            self, experiment_id: str, data: dict
-        ) -> LifecycleHookResult:
-            # Validate experiment data
-            errors = self.validate_schema(data)
-            if errors:
-                return LifecycleHookResult(
-                    success=False,
-                    message="Validation failed",
-                    data={"errors": errors},
-                )
-            return LifecycleHookResult(success=True)
-    """
+    """Result from a lifecycle hook."""
 
     success: bool = True
     message: Optional[str] = None
@@ -115,198 +67,56 @@ class AnalysisPlugin(ABC):
 
     Plugins implement this interface to integrate with the MLD platform.
     They can run in two modes:
-    - Standalone: No platform context, minimal features
-    - Integrated: Full platform context with auth, experiments, etc.
-
-    Lifecycle:
-        1. Plugin discovered via entry point or path
-        2. Plugin instantiated (constructor called)
-        3. initialize(context) called - set up resources
-        4. Plugin serves requests
-        5. shutdown() called on platform stop
-
-    Example:
-        class MyPlugin(AnalysisPlugin):
-            @property
-            def metadata(self) -> PluginMetadata:
-                return PluginMetadata(
-                    name="My Plugin",
-                    version="1.0.0",
-                    description="My analysis plugin",
-                    analysis_type="metabolomics",
-                    routes_prefix="/my-plugin",
-                )
-
-            def get_routers(self):
-                return [(my_router, "")]
-
-            async def initialize(self, context=None):
-                self._context = context
-                # Set up database connections, caches, etc.
-
-            async def shutdown(self):
-                # Clean up resources
-                pass
-
-            async def check_health(self) -> PluginHealth:
-                return PluginHealth(status=HealthStatus.HEALTHY)
+    - Standalone: No platform context, uses local SQLite for plugin tables
+    - Integrated: Full platform context with PostgreSQL shared schema
     """
 
     _context: Optional[PlatformContext] = None
-    _local_db: Optional["LocalDatabase"] = None
+    _standalone_db: Optional["LocalDatabase"] = None
 
     @property
     @abstractmethod
     def metadata(self) -> PluginMetadata:
-        """Return plugin metadata.
-
-        Must return a PluginMetadata instance describing the plugin.
-        This is called during plugin discovery.
-        """
+        """Return plugin metadata."""
         pass
 
     @abstractmethod
     def get_routers(self) -> list[tuple["APIRouter", str]]:
-        """
-        Return list of (router, sub_prefix) tuples.
-
-        Each router is mounted at {routes_prefix}{sub_prefix}.
-
-        Example:
-            return [
-                (extraction_router, "/extraction"),  # /my-plugin/extraction
-                (charts_router, "/charts"),          # /my-plugin/charts
-                (api_router, ""),                    # /my-plugin/
-            ]
-
-        Returns:
-            List of (APIRouter, prefix) tuples
-        """
+        """Return list of (router, sub_prefix) tuples."""
         pass
 
     @abstractmethod
     async def initialize(self, context: Optional[PlatformContext] = None) -> None:
-        """
-        Initialize the plugin.
-
-        Called once when the plugin is loaded. Use this to:
-        - Store the platform context
-        - Set up database connections
-        - Initialize caches
-        - Start background tasks
-
-        Args:
-            context: Platform context if running integrated, None if standalone.
-
-        Raises:
-            PluginLifecycleException: If initialization fails fatally.
-                The plugin will not be loaded if this raises.
-
-        Example:
-            async def initialize(self, context=None):
-                self._context = context
-                if context:
-                    self.experiment_repo = context.get_experiment_repository()
-                    self.data_repo = context.get_plugin_data_repository()
-        """
+        """Initialize the plugin."""
         pass
 
     @abstractmethod
     async def shutdown(self) -> None:
-        """
-        Clean up plugin resources.
-
-        Called when the platform is shutting down. Use this to:
-        - Close database connections
-        - Stop background tasks
-        - Flush caches
-
-        This should not raise exceptions - log errors instead.
-
-        Example:
-            async def shutdown(self):
-                if self.db_pool:
-                    await self.db_pool.close()
-                if self.cache:
-                    await self.cache.flush()
-        """
+        """Clean up plugin resources."""
         pass
 
     # --- Optional lifecycle hooks ---
 
     async def check_health(self) -> PluginHealth:
-        """
-        Check plugin health status.
-
-        Override this to report plugin health to the platform.
-        Called periodically by the platform health check system.
-
-        Returns:
-            PluginHealth with status and optional details.
-
-        Default implementation returns HEALTHY.
-        """
+        """Check plugin health status."""
         return PluginHealth(status=HealthStatus.HEALTHY)
 
     async def on_before_experiment_save(
-        self, experiment_id: str, data: dict[str, Any]
+        self, experiment_id: int, data: dict[str, Any]
     ) -> LifecycleHookResult:
-        """
-        Called before experiment data is saved.
-
-        Use this hook to:
-        - Validate experiment data against plugin schema
-        - Transform or enrich data before save
-        - Reject invalid data
-
-        Args:
-            experiment_id: ID of the experiment
-            data: Data being saved (can be modified in place)
-
-        Returns:
-            LifecycleHookResult with success=False to prevent save.
-
-        Default implementation allows all saves.
-        """
+        """Called before experiment data is saved."""
         return LifecycleHookResult(success=True)
 
     async def on_after_experiment_save(
-        self, experiment_id: str, data: dict[str, Any]
+        self, experiment_id: int, data: dict[str, Any]
     ) -> None:
-        """
-        Called after experiment data is saved successfully.
-
-        Use this hook to:
-        - Trigger follow-up processing
-        - Update caches
-        - Send notifications
-
-        Args:
-            experiment_id: ID of the experiment
-            data: Data that was saved
-
-        Default implementation does nothing.
-        """
+        """Called after experiment data is saved successfully."""
         pass
 
     async def on_experiment_status_change(
-        self, experiment_id: str, old_status: str, new_status: str
+        self, experiment_id: int, old_status: str, new_status: str
     ) -> None:
-        """
-        Called when experiment status changes.
-
-        Use this hook to:
-        - Trigger analysis when status becomes "completed"
-        - Update UI state
-        - Log status transitions
-
-        Args:
-            experiment_id: ID of the experiment
-            old_status: Previous status
-            new_status: New status
-
-        Default implementation does nothing.
-        """
+        """Called when experiment status changes."""
         pass
 
     # --- Properties ---
@@ -324,14 +134,7 @@ class AnalysisPlugin(ABC):
     # --- Optional overrides ---
 
     def get_frontend_config(self) -> dict[str, Any]:
-        """
-        Return frontend configuration for this plugin.
-
-        Override to provide custom frontend config.
-        This is sent to the plugin frontend on load.
-
-        Default returns basic metadata.
-        """
+        """Return frontend configuration for this plugin."""
         return {
             "name": self.metadata.name,
             "version": self.metadata.version,
@@ -340,88 +143,91 @@ class AnalysisPlugin(ABC):
         }
 
     def get_frontend_dir(self) -> Optional[str]:
-        """
-        Return the path to the plugin's built frontend directory.
-
-        Override this method to provide the path to your plugin's
-        built frontend files (typically the 'dist' folder from Vite/webpack).
-
-        The platform will serve these files under the plugin's route prefix.
-
-        Returns:
-            Path to frontend dist directory, or None if no frontend.
-
-        Example:
-            def get_frontend_dir(self) -> Optional[str]:
-                from pathlib import Path
-                return str(Path(__file__).parent.parent / "frontend" / "dist")
-        """
+        """Return the path to the plugin's built frontend directory."""
         return None
 
     def get_compatible_platform_versions(self) -> Optional[tuple[str, str]]:
-        """
-        Return the range of compatible platform versions.
-
-        Override to specify version constraints. The platform will
-        warn if versions are incompatible.
-
-        Returns:
-            Tuple of (min_version, max_version) or None for no constraints.
-            Use "*" for unbounded min or max.
-
-        Example:
-            def get_compatible_platform_versions(self):
-                return ("1.0.0", "2.0.0")  # Compatible with 1.x
-        """
+        """Return the range of compatible platform versions."""
         return None
 
-    # --- Local database support ---
+    # --- Shared database support ---
 
-    @property
-    def local_db(self) -> Optional["LocalDatabase"]:
-        """Get the local database instance, or None if not set up."""
-        return self._local_db
+    def get_shared_models(self) -> list[type]:
+        """Return SQLModel/SQLAlchemy model classes for plugin tables.
 
-    def get_local_models(self) -> list[type]:
-        """Return SQLModel classes for custom local tables.
-
-        Override this to register plugin-specific SQLModel tables
-        that will be created in the local database.
+        Override this to declare tables that will be created in the plugin's
+        shared database schema (PostgreSQL when integrated, SQLite when standalone).
 
         Returns:
-            List of SQLModel table classes.
+            List of model classes with __table__ attribute.
         """
         return []
 
-    def get_local_database_config(self) -> Optional["LocalDatabaseConfig"]:
-        """Return configuration for the local database.
+    @asynccontextmanager
+    async def get_plugin_db_session(self) -> AsyncGenerator[Any, None]:
+        """Unified DB access -- PostgreSQL (platform) or SQLite (standalone).
 
-        Override this to customize the storage directory or filename.
-        Returns None to use defaults (~/.mld/plugins/{plugin-name}/data.db).
+        Yields an async session. When running integrated, delegates to the
+        platform's shared schema session. When standalone, uses local SQLite.
         """
-        return None
+        if self._context:
+            async with self._context.get_shared_db_session() as session:
+                yield session
+        else:
+            if self._standalone_db is None:
+                raise RuntimeError(
+                    "Standalone database not initialized. "
+                    "Call _setup_standalone_db() in initialize()."
+                )
+            async with self._standalone_db.get_async_session() as session:
+                yield session
 
-    def _setup_local_database(self, storage_dir: "Path | None" = None) -> None:
-        """Initialize the local database. Call from initialize().
+    # --- Standalone database (SQLite fallback) ---
+
+    @property
+    def standalone_db(self) -> Optional["LocalDatabase"]:
+        """Get the standalone database instance, or None if not set up."""
+        return self._standalone_db
+
+    def _setup_standalone_db(self, storage_dir: "Any | None" = None) -> None:
+        """Initialize the standalone SQLite database.
 
         Args:
             storage_dir: Override the storage directory for the database.
-                         Used by the platform to place DBs in its data directory.
-                         If None, uses the plugin's config or default path.
         """
-        if self._local_db is not None and self._local_db.is_initialized:
-            return  # Already set up (idempotent)
+        if self._standalone_db is not None and self._standalone_db.is_initialized:
+            return
 
         from mld_sdk.local_database import LocalDatabase, LocalDatabaseConfig
+        from pathlib import Path
 
-        config = self.get_local_database_config() or LocalDatabaseConfig()
+        config = LocalDatabaseConfig()
         if storage_dir is not None:
-            config.storage_dir = storage_dir
-        self._local_db = LocalDatabase(self.metadata.name, config)
-        self._local_db.initialize(models=self.get_local_models())
+            config.storage_dir = Path(storage_dir) if not isinstance(storage_dir, Path) else storage_dir
+        self._standalone_db = LocalDatabase(self.metadata.name, config)
+        self._standalone_db.initialize(models=self.get_shared_models())
+
+    def _teardown_standalone_db(self) -> None:
+        """Close the standalone database."""
+        if self._standalone_db is not None:
+            self._standalone_db.close()
+            self._standalone_db = None
+
+    # --- Backward compatibility ---
+
+    @property
+    def local_db(self) -> Optional["LocalDatabase"]:
+        """Backward compat: alias for standalone_db."""
+        return self._standalone_db
+
+    def get_local_models(self) -> list[type]:
+        """Backward compat: alias for get_shared_models()."""
+        return self.get_shared_models()
+
+    def _setup_local_database(self, storage_dir: "Any | None" = None) -> None:
+        """Backward compat: alias for _setup_standalone_db()."""
+        self._setup_standalone_db(storage_dir)
 
     def _teardown_local_database(self) -> None:
-        """Close the local database. Call from shutdown()."""
-        if self._local_db is not None:
-            self._local_db.close()
-            self._local_db = None
+        """Backward compat: alias for _teardown_standalone_db()."""
+        self._teardown_standalone_db()

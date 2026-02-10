@@ -1,8 +1,15 @@
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, type Ref } from 'vue'
 
 const isDark = ref(false)
+let initialized = false
 
-export function useTheme() {
+export interface UseThemeReturn {
+  isDark: Ref<boolean>
+  toggleTheme: () => void
+  setTheme: (theme: 'light' | 'dark') => void
+}
+
+export function useTheme(): UseThemeReturn {
   function toggleTheme() {
     isDark.value = !isDark.value
   }
@@ -21,6 +28,9 @@ export function useTheme() {
   })
 
   onMounted(() => {
+    if (initialized) return
+    initialized = true
+
     const savedTheme = localStorage.getItem('mld-theme')
     if (savedTheme === 'dark') {
       isDark.value = true

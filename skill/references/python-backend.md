@@ -14,12 +14,7 @@ from fastapi import APIRouter
 class MyPlugin(AnalysisPlugin):
     @property
     def metadata(self) -> PluginMetadata:
-        """Required: Plugin identification and configuration."""
-        ...
-
-    @property
-    def capabilities(self) -> PluginCapabilities:
-        """Required: What platform features the plugin needs."""
+        """Required: Plugin identification, type, and capabilities."""
         ...
 
     def get_routers(self) -> list[tuple[APIRouter, str]]:
@@ -34,9 +29,9 @@ class MyPlugin(AnalysisPlugin):
         """Required: Called on plugin unload. Clean up resources."""
         ...
 
-    async def check_health(self) -> dict:
-        """Optional: Health check endpoint data."""
-        return {"status": "healthy"}
+    async def check_health(self) -> PluginHealth:
+        """Optional: Health check. Returns PluginHealth."""
+        return PluginHealth(status=HealthStatus.HEALTHY)
 
     def get_frontend_dir(self) -> str | None:
         """Optional: Path to frontend dist for serving static files."""
@@ -45,6 +40,10 @@ class MyPlugin(AnalysisPlugin):
     def get_frontend_config(self) -> dict:
         """Optional: Frontend configuration (nav items, routes)."""
         return {}
+
+    def get_shared_models(self) -> list[type]:
+        """Optional: SQLModel classes for plugin tables (shared DB)."""
+        return []
 ```
 
 ---
@@ -52,7 +51,7 @@ class MyPlugin(AnalysisPlugin):
 ## PluginMetadata
 
 ```python
-from mld_sdk import PluginMetadata
+from mld_sdk import PluginMetadata, PluginCapabilities, PluginType
 
 PluginMetadata(
     name="my-plugin",              # Unique identifier (kebab-case)
@@ -60,9 +59,14 @@ PluginMetadata(
     description="Description",     # User-facing description
     analysis_type="mass-spec",     # Category for grouping plugins
     routes_prefix="/my-plugin",    # API route prefix (/api/my-plugin/*)
-    frontend_route="/my-plugin",   # Frontend URL path (optional)
+    plugin_type=PluginType.ANALYSIS,      # Plugin type (default: ANALYSIS)
+    capabilities=PluginCapabilities(       # Capabilities declaration
+        requires_auth=True,
+        requires_shared_database=True,
+    ),
     author="Your Name",            # Plugin author (optional)
-    documentation_url="https://",  # External docs link (optional)
+    homepage="https://...",        # Project homepage (optional)
+    license="MIT",                 # License identifier (optional)
 )
 ```
 
@@ -75,9 +79,11 @@ PluginMetadata(
 | `description` | str | Yes | User-facing description |
 | `analysis_type` | str | Yes | Plugin category |
 | `routes_prefix` | str | Yes | API route prefix |
-| `frontend_route` | str | No | Frontend URL path |
+| `plugin_type` | PluginType | No | Plugin type (default: ANALYSIS) |
+| `capabilities` | PluginCapabilities | No | What platform features are needed |
 | `author` | str | No | Plugin author |
-| `documentation_url` | str | No | Link to docs |
+| `homepage` | str | No | Project homepage URL |
+| `license` | str | No | License identifier |
 
 ---
 
@@ -87,15 +93,11 @@ PluginMetadata(
 from mld_sdk import PluginCapabilities, PluginType
 
 PluginCapabilities(
-    plugin_type=PluginType.ANALYSIS,      # Database access level
     requires_auth=True,                    # Needs user authentication
     requires_database=True,                # Needs platform database
     requires_experiments=True,             # Needs experiment access
-    requires_compound_lists=True,          # Needs compound list access
-    requires_samples=True,                 # Needs sample access
+    requires_shared_database=True,         # Needs shared DB schema (PostgreSQL/SQLite)
     supports_experiment_linking=True,      # Can link to experiments
-    supports_sample_mapping=True,          # Can map sample data
-    supported_file_types=[".csv", ".xlsx"],# Files this plugin handles
 )
 ```
 
@@ -117,32 +119,28 @@ PluginCapabilities(
 ```python
 # services/analysis_service.py
 from mld_sdk.context import PlatformContext
-from mld_sdk.repositories import ExperimentRepository, AnalysisArtifactRepository
 
 class AnalysisService:
     def __init__(self, context: PlatformContext | None):
         self._context = context
         self._settings: dict = {}
 
-        # Initialize repositories if in integrated mode
         if context is not None:
             self._experiment_repo = context.get_experiment_repository()
-            self._artifact_repo = context.get_analysis_artifact_repository()
+            self._plugin_data_repo = context.get_plugin_data_repository()
 
     @property
     def is_standalone(self) -> bool:
         return self._context is None
 
-    async def run_analysis(self, experiment_id: str) -> dict:
+    async def run_analysis(self, experiment_id: int) -> dict:
         if self.is_standalone:
             return {"mode": "standalone", "experiment_id": experiment_id}
 
         experiment = await self._experiment_repo.get_by_id(experiment_id)
-        # ... perform analysis
         return {"status": "completed", "experiment": experiment}
 
     async def cleanup(self) -> None:
-        """Clean up resources on shutdown."""
         pass
 ```
 
@@ -167,7 +165,7 @@ def get_service() -> AnalysisService:
 
 @router.post("/run/{experiment_id}")
 async def run_analysis(
-    experiment_id: str,
+    experiment_id: int,
     service: AnalysisService = Depends(get_service),
 ):
     return await service.run_analysis(experiment_id)
@@ -204,8 +202,12 @@ repo = context.get_experiment_repository()
 # List experiments
 experiments, total = await repo.list_all(
     skip=0, limit=100,
-    status="completed",  # planned|ready_to_extract|extracting|completed|failed
+    status="completed",             # planned|ready_to_extract|extracting|completed|failed
+    experiment_type="drp",          # drp|gene_edit|method_dev|custom
     project="Project Name",
+    created_by=1,                   # User ID
+    parent_experiment_id=42,        # Parent experiment ID
+    search="keyword",               # Search term
 )
 
 # Get single experiment
@@ -216,9 +218,9 @@ experiment = await repo.create(
     name="Experiment Name",
     experiment_type="drp",  # drp|gene_edit|method_dev|custom
     created_by=user_id,
-    compound_list_id=list_id,
-    cell_line="HeLa",
+    parent_experiment_id=parent_id,
     project="Project Name",
+    notes="Notes",
     tags={"key": "value"},
 )
 
@@ -227,80 +229,73 @@ await repo.update(experiment_id, status="extracting", notes="Started")
 
 # Delete (EXPERIMENT_DESIGN only)
 await repo.delete(experiment_id)
+
+# Check if experiment has plugin data
+has_data = await repo.has_plugin_data(experiment_id)
 ```
 
-### Plate Operations
+### PluginDataRepository
+
+Store plugin-specific experiment data and analysis results. Available to all plugin types.
 
 ```python
-# Get plates for experiment
-plates = await repo.get_plates_for_experiment(experiment_id)
+repo = context.get_plugin_data_repository()
 
-# Get single plate
-plate = await repo.get_plate_by_id(plate_id)
+# Save experiment data (one per experiment per plugin)
+data = await repo.save_experiment_data(
+    experiment_id=exp_id,
+    plugin_id="my-plugin",
+    data={"key": "value"},
+    schema_version="1.0",
+)
 
-# Create plate (EXPERIMENT_DESIGN only)
-plate = await repo.create_plate(experiment_id, name="Plate-001", layout_type="96-well")
+# Get experiment data
+data = await repo.get_experiment_data(experiment_id)
 
-# Get samples for plate
-samples = await repo.get_samples_for_plate(plate_id)
+# Save analysis result
+result = await repo.save_analysis_result(
+    experiment_id=exp_id,
+    plugin_id="my-plugin",
+    result={"peaks": [...]},
+)
+
+# Get analysis results
+result = await repo.get_analysis_result(experiment_id, "my-plugin")
+results = await repo.get_analysis_results(experiment_id)
 ```
 
-### AnalysisArtifactRepository
+### PluginRoleRepository
 
-Store JSON data linked to experiments. Available to all plugin types.
+Plugin-scoped user roles, independent of platform-level roles.
 
 ```python
-artifact_repo = context.get_analysis_artifact_repository()
+repo = context.get_plugin_role_repository()
 
-# Create artifact
-artifact = await artifact_repo.create(
-    plugin_name="MyPlugin",
-    artifact_type="peak_data",  # Custom type string
-    data={"peaks": [...], "metadata": {...}},
-    experiment_id=exp_id,  # Optional
-    created_by=user_id,    # Optional
-)
+# Get user's role in this plugin
+role = await repo.get_role("my-plugin", user_id)  # Returns str | None
 
-# List by experiment
-artifacts = await artifact_repo.list_for_experiment(
-    experiment_id,
-    plugin_name="MyPlugin",    # Optional filter
-    artifact_type="peak_data"  # Optional filter
-)
+# Set user's role
+await repo.set_role("my-plugin", user_id, "admin")
 
-# List by plugin
-artifacts = await artifact_repo.list_for_plugin(
-    "MyPlugin",
-    artifact_type="peak_data",
-    limit=100
-)
+# Remove role
+await repo.remove_role("my-plugin", user_id)
 
-# Update
-await artifact_repo.update(artifact_id, data={"updated": True})
+# List all roles for this plugin
+roles = await repo.list_plugin_roles("my-plugin")
 
-# Delete
-await artifact_repo.delete(artifact_id)
+# List all plugin roles for a user
+user_roles = await repo.list_user_roles(user_id)
 ```
 
-### CompoundListRepository
+### Role-Based Access Control
 
 ```python
-repo = context.get_compound_list_repository()
-
-# List compound lists
-lists = await repo.list_all(owner_id=user_id, include_master=True)
-
-# Get compounds for list
-compounds = await repo.get_compounds_for_list(compound_list_id)
-
-# Create compound list
-compound_list = await repo.create(name="My List", owner_id=user_id, is_master=False)
-
-# Create compounds
-compounds = await repo.create_compounds_batch(compound_list_id, [
-    {"name": "Glucose", "formula": "C6H12O6", "adduct": "[M+H]+", "expected_rt": 2.5},
-    {"name": "Lactate", "formula": "C3H6O3", "adduct": "[M-H]-", "expected_rt": 1.8},
-])
+# FastAPI dependency for role-based access control
+@router.get("/admin/settings")
+async def settings(user=context.require_plugin_role("admin")):
+    # Only users with "admin" role in this plugin can access
+    # Platform admins automatically bypass plugin role checks
+    return {"settings": ...}
 ```
 
 ### UserRepository
@@ -327,21 +322,22 @@ Per-plugin local SQLite storage using SQLModel. Works in both standalone and int
 class MyPlugin(AnalysisPlugin):
     async def initialize(self, context: PlatformContext | None) -> None:
         self._context = context
-        self._setup_local_database()
+        if self.is_standalone:
+            self._setup_standalone_db()
 
         # Store/retrieve JSON-serializable values
-        self.local_db.set("threshold", 0.05, namespace="settings")
-        self.local_db.set("columns", ["name", "rt", "intensity"])
+        self.standalone_db.set("threshold", 0.05, namespace="settings")
+        self.standalone_db.set("columns", ["name", "rt", "intensity"])
 
-        val = self.local_db.get("threshold", namespace="settings")  # 0.05
-        all_settings = self.local_db.get_all(namespace="settings")  # dict
-        keys = self.local_db.list_keys()  # list[str]
+        val = self.standalone_db.get("threshold", namespace="settings")  # 0.05
+        all_settings = self.standalone_db.get_all(namespace="settings")  # dict
+        keys = self.standalone_db.list_keys()  # list[str]
 
-        self.local_db.delete("columns")
-        self.local_db.clear(namespace="settings")
+        self.standalone_db.delete("columns")
+        self.standalone_db.clear(namespace="settings")
 
     async def shutdown(self) -> None:
-        self._teardown_local_database()
+        self._teardown_standalone_db()
 ```
 
 ### Custom SQLModel Tables
@@ -351,32 +347,56 @@ from sqlmodel import SQLModel, Field, select
 
 class InstrumentReading(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    experiment_id: str = Field(index=True)
+    experiment_id: int = Field(index=True)
     intensity: float
     channel: str
 
 class MyPlugin(AnalysisPlugin):
-    def get_local_models(self):
+    def get_shared_models(self):
         return [InstrumentReading]
 
     async def initialize(self, context=None):
         self._context = context
-        self._setup_local_database()
+        if self.is_standalone:
+            self._setup_standalone_db()
+
+    async def save_data(self, experiment_id: int, data: dict):
+        async with self.get_plugin_db_session() as session:
+            # Works with both PostgreSQL (integrated) and SQLite (standalone)
+            ...
 
     async def store_reading(self, exp_id, intensity, channel):
-        with self.local_db.get_session() as session:
+        with self.standalone_db.get_session() as session:
             session.add(InstrumentReading(
                 experiment_id=exp_id, intensity=intensity, channel=channel
             ))
             session.commit()
 
     async def query_readings(self, exp_id):
-        with self.local_db.get_session() as session:
+        with self.standalone_db.get_session() as session:
             return session.exec(
                 select(InstrumentReading).where(
                     InstrumentReading.experiment_id == exp_id
                 )
             ).all()
+```
+
+### Unified Database Access
+
+```python
+class MyPlugin(AnalysisPlugin):
+    async def initialize(self, context: PlatformContext | None) -> None:
+        self._context = context
+        if self.is_standalone:
+            self._setup_standalone_db()
+
+    async def save_data(self, experiment_id: int, data: dict):
+        async with self.get_plugin_db_session() as session:
+            # Works with both PostgreSQL (integrated) and SQLite (standalone)
+            ...
+
+    async def shutdown(self) -> None:
+        self._teardown_standalone_db()
 ```
 
 ### Custom Path
@@ -398,30 +418,32 @@ Default: `~/.mld/plugins/{plugin-name}/data.db`
 
 ## Plugin Configuration
 
-Persist plugin-specific settings:
+Access platform configuration:
 
 ```python
-# Get config (returns dict or None)
-config = await context.get_plugin_config()
-value = config.get("key", default) if config else default
-
-# Set config
-await context.set_plugin_config({"key": "value", "nested": {"a": 1}})
+# Get platform config (returns dict)
+config = context.get_config()
+value = config.get("key", default)
 ```
 
-**Dual-mode pattern:**
+**Dual-mode pattern for plugin settings:**
 
 ```python
 async def get_settings(self) -> dict:
     if self.is_standalone:
         return self._in_memory_settings
-    return await self._context.get_plugin_config() or {}
+    # Use plugin data repository or local database for persistence
+    data = await self._plugin_data_repo.get_experiment_data(experiment_id)
+    return data.data if data else {}
 
 async def save_settings(self, settings: dict) -> None:
     if self.is_standalone:
         self._in_memory_settings = settings
     else:
-        await self._context.set_plugin_config(settings)
+        await self._plugin_data_repo.save_experiment_data(
+            experiment_id=0, plugin_id=self.metadata.name,
+            data=settings, schema_version="1.0",
+        )
 ```
 
 ---
@@ -452,17 +474,20 @@ async def protected(user: dict = Depends(plugin.get_auth_dependency())):
 
 ```python
 from mld_sdk.exceptions import (
-    PluginError,          # Base for all plugin errors
-    PluginConfigError,    # Configuration issues
-    PluginInitError,      # Initialization failures
-    PluginRuntimeError,   # Runtime errors
-    PermissionError,      # Access denied (e.g., ANALYSIS trying to write)
+    PluginException,          # Base for all plugin errors
+    ValidationException,      # Invalid input data
+    PermissionException,      # Access denied
+    ConfigurationException,   # Plugin configuration issues
+    RepositoryException,      # Database/storage errors
+    NotFoundException,        # Resource not found (subclass of RepositoryException)
+    ConflictException,        # Resource conflict (subclass of RepositoryException)
+    PluginLifecycleException, # Plugin startup/shutdown errors
 )
 
-# Raise with serialization support
-raise PluginRuntimeError(
+raise ValidationException(
     message="Analysis failed",
-    details={"experiment_id": exp_id, "reason": "Missing data"},
+    field="experiment_id",
+    value=exp_id,
 )
 ```
 
@@ -471,20 +496,24 @@ raise PluginRuntimeError(
 ## Health Check
 
 ```python
-async def check_health(self) -> dict:
-    health = {
-        "status": "healthy",
-        "mode": "integrated" if self._context else "standalone",
-        "version": self.metadata.version,
-    }
+from mld_sdk.plugin import PluginHealth, HealthStatus
+
+async def check_health(self) -> PluginHealth:
+    health = PluginHealth(
+        status=HealthStatus.HEALTHY,
+        details={
+            "mode": "integrated" if self._context else "standalone",
+            "version": self.metadata.version,
+        },
+    )
 
     # Check service health
     if hasattr(self, '_service'):
         try:
             await self._service.verify_connection()
         except Exception as e:
-            health["status"] = "degraded"
-            health["error"] = str(e)
+            health.status = HealthStatus.DEGRADED
+            health.message = str(e)
 
     return health
 ```
@@ -524,6 +553,12 @@ def create_standalone_app():
     for router, prefix in plugin.get_routers():
         app.include_router(router, prefix=f"/api{prefix}")
 
+    # Health check
+    @app.get("/health")
+    async def health():
+        result = await plugin.check_health()
+        return result.to_dict()
+
     # Serve frontend if available
     frontend_dir = plugin.get_frontend_dir()
     if frontend_dir:
@@ -548,26 +583,16 @@ if __name__ == "__main__":
 
 # ExperimentType
 "drp" | "gene_edit" | "method_dev" | "custom"
-
-# SampleType
-"sample" | "qc" | "blank"
-
-# PlateLayoutType
-"96-well" | "54-vial"
 ```
 
 ### Entity Fields
 
-**Experiment:** id, name, status, experiment_type, method_id, compound_list_id, cell_line, project, notes, tags, created_at, created_by
+**Experiment:** id (int), name, experiment_type, status, created_at, updated_at, created_by (int|None), parent_experiment_id (int|None), project, notes, tags, custom_metadata
 
-**Plate:** id, experiment_id, name, layout_type, sequence_file_path, created_at
+**PluginExperimentData:** id (int), experiment_id (int), plugin_id (str), data (dict), schema_version (str), created_at, updated_at
 
-**Sample:** id, plate_id, well_position, sample_name, sample_type, replicate_number, timepoint, tags
+**PluginAnalysisResult:** id (int), experiment_id (int), plugin_id (str), result (dict), created_at, updated_at
 
-**CompoundList:** id, name, owner_id, is_master, method_id, description, created_at
+**User:** id (int), username, role, is_active, created_at, updated_at, email, shortname, first_name, last_name
 
-**Compound:** id, compound_list_id, name, formula, adduct, expected_rt, rt_source, mass
-
-**User:** id, username, shortname, email, role, is_active, created_at
-
-**AnalysisArtifact:** id, plugin_name, experiment_id, artifact_type, data (JSON), created_at, created_by
+**UserPluginRole:** id (int), user_id (int), plugin_id (str), role (str), created_at, updated_at

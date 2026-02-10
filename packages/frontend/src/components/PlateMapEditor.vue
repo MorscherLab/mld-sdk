@@ -230,103 +230,70 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div :class="['flex', showSidebar ? 'gap-4' : '']">
+  <div :class="['mld-plate-editor', { 'mld-plate-editor--with-sidebar': showSidebar }]">
     <!-- Main plate area -->
-    <div class="flex-1 min-w-0">
+    <div class="mld-plate-editor__main">
       <!-- Toolbar -->
-      <div
-        v-if="showToolbar"
-        class="flex flex-wrap items-center gap-2 mb-4 p-2 rounded-lg"
-        style="background-color: var(--bg-secondary); border: 1px solid var(--border-color)"
-      >
-        <!-- Plate tabs (matching MSExpDesigner rack tabs) -->
-        <div class="flex items-center gap-1 flex-wrap">
+      <div v-if="showToolbar" class="mld-plate-editor__toolbar">
+        <!-- Plate tabs -->
+        <div class="mld-plate-editor__tabs">
           <button
             v-for="(plate, index) in editor.plates.value"
             :key="plate.id"
             type="button"
-            class="group relative flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-all duration-200"
-            :style="{
-              backgroundColor: plate.id === editor.activePlate.value?.id
-                ? 'var(--color-primary, #3b82f6)'
-                : 'var(--bg-tertiary)',
-              color: plate.id === editor.activePlate.value?.id
-                ? 'white'
-                : 'var(--text-secondary)',
-              border: plate.id === editor.activePlate.value?.id
-                ? 'none'
-                : '1px solid var(--border-color)',
-            }"
+            :class="['mld-plate-editor__tab', { 'mld-plate-editor__tab--active': plate.id === editor.activePlate.value?.id }]"
             @click="editor.setActivePlate(plate.id)"
           >
-            <!-- Slot color dot -->
             <span
-              class="w-2.5 h-2.5 rounded-full flex-shrink-0"
+              class="mld-plate-editor__tab-slot"
               :style="{ backgroundColor: SLOT_COLORS[getPlateSlot(plate.id, index)] }"
             />
-            <span class="font-medium">{{ plate.name }}</span>
-            <!-- Sample count badge -->
+            <span class="mld-plate-editor__tab-name">{{ plate.name }}</span>
             <span
               v-if="getPlateWellCount(plate.id) > 0"
-              class="px-1.5 min-w-[1.25rem] text-center text-[10px] font-semibold rounded-full"
-              :style="{
-                backgroundColor: plate.id === editor.activePlate.value?.id
-                  ? 'rgba(255,255,255,0.2)'
-                  : 'var(--bg-secondary)',
-                color: plate.id === editor.activePlate.value?.id
-                  ? 'white'
-                  : 'var(--text-muted)',
-              }"
+              class="mld-plate-editor__tab-count"
             >
               {{ getPlateWellCount(plate.id) }}
             </span>
-            <!-- Remove button (shown on hover for non-active) -->
             <button
               v-if="editor.plates.value.length > 1"
               type="button"
-              class="opacity-0 group-hover:opacity-100 transition-opacity ml-1"
-              :style="{ color: plate.id === editor.activePlate.value?.id ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)' }"
+              class="mld-plate-editor__tab-remove"
               :aria-label="`Remove ${plate.name}`"
               @click.stop="handleRemovePlate(plate.id)"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </button>
 
-          <!-- Add plate button -->
           <button
             v-if="allowAddPlates && editor.plates.value.length < maxPlates"
             type="button"
-            class="flex items-center gap-1 px-2 py-1.5 text-sm rounded-md transition-colors"
-            style="color: var(--text-muted); border: 1px dashed var(--border-color)"
+            class="mld-plate-editor__add-plate"
             aria-label="Add plate"
             @click="handleAddPlate"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             <span>Add</span>
           </button>
         </div>
 
-        <div class="flex-1" />
+        <div class="mld-plate-editor__spacer" />
 
         <!-- Actions -->
-        <div class="flex items-center gap-1">
+        <div class="mld-plate-editor__actions">
           <button
             type="button"
             :disabled="!editor.canUndo.value"
-            class="p-1.5 rounded transition-colors"
-            :style="{
-              color: editor.canUndo.value ? 'var(--text-secondary)' : 'var(--text-muted)',
-              opacity: editor.canUndo.value ? 1 : 0.4,
-            }"
+            class="mld-plate-editor__action-btn"
             title="Undo (Ctrl+Z)"
             @click="handleUndo"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
             </svg>
           </button>
@@ -334,41 +301,35 @@ onUnmounted(() => {
           <button
             type="button"
             :disabled="!editor.canRedo.value"
-            class="p-1.5 rounded transition-colors"
-            :style="{
-              color: editor.canRedo.value ? 'var(--text-secondary)' : 'var(--text-muted)',
-              opacity: editor.canRedo.value ? 1 : 0.4,
-            }"
+            class="mld-plate-editor__action-btn"
             title="Redo (Ctrl+Shift+Z)"
             @click="handleRedo"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6" />
             </svg>
           </button>
 
-          <div class="w-px h-4 mx-1" style="background-color: var(--border-color)" />
+          <div class="mld-plate-editor__divider" />
 
           <button
             type="button"
-            class="p-1.5 rounded transition-colors hover:bg-gray-500/10"
-            style="color: var(--text-secondary)"
+            class="mld-plate-editor__action-btn"
             title="Import"
             @click="showImportModal = true"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
           </button>
 
           <button
             type="button"
-            class="p-1.5 rounded transition-colors hover:bg-gray-500/10"
-            style="color: var(--text-secondary)"
+            class="mld-plate-editor__action-btn"
             title="Export JSON"
             @click="handleExport('json')"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
           </button>
@@ -391,26 +352,23 @@ onUnmounted(() => {
       <!-- Selection info bar -->
       <div
         v-if="editor.selectedWells.value.length > 0"
-        class="mt-3 flex items-center gap-3 px-3 py-2 rounded-lg text-sm"
-        style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color)"
+        class="mld-plate-editor__selection-bar"
       >
-        <span style="color: var(--text-secondary)">
+        <span class="mld-plate-editor__selection-count">
           <strong>{{ editor.selectedWells.value.length }}</strong> wells selected
         </span>
-        <div class="flex-1" />
+        <div class="mld-plate-editor__spacer" />
         <button
           v-if="editor.activeSampleId.value"
           type="button"
-          class="px-3 py-1 text-sm font-medium rounded transition-colors"
-          style="background-color: var(--color-primary, #3b82f6); color: white"
+          class="mld-plate-editor__assign-btn"
           @click="handleAssignSample"
         >
           Assign {{ editor.samples.value.find(s => s.id === editor.activeSampleId.value)?.name }}
         </button>
         <button
           type="button"
-          class="px-3 py-1 text-sm font-medium rounded transition-colors hover:bg-red-500/10"
-          style="background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color)"
+          class="mld-plate-editor__clear-btn"
           @click="handleClearWells"
         >
           Clear
@@ -418,27 +376,27 @@ onUnmounted(() => {
       </div>
 
       <!-- Legend -->
-      <div class="mt-3 flex items-center justify-between px-1">
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1.5">
-            <div class="w-3.5 h-3.5 rounded" style="background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4)" />
-            <span class="text-xs" style="color: var(--text-muted)">Sample</span>
+      <div class="mld-plate-editor__legend">
+        <div class="mld-plate-editor__legend-items">
+          <div class="mld-plate-editor__legend-item">
+            <div class="mld-plate-editor__legend-swatch" style="background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4)" />
+            <span class="mld-plate-editor__legend-label">Sample</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <div class="w-3.5 h-3.5 rounded" style="background-color: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4)" />
-            <span class="text-xs" style="color: var(--text-muted)">Control</span>
+          <div class="mld-plate-editor__legend-item">
+            <div class="mld-plate-editor__legend-swatch" style="background-color: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4)" />
+            <span class="mld-plate-editor__legend-label">Control</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <div class="w-3.5 h-3.5 rounded" style="background-color: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4)" />
-            <span class="text-xs" style="color: var(--text-muted)">Blank</span>
+          <div class="mld-plate-editor__legend-item">
+            <div class="mld-plate-editor__legend-swatch" style="background-color: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4)" />
+            <span class="mld-plate-editor__legend-label">Blank</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <div class="w-3.5 h-3.5 rounded" style="background-color: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4)" />
-            <span class="text-xs" style="color: var(--text-muted)">QC</span>
+          <div class="mld-plate-editor__legend-item">
+            <div class="mld-plate-editor__legend-swatch" style="background-color: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4)" />
+            <span class="mld-plate-editor__legend-label">QC</span>
           </div>
         </div>
-        <span class="text-xs flex items-center gap-1.5" style="color: var(--text-muted)">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <span class="mld-plate-editor__legend-hint">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
           </svg>
           Drag to select
@@ -447,9 +405,9 @@ onUnmounted(() => {
     </div>
 
     <!-- Sidebar -->
-    <div v-if="showSidebar" class="w-52 flex-shrink-0">
-      <div class="rounded-lg p-3" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color)">
-        <h3 class="text-sm font-medium mb-3" style="color: var(--text-primary)">Sample Types</h3>
+    <div v-if="showSidebar" class="mld-plate-editor__sidebar">
+      <div class="mld-plate-editor__sidebar-panel">
+        <h3 class="mld-plate-editor__sidebar-title">Sample Types</h3>
 
         <SampleLegend
           :model-value="editor.activeSampleId.value"
@@ -462,21 +420,19 @@ onUnmounted(() => {
         />
 
         <!-- Add sample -->
-        <div v-if="allowAddSamples" class="mt-3 pt-3" style="border-top: 1px solid var(--border-color)">
-          <div class="flex gap-2">
+        <div v-if="allowAddSamples" class="mld-plate-editor__add-sample">
+          <div class="mld-plate-editor__add-sample-form">
             <input
               v-model="newSampleName"
               type="text"
               placeholder="New sample..."
-              class="flex-1 px-2 py-1 text-sm rounded-md focus:outline-none focus:ring-1"
-              style="background-color: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary)"
+              class="mld-plate-editor__add-sample-input"
               @keyup.enter="handleAddSample"
             />
             <button
               type="button"
               :disabled="!newSampleName.trim()"
-              class="px-2 py-1 text-sm font-medium rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              style="background-color: var(--color-primary, #3b82f6); color: white"
+              class="mld-plate-editor__add-sample-btn"
               @click="handleAddSample"
             >
               Add
@@ -485,13 +441,13 @@ onUnmounted(() => {
         </div>
 
         <!-- Keyboard shortcuts -->
-        <div class="mt-4 pt-3" style="border-top: 1px solid var(--border-color)">
-          <h4 class="text-xs font-medium mb-2" style="color: var(--text-muted)">Shortcuts</h4>
-          <div class="space-y-1 text-xs" style="color: var(--text-muted)">
-            <div><kbd class="px-1 rounded" style="background-color: var(--bg-primary)">1-9</kbd> Quick assign</div>
-            <div><kbd class="px-1 rounded" style="background-color: var(--bg-primary)">Del</kbd> Clear wells</div>
-            <div><kbd class="px-1 rounded" style="background-color: var(--bg-primary)">Ctrl+Z</kbd> Undo</div>
-            <div><kbd class="px-1 rounded" style="background-color: var(--bg-primary)">Ctrl+A</kbd> Select all</div>
+        <div class="mld-plate-editor__shortcuts">
+          <h4 class="mld-plate-editor__shortcuts-title">Shortcuts</h4>
+          <div class="mld-plate-editor__shortcuts-list">
+            <div><kbd class="mld-plate-editor__shortcut-key">1-9</kbd> Quick assign</div>
+            <div><kbd class="mld-plate-editor__shortcut-key">Del</kbd> Clear wells</div>
+            <div><kbd class="mld-plate-editor__shortcut-key">Ctrl+Z</kbd> Undo</div>
+            <div><kbd class="mld-plate-editor__shortcut-key">Ctrl+A</kbd> Select all</div>
           </div>
         </div>
       </div>
@@ -501,40 +457,37 @@ onUnmounted(() => {
     <Teleport to="body">
       <div
         v-if="showImportModal"
-        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        class="mld-plate-editor__modal-overlay"
         @click.self="showImportModal = false"
       >
-        <div class="rounded-lg shadow-lg p-4 w-full max-w-md" style="background-color: var(--bg-primary); border: 1px solid var(--border-color)">
-          <h3 class="text-lg font-medium mb-3" style="color: var(--text-primary)">Import Plate Map</h3>
+        <div class="mld-plate-editor__modal">
+          <h3 class="mld-plate-editor__modal-title">Import Plate Map</h3>
 
-          <div class="mb-3">
-            <label class="block text-sm mb-1" style="color: var(--text-secondary)">Format</label>
+          <div class="mld-plate-editor__modal-field">
+            <label class="mld-plate-editor__modal-label">Format</label>
             <select
               v-model="importFormat"
-              class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-1"
-              style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary)"
+              class="mld-plate-editor__modal-select"
             >
               <option value="json">JSON</option>
               <option value="csv">CSV</option>
             </select>
           </div>
 
-          <div class="mb-4">
-            <label class="block text-sm mb-1" style="color: var(--text-secondary)">Data</label>
+          <div class="mld-plate-editor__modal-field">
+            <label class="mld-plate-editor__modal-label">Data</label>
             <textarea
               v-model="importText"
               rows="8"
-              class="w-full px-3 py-2 rounded-md font-mono text-sm focus:outline-none focus:ring-1 resize-none"
-              style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary)"
+              class="mld-plate-editor__modal-textarea"
               placeholder="Paste your data here..."
             />
           </div>
 
-          <div class="flex justify-end gap-2">
+          <div class="mld-plate-editor__modal-actions">
             <button
               type="button"
-              class="px-4 py-2 text-sm rounded-md transition-colors"
-              style="background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color)"
+              class="mld-plate-editor__modal-cancel"
               @click="showImportModal = false"
             >
               Cancel
@@ -542,8 +495,7 @@ onUnmounted(() => {
             <button
               type="button"
               :disabled="!importText.trim()"
-              class="px-4 py-2 text-sm rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              style="background-color: var(--color-primary, #3b82f6); color: white"
+              class="mld-plate-editor__modal-submit"
               @click="handleImport"
             >
               Import

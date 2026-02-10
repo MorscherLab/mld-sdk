@@ -1,9 +1,8 @@
 """
-Local SQLite database for MLD plugins.
+Local SQLite database for MLD plugins (standalone mode).
 
-Provides per-plugin persistent storage using SQLModel + SQLite:
-- High-level API: key-value/JSON storage with namespaces
-- Low-level API: raw SQLModel engine + session for custom tables
+Provides per-plugin persistent storage using SQLModel + SQLite
+with both sync and async session support.
 
 SQLModel is an optional dependency. Install with:
     pip install mld-sdk[local-db]
@@ -11,16 +10,18 @@ SQLModel is an optional dependency. Install with:
 
 from __future__ import annotations
 
-import json
-from contextlib import contextmanager
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from contextlib import asynccontextmanager, contextmanager
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Generator
+from typing import TYPE_CHECKING, AsyncGenerator, Generator
+
+if TYPE_CHECKING:
+    from sqlalchemy import Engine
+    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+    from sqlmodel import Session
 
 _SQLMODEL_AVAILABLE = False
 try:
-    from sqlmodel import Field as SQLField
     from sqlmodel import SQLModel
 
     _SQLMODEL_AVAILABLE = True
@@ -39,26 +40,7 @@ def _require_sqlmodel() -> None:
         )
 
 
-if _SQLMODEL_AVAILABLE:
-
-    class KeyValueEntry(SQLModel, table=True):
-        """Built-in key-value table for simple plugin storage."""
-
-        __tablename__ = "mld_key_value"
-
-        id: int | None = SQLField(default=None, primary_key=True)
-        namespace: str = SQLField(default="default", index=True)
-        key: str = SQLField(index=True)
-        value: str = SQLField(default="{}")
-        created_at: str = SQLField(
-            default_factory=lambda: datetime.now(timezone.utc).isoformat()
-        )
-        updated_at: str = SQLField(
-            default_factory=lambda: datetime.now(timezone.utc).isoformat()
-        )
-
-
-@dataclass
+@dataclass(slots=True)
 class LocalDatabaseConfig:
     """Configuration for a plugin's local database."""
 
@@ -69,18 +51,18 @@ class LocalDatabaseConfig:
 
 class LocalDatabase:
     """
-    Per-plugin local SQLite database.
+    Per-plugin local SQLite database for standalone mode.
 
-    Provides both a high-level key-value API and low-level SQLModel
-    engine/session access for custom tables.
+    Provides sync and async session access for plugin tables.
     """
 
     def __init__(self, plugin_name: str, config: LocalDatabaseConfig | None = None):
         _require_sqlmodel()
         self._plugin_name = plugin_name
         self._config = config or LocalDatabaseConfig()
-        self._engine: Any = None
-        self._initialized = False
+        self._engine: Engine | None = None
+        self._async_engine: AsyncEngine | None = None
+        self._initialized: bool = False
 
     @property
     def is_initialized(self) -> bool:
@@ -94,7 +76,7 @@ class LocalDatabase:
         return storage_dir / self._config.db_filename
 
     @property
-    def engine(self) -> Any:
+    def engine(self) -> Engine:
         if not self._initialized:
             from mld_sdk.exceptions import ConfigurationException
 
@@ -109,7 +91,6 @@ class LocalDatabase:
 
         Args:
             models: Optional list of SQLModel classes to create tables for.
-                    The built-in KeyValueEntry table is always created.
         """
         _require_sqlmodel()
         from sqlmodel import SQLModel as _SQLModel
@@ -122,18 +103,15 @@ class LocalDatabase:
             echo=self._config.echo_sql,
         )
 
-        tables = [KeyValueEntry.__table__]
         if models:
+            tables = []
             for model in models:
                 if hasattr(model, "__table__"):
                     tables.append(model.__table__)
-                elif hasattr(model, "metadata"):
-                    _SQLModel.metadata.create_all(self._engine)
-                    tables = []
-                    break
-
-        if tables:
-            _SQLModel.metadata.create_all(self._engine, tables=tables)
+            if tables:
+                _SQLModel.metadata.create_all(self._engine, tables=tables)
+        else:
+            _SQLModel.metadata.create_all(self._engine)
 
         self._initialized = True
 
@@ -141,124 +119,48 @@ class LocalDatabase:
         if self._engine is not None:
             self._engine.dispose()
             self._engine = None
+        if self._async_engine is not None:
+            # async engine disposal is sync-safe in SQLAlchemy
+            import asyncio
+
+            try:
+                loop = asyncio.get_running_loop()
+                loop.create_task(self._async_engine.dispose())
+            except RuntimeError:
+                asyncio.run(self._async_engine.dispose())
+            self._async_engine = None
         self._initialized = False
 
     @contextmanager
-    def get_session(self) -> Generator[Any, None, None]:
-        """Get a SQLModel Session for custom table operations."""
+    def get_session(self) -> Generator[Session, None, None]:
+        """Get a sync SQLModel Session."""
         _require_sqlmodel()
         from sqlmodel import Session
 
         with Session(self.engine) as session:
             yield session
 
-    # --- High-level key-value API ---
+    @asynccontextmanager
+    async def get_async_session(self) -> AsyncGenerator[AsyncSession, None]:
+        """Get an async SQLAlchemy session (uses aiosqlite)."""
+        if self._async_engine is None:
+            from sqlalchemy.ext.asyncio import create_async_engine
 
-    def set(
-        self,
-        key: str,
-        value: Any,
-        namespace: str = "default",
-    ) -> None:
-        """Store a value (serialized as JSON) under the given key."""
-        from sqlmodel import Session, select
-
-        serialized = json.dumps(value)
-
-        with Session(self.engine) as session:
-            statement = select(KeyValueEntry).where(
-                KeyValueEntry.namespace == namespace,
-                KeyValueEntry.key == key,
+            self._async_engine = create_async_engine(
+                f"sqlite+aiosqlite:///{self.db_path}",
+                echo=self._config.echo_sql,
             )
-            entry = session.exec(statement).first()
 
-            if entry:
-                entry.value = serialized
-                entry.updated_at = datetime.now(timezone.utc).isoformat()
-                session.add(entry)
-            else:
-                entry = KeyValueEntry(
-                    namespace=namespace,
-                    key=key,
-                    value=serialized,
-                )
-                session.add(entry)
-            session.commit()
+        from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
+        from sqlalchemy.orm import sessionmaker
 
-    def get(
-        self,
-        key: str,
-        namespace: str = "default",
-        default: Any = None,
-    ) -> Any:
-        """Retrieve a value by key, returning default if not found."""
-        from sqlmodel import Session, select
-
-        with Session(self.engine) as session:
-            statement = select(KeyValueEntry).where(
-                KeyValueEntry.namespace == namespace,
-                KeyValueEntry.key == key,
-            )
-            entry = session.exec(statement).first()
-            if entry is None:
-                return default
-            return json.loads(entry.value)
-
-    def delete(self, key: str, namespace: str = "default") -> bool:
-        """Delete a key. Returns True if the key existed."""
-        from sqlmodel import Session, select
-
-        with Session(self.engine) as session:
-            statement = select(KeyValueEntry).where(
-                KeyValueEntry.namespace == namespace,
-                KeyValueEntry.key == key,
-            )
-            entry = session.exec(statement).first()
-            if entry is None:
-                return False
-            session.delete(entry)
-            session.commit()
-            return True
-
-    def list_keys(self, namespace: str = "default") -> list[str]:
-        """List all keys in a namespace."""
-        from sqlmodel import Session, select
-
-        with Session(self.engine) as session:
-            statement = select(KeyValueEntry.key).where(
-                KeyValueEntry.namespace == namespace,
-            )
-            return list(session.exec(statement).all())
-
-    def get_all(self, namespace: str = "default") -> dict[str, Any]:
-        """Get all key-value pairs in a namespace."""
-        from sqlmodel import Session, select
-
-        with Session(self.engine) as session:
-            statement = select(KeyValueEntry).where(
-                KeyValueEntry.namespace == namespace,
-            )
-            entries = session.exec(statement).all()
-            return {e.key: json.loads(e.value) for e in entries}
-
-    def clear(self, namespace: str | None = None) -> int:
-        """Clear entries. If namespace is None, clears all namespaces.
-
-        Returns the number of entries deleted.
-        """
-        from sqlmodel import Session, select
-
-        with Session(self.engine) as session:
-            if namespace is not None:
-                statement = select(KeyValueEntry).where(
-                    KeyValueEntry.namespace == namespace,
-                )
-            else:
-                statement = select(KeyValueEntry)
-
-            entries = session.exec(statement).all()
-            count = len(entries)
-            for entry in entries:
-                session.delete(entry)
-            session.commit()
-            return count
+        async_session = sessionmaker(
+            self._async_engine, class_=_AsyncSession, expire_on_commit=False
+        )
+        async with async_session() as session:
+            try:
+                yield session
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                raise

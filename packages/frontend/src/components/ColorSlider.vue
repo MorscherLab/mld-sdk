@@ -52,9 +52,9 @@ const thresholds = computed(() => props.thresholds ?? defaultThresholds)
 
 const sizeConfig = computed(() => {
   switch (props.size) {
-    case 'sm': return { track: 'h-1', thumb: 16, badgeSize: '24px', fontSize: '11px', label: 'text-[10px]' }
-    case 'lg': return { track: 'h-2', thumb: 22, badgeSize: '32px', fontSize: '14px', label: 'text-xs' }
-    default: return { track: 'h-1.5', thumb: 18, badgeSize: '28px', fontSize: '12px', label: 'text-[10px]' }
+    case 'sm': return { thumb: 16, badgeSize: '24px', fontSize: '11px', labelFontSize: '0.625rem' }
+    case 'lg': return { thumb: 22, badgeSize: '32px', fontSize: '14px', labelFontSize: '0.75rem' }
+    default: return { thumb: 18, badgeSize: '28px', fontSize: '12px', labelFontSize: '0.625rem' }
   }
 })
 
@@ -107,10 +107,10 @@ function handleInput(event: Event) {
 </script>
 
 <template>
-  <div :class="['space-y-1', disabled ? 'opacity-50' : '']">
-    <div class="flex items-center gap-2">
+  <div :class="['mld-color-slider', { 'mld-color-slider--disabled': disabled }]">
+    <div class="mld-color-slider__row">
       <!-- Slider track with gradient -->
-      <div class="relative flex-1">
+      <div class="mld-color-slider__track">
         <input
           type="range"
           :value="currentValue"
@@ -122,7 +122,7 @@ function handleInput(event: Event) {
           :aria-valuemin="min"
           :aria-valuemax="max"
           :aria-valuenow="currentValue"
-          class="color-slider w-full cursor-pointer disabled:cursor-not-allowed"
+          class="color-slider mld-color-slider__input"
           :style="{
             '--slider-gradient': gradientStyle,
             '--thumb-size': `${sizeConfig.thumb}px`,
@@ -134,7 +134,7 @@ function handleInput(event: Event) {
       <!-- Value badge -->
       <div
         v-if="showValue"
-        class="flex items-center justify-center rounded font-bold"
+        class="mld-color-slider__badge"
         :style="{
           ...valueBadgeStyle,
           minWidth: sizeConfig.badgeSize,
@@ -147,7 +147,11 @@ function handleInput(event: Event) {
     </div>
 
     <!-- Min/Max labels -->
-    <div v-if="showLabels" class="flex justify-between" :class="sizeConfig.label" style="color: var(--text-muted)">
+    <div
+      v-if="showLabels"
+      class="mld-color-slider__labels"
+      :style="{ fontSize: sizeConfig.labelFontSize }"
+    >
       <span>{{ minLabel ?? min }}</span>
       <span>{{ maxLabel ?? max }}</span>
     </div>

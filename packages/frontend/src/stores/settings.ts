@@ -2,6 +2,16 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import type { ThemeMode, ColorPalette, TableDensity } from '../types'
 
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_API_PREFIX?: string
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv
+  }
+}
+
 export interface SettingsState {
   serverHost: string
   serverPort: number
@@ -80,9 +90,7 @@ export const useSettingsStore = defineStore('mld-settings', () => {
   const tableDensity = ref<TableDensity>(defaultSettings.tableDensity)
 
   // API prefix - can be configured via env variable VITE_API_PREFIX
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const importMeta = import.meta as any
-  const apiPrefix: string = importMeta.env?.VITE_API_PREFIX ?? '/api'
+  const apiPrefix: string = (import.meta.env?.VITE_API_PREFIX as string | undefined) ?? '/api'
 
   function getApiBaseUrl(): string {
     const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost'

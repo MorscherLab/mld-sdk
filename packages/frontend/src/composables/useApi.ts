@@ -22,7 +22,20 @@ export interface ApiClientOptions {
   withAuth?: boolean
 }
 
-export function useApi(options: ApiClientOptions = {}) {
+export interface UseApiReturn {
+  client: AxiosInstance
+  get: <T>(url: string, config?: AxiosRequestConfig) => Promise<T>
+  post: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>
+  put: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>
+  patch: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>
+  delete: <T>(url: string, config?: AxiosRequestConfig) => Promise<T>
+  upload: <T>(url: string, file: File, fieldName?: string, additionalData?: Record<string, unknown>) => Promise<T>
+  download: (url: string, filename?: string) => Promise<string>
+  buildUrl: (path: string) => string
+  buildWsUrl: (path: string) => string
+}
+
+export function useApi(options: ApiClientOptions = {}): UseApiReturn {
   const settingsStore = useSettingsStore()
   const authStore = useAuthStore()
   const apiClient = getApiClient()

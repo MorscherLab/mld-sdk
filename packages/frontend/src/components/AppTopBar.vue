@@ -21,6 +21,11 @@ interface Props {
   settingsConfig?: TopBarSettingsConfig
   showStandaloneLabel?: boolean
   standaloneLabel?: string
+  showAdmin?: boolean
+  adminPath?: string
+  showProfile?: boolean
+  userName?: string
+  userInitial?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -31,16 +36,27 @@ const props = withDefaults(defineProps<Props>(), {
   showSettings: false,
   showStandaloneLabel: true,
   standaloneLabel: 'Standalone',
+  showAdmin: false,
+  adminPath: '/admin',
+  showProfile: false,
 })
 
 const settingsOpen = ref(false)
 const { isIntegrated } = usePlatformContext()
 const isStandalone = computed(() => !isIntegrated.value)
 
+const profileInitial = computed(() => {
+  if (props.userInitial) return props.userInitial
+  if (props.userName) return props.userName.charAt(0).toUpperCase()
+  return 'U'
+})
+
 const emit = defineEmits<{
   'page-select': [page: TopBarPage]
   'tab-select': [tab: TopBarTab]
   'tab-option-select': [option: TopBarTabOption, tab: TopBarTab]
+  'profile-click': []
+  'admin-click': []
 }>()
 
 const showPagesDropdown = ref(false)
@@ -390,6 +406,9 @@ onUnmounted(() => {
         </span>
         <!-- Actions slot (right side) -->
         <slot name="actions" />
+        <!-- Theme toggle -->
+        <ThemeToggle v-if="showThemeToggle" size="sm" />
+        <!-- Settings gear -->
         <button
           v-if="showSettings"
           type="button"
@@ -402,7 +421,31 @@ onUnmounted(() => {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
-        <ThemeToggle v-if="showThemeToggle" size="sm" />
+        <!-- Admin link -->
+        <router-link
+          v-if="showAdmin"
+          :to="adminPath"
+          class="mld-topbar__admin-btn"
+          aria-label="Admin Dashboard"
+          @click="emit('admin-click')"
+        >
+          <svg class="mld-topbar__admin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+        </router-link>
+        <!-- Profile button -->
+        <button
+          v-if="showProfile"
+          type="button"
+          class="mld-topbar__profile-btn"
+          aria-label="Edit profile"
+          @click="emit('profile-click')"
+        >
+          <div class="mld-topbar__profile-avatar">
+            {{ profileInitial }}
+          </div>
+          <span v-if="userName" class="mld-topbar__profile-name">{{ userName }}</span>
+        </button>
       </div>
     </div>
   </header>

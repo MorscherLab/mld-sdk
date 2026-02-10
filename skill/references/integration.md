@@ -36,7 +36,7 @@ class AnalysisService:
     def is_standalone(self) -> bool:
         return self._context is None
 
-    async def get_experiment(self, experiment_id: str):
+    async def get_experiment(self, experiment_id: int):
         if self.is_standalone:
             # Return mock data for development
             return {"id": experiment_id, "name": "Mock Experiment"}
@@ -70,23 +70,23 @@ if (isIntegrated.value) {
 class AnalysisService:
     def __init__(self, context: PlatformContext | None):
         self._context = context
-        self._local_settings: dict = {}  # Standalone fallback
+        self._local_settings: dict = {}
 
     async def get_settings(self) -> dict:
         if self.is_standalone:
             return self._local_settings
-        return await self._context.get_plugin_config() or {}
+        config = self._context.get_config()
+        return config.get("plugin_settings", {})
 
     async def save_settings(self, settings: dict) -> None:
         if self.is_standalone:
             self._local_settings = settings
-        else:
-            await self._context.set_plugin_config(settings)
+        # In integrated mode, settings are managed by the platform
 ```
 
 ### Settings Persistence (Local Database)
 
-For persistent storage that works in both modes, use the local database:
+For persistent storage that works in both modes, use the standalone database:
 
 ```python
 from mld_sdk import AnalysisPlugin
@@ -94,19 +94,28 @@ from mld_sdk import AnalysisPlugin
 class MyPlugin(AnalysisPlugin):
     async def initialize(self, context=None):
         self._context = context
-        self._setup_local_database()
+        if self.is_standalone:
+            self._setup_standalone_db()
 
     async def get_settings(self) -> dict:
-        return self.local_db.get_all(namespace="settings")
+        return self.standalone_db.get_all(namespace="settings")
 
     async def save_setting(self, key: str, value) -> None:
-        self.local_db.set(key, value, namespace="settings")
+        self.standalone_db.set(key, value, namespace="settings")
 
     async def shutdown(self):
-        self._teardown_local_database()
+        self._teardown_standalone_db()
 ```
 
 This eliminates the standalone vs integrated split for plugin-internal data -- settings persist across restarts in both modes.
+
+For unified async database access that works in both modes (PostgreSQL in integrated, SQLite in standalone):
+
+```python
+# Unified async DB access (PostgreSQL or SQLite depending on mode)
+async with self.get_plugin_db_session() as session:
+    ...
+```
 
 ### Authentication
 
@@ -124,7 +133,7 @@ def get_auth_dependency(self):
 ### Feature Availability
 
 ```python
-async def analyze_experiment(self, experiment_id: str):
+async def analyze_experiment(self, experiment_id: int):
     if self.is_standalone:
         raise HTTPException(
             status_code=503,
@@ -182,7 +191,8 @@ def create_standalone_app() -> FastAPI:
     # Health check
     @app.get("/health")
     async def health():
-        return await plugin.check_health()
+        result = await plugin.check_health()
+        return result.to_dict()
 
     # Serve frontend if available
     frontend_dir = plugin.get_frontend_dir()
@@ -361,48 +371,38 @@ def get_frontend_config(self) -> dict:
 ### Basic Health Check
 
 ```python
-async def check_health(self) -> dict:
-    return {
-        "status": "healthy",
-        "mode": "integrated" if self._context else "standalone",
-        "version": self.metadata.version,
-    }
+async def check_health(self) -> PluginHealth:
+    return PluginHealth(
+        status=HealthStatus.HEALTHY,
+        details={
+            "mode": "integrated" if self._context else "standalone",
+            "version": self.metadata.version,
+        }
+    )
 ```
 
 ### Comprehensive Health Check
 
 ```python
-async def check_health(self) -> dict:
-    health = {
-        "status": "healthy",
+async def check_health(self) -> PluginHealth:
+    details = {
         "mode": "integrated" if self._context else "standalone",
         "version": self.metadata.version,
-        "checks": {},
     }
+    status = HealthStatus.HEALTHY
 
-    # Check service health
     if hasattr(self, '_service'):
         try:
             await asyncio.wait_for(
                 self._service.verify_connection(),
                 timeout=5.0
             )
-            health["checks"]["service"] = "ok"
+            details["service"] = "ok"
         except Exception as e:
-            health["status"] = "degraded"
-            health["checks"]["service"] = f"error: {e}"
+            status = HealthStatus.DEGRADED
+            details["service"] = f"error: {e}"
 
-    # Check database connection (integrated only)
-    if self._context:
-        try:
-            repo = self._context.get_experiment_repository()
-            await repo.list_all(limit=1)
-            health["checks"]["database"] = "ok"
-        except Exception as e:
-            health["status"] = "degraded"
-            health["checks"]["database"] = f"error: {e}"
-
-    return health
+    return PluginHealth(status=status, details=details)
 ```
 
 ---
@@ -412,7 +412,7 @@ async def check_health(self) -> dict:
 ### Graceful Degradation
 
 ```python
-async def get_data(self, experiment_id: str) -> dict:
+async def get_data(self, experiment_id: int) -> dict:
     try:
         if self._context:
             repo = self._context.get_experiment_repository()
@@ -427,13 +427,12 @@ async def get_data(self, experiment_id: str) -> dict:
 ### Mode-Specific Errors
 
 ```python
-from mld_sdk.exceptions import PluginRuntimeError
+from mld_sdk.exceptions import PermissionException
 
 async def platform_only_feature(self):
     if self.is_standalone:
-        raise PluginRuntimeError(
-            message="This feature requires platform integration",
-            details={"feature": "experiment_linking", "mode": "standalone"},
+        raise PermissionException(
+            "This feature requires platform integration",
         )
     # ... implementation
 ```

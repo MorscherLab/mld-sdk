@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 import type { AuthConfig, UserInfo, LoginResponse, TokenVerifyResponse, UpdateProfileRequest } from '../types'
@@ -43,7 +43,21 @@ const TOKEN_REFRESH_CHECK_INTERVAL_MS = 60 * 1000 // Check every minute
  * // Tokens are refreshed 5 minutes before expiration
  * ```
  */
-export function useAuth() {
+export interface UseAuthReturn {
+  login: (username: string, password: string) => Promise<boolean>
+  logout: () => void
+  register: (username: string, password: string, email?: string) => Promise<boolean>
+  verifyToken: () => Promise<boolean>
+  fetchAuthConfig: () => Promise<AuthConfig>
+  initializeAuth: () => Promise<void>
+  getCurrentUser: () => Promise<UserInfo | null>
+  getAuthHeader: () => Record<string, string>
+  updateProfile: (data: { email?: string; shortname?: string; currentPassword?: string; newPassword?: string }) => Promise<{ success: boolean; error?: string }>
+  refreshToken: () => Promise<boolean>
+  isRefreshing: Ref<boolean>
+}
+
+export function useAuth(): UseAuthReturn {
   const authStore = useAuthStore()
   const settingsStore = useSettingsStore()
 

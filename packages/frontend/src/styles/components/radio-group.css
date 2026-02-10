@@ -16,7 +16,7 @@
 
 .mld-radio-option {
   display: inline-flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.25rem;
   cursor: pointer;
   user-select: none;
@@ -123,7 +123,6 @@ html.dark .mld-radio-option__native:focus-visible + .mld-radio-option__circle {
 .mld-radio-option__content {
   display: flex;
   flex-direction: column;
-  padding-top: 0.375rem;
 }
 
 .mld-radio-option__label {
