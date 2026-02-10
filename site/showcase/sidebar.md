@@ -46,15 +46,23 @@ A sidebar navigation component with collapsible sections, badges, collapse/expan
 interface SidebarItem {
   id: string
   label: string
-  icon?: string
+  icon?: string              // SVG path data, emoji, or text
   to?: string
   href?: string
   children?: SidebarItem[]
   badge?: string | number
   disabled?: boolean
-  defaultOpen?: boolean  // Whether collapsible section starts open (default: true)
+  defaultOpen?: boolean      // Whether collapsible section starts open (default: true)
 }
 ```
+
+## Icons
+
+The `icon` prop supports both SVG path data and text/emoji:
+- **SVG paths**: String starting with `M`/`m` or array of path strings (e.g., `"M12 2L2 7..."`)
+- **Text/emoji**: Any other string (e.g., `"🧪"`, `"A"`, `"⚙️"`)
+
+Icons are auto-detected based on content. Use `#icon-{id}` slot for custom components.
 
 ## Collapsible Sections
 
@@ -65,6 +73,7 @@ const items: SidebarItem[] = [
   {
     id: 'experiments',
     label: 'Experiments',
+    icon: '🧪',
     defaultOpen: true,  // starts open (default)
     children: [
       { id: 'exp-list', label: 'All Experiments' },
@@ -74,6 +83,7 @@ const items: SidebarItem[] = [
   {
     id: 'analysis',
     label: 'Analysis',
+    icon: '📊',
     defaultOpen: false,  // starts collapsed
     children: [
       { id: 'results', label: 'Results' },
@@ -91,16 +101,17 @@ import { ref } from 'vue'
 import { AppSidebar, type SidebarItem } from '@morscherlab/mld-sdk'
 
 const items: SidebarItem[] = [
-  { id: 'home', label: 'Home', to: '/' },
+  { id: 'home', label: 'Home', to: '/', icon: '🏠' },
   {
     id: 'experiments',
     label: 'Experiments',
+    icon: '🧪',
     children: [
       { id: 'exp-list', label: 'All', to: '/experiments' },
       { id: 'exp-new', label: 'New', to: '/experiments/new' },
     ],
   },
-  { id: 'settings', label: 'Settings', badge: 3 },
+  { id: 'settings', label: 'Settings', icon: '⚙️', badge: 3 },
 ]
 
 const activeItem = ref('home')

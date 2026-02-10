@@ -60,6 +60,11 @@
   height: 1rem;
 }
 
+.mld-collapsible-card__icon-text {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .mld-collapsible-card__titles {
   display: flex;
   flex-direction: column;

@@ -157,7 +157,7 @@ export type {
   SelectOption,
   RadioOption,
   FormFieldProps,
-  SidebarItem,
+  SidebarToolSection,
   CollapsibleState,
   TopBarVariant,
   TopBarPage,

@@ -59,30 +59,6 @@ describe('AppLayout', () => {
       const wrapper = mount(AppLayout)
       expect(wrapper.find('.mld-layout__sidebar').exists()).toBe(false)
     })
-
-    it('should pass collapsed prop to sidebar slot', () => {
-      const wrapper = mount(AppLayout, {
-        props: { sidebarCollapsed: true },
-        slots: {
-          sidebar: `<template #sidebar="{ collapsed }">
-            <div :data-collapsed="collapsed">Sidebar</div>
-          </template>`,
-        },
-      })
-      const sidebar = wrapper.find('[data-collapsed]')
-      expect(sidebar.attributes('data-collapsed')).toBe('true')
-    })
-
-    it('should pass toggle function to sidebar slot', () => {
-      const wrapper = mount(AppLayout, {
-        slots: {
-          sidebar: `<template #sidebar="{ toggle }">
-            <button @click="toggle">Toggle</button>
-          </template>`,
-        },
-      })
-      expect(wrapper.find('button').exists()).toBe(true)
-    })
   })
 
   describe('sidebarPosition prop', () => {
@@ -121,19 +97,9 @@ describe('AppLayout', () => {
   })
 
   describe('sidebar width styling', () => {
-    it('should not apply inline width when default auto is used (expanded)', () => {
+    it('should not apply inline width when default auto is used', () => {
       const wrapper = mount(AppLayout, {
-        props: { sidebarCollapsed: false },
-        slots: { sidebar: '<div>Nav</div>' },
-      })
-      const sidebar = wrapper.find('.mld-layout__sidebar')
-      expect(sidebar.attributes('style')).toBeUndefined()
-    })
-
-    it('should not apply inline width when default auto is used (collapsed)', () => {
-      const wrapper = mount(AppLayout, {
-        props: { sidebarCollapsed: true },
-        slots: { sidebar: '<div>Nav</div>' },
+        slots: { sidebar: '<div>Sidebar</div>' },
       })
       const sidebar = wrapper.find('.mld-layout__sidebar')
       expect(sidebar.attributes('style')).toBeUndefined()
@@ -141,57 +107,20 @@ describe('AppLayout', () => {
 
     it('should apply custom sidebar width', () => {
       const wrapper = mount(AppLayout, {
-        props: {
-          sidebarWidth: '300px',
-          sidebarCollapsed: false,
-        },
-        slots: { sidebar: '<div>Nav</div>' },
+        props: { sidebarWidth: '300px' },
+        slots: { sidebar: '<div>Sidebar</div>' },
       })
       const sidebar = wrapper.find('.mld-layout__sidebar')
       expect(sidebar.attributes('style')).toContain('width: 300px')
     })
 
-    it('should apply custom collapsed width', () => {
+    it('should handle width with different CSS units', () => {
       const wrapper = mount(AppLayout, {
-        props: {
-          sidebarCollapsedWidth: '80px',
-          sidebarCollapsed: true,
-        },
-        slots: { sidebar: '<div>Nav</div>' },
+        props: { sidebarWidth: '20rem' },
+        slots: { sidebar: '<div>Sidebar</div>' },
       })
       const sidebar = wrapper.find('.mld-layout__sidebar')
-      expect(sidebar.attributes('style')).toContain('width: 80px')
-    })
-  })
-
-  describe('v-model:sidebarCollapsed', () => {
-    it('should emit update:sidebarCollapsed when toggle is called', async () => {
-      const wrapper = mount(AppLayout, {
-        props: { sidebarCollapsed: false },
-        slots: {
-          sidebar: `<template #sidebar="{ toggle }">
-            <button @click="toggle" data-test="toggle-btn">Toggle</button>
-          </template>`,
-        },
-      })
-
-      await wrapper.find('[data-test="toggle-btn"]').trigger('click')
-      expect(wrapper.emitted('update:sidebarCollapsed')).toHaveLength(1)
-      expect(wrapper.emitted('update:sidebarCollapsed')?.[0]).toEqual([true])
-    })
-
-    it('should emit false when collapsed is true', async () => {
-      const wrapper = mount(AppLayout, {
-        props: { sidebarCollapsed: true },
-        slots: {
-          sidebar: `<template #sidebar="{ toggle }">
-            <button @click="toggle" data-test="toggle-btn">Toggle</button>
-          </template>`,
-        },
-      })
-
-      await wrapper.find('[data-test="toggle-btn"]').trigger('click')
-      expect(wrapper.emitted('update:sidebarCollapsed')?.[0]).toEqual([false])
+      expect(sidebar.attributes('style')).toContain('width: 20rem')
     })
   })
 
@@ -200,13 +129,13 @@ describe('AppLayout', () => {
       const wrapper = mount(AppLayout, {
         slots: {
           topbar: '<div class="topbar-content">Header</div>',
-          sidebar: '<div class="sidebar-content">Nav</div>',
+          sidebar: '<div class="sidebar-content">Sidebar</div>',
           default: '<div class="main-content">Content</div>',
         },
       })
 
       expect(wrapper.find('.topbar-content').text()).toBe('Header')
-      expect(wrapper.find('.sidebar-content').text()).toBe('Nav')
+      expect(wrapper.find('.sidebar-content').text()).toBe('Sidebar')
       expect(wrapper.find('.main-content').text()).toBe('Content')
     })
 
@@ -229,19 +158,6 @@ describe('AppLayout', () => {
       const wrapper = mount(AppLayout)
       expect(wrapper.find('.mld-layout__main').exists()).toBe(true)
       expect(wrapper.find('.mld-layout__main').text()).toBe('')
-    })
-
-    it('should handle sidebar width with different units', () => {
-      const wrapper = mount(AppLayout, {
-        props: {
-          sidebarWidth: '20rem',
-          sidebarCollapsedWidth: '4rem',
-          sidebarCollapsed: false,
-        },
-        slots: { sidebar: '<div>Nav</div>' },
-      })
-      const sidebar = wrapper.find('.mld-layout__sidebar')
-      expect(sidebar.attributes('style')).toContain('width: 20rem')
     })
   })
 })

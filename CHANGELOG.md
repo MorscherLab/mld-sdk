@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-02-10
+
+### Breaking Changes
+
+- **AppSidebar redesign** - Converted from navigation sidebar to context-sensitive toolkit panel. `items` prop replaced with `panels` (mapping view IDs to section arrays), `activeId` replaced with `activeView`, `collapsed`/`collapsedWidth` props removed. Use `#section-{id}` slots for section content. `SidebarItem` type renamed to `SidebarToolSection`.
+- **AppLayout simplified** - Removed `v-model:sidebar-collapsed`, `sidebarCollapsedWidth` prop, and sidebar slot scoped props (`collapsed`, `toggle`). Sidebar visibility is now controlled by AppSidebar itself based on `activeView`.
+
+### Added
+
+- **Skill reference: guideline.md** - Plugin architecture patterns, UX conventions, navigation hierarchy, component selection guide, CSS rules, and testing best practices
+- **Skill reference: troubleshooting.md** - 20 entries organized by symptom (build/setup, runtime backend, runtime frontend, deployment, performance) with cause/fix/prevention format
+
+### Changed
+
+- **AppSidebar** - Sections render as CollapsibleCards with `#section-{id}` slots; sidebar auto-hides when active view has no matching panels
+- **AppLayout** - Sidebar wrapper auto-hides via `:has(.mld-sidebar--hidden)` CSS; stripped topbar card variant borders inside layout
+- **CollapsibleCard** - Icon badge now correctly renders text/emoji icons (not just SVG paths) via `isSvgIcon` detection
+- **Skill SKILL.md** - Reference navigation table expanded with guideline and troubleshooting links; inline troubleshooting items replaced with pointer to full guide
+
+### Fixed
+
+- **AppTopBar CSS** - Card variant inside AppLayout now strips redundant margins, border-radius, and box-shadow
+
 ## [0.4.0] - 2026-02-09
 
 ### Added

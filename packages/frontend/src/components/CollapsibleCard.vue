@@ -44,18 +44,17 @@ const headerClasses = computed(() => [
   props.disabled ? 'mld-collapsible-card__header--disabled' : '',
 ])
 
-const iconBgStyle = computed(() => {
-  if (!props.icon) return {}
-  return {
-    backgroundColor: props.iconBg || 'var(--color-primary-soft)',
-  }
-})
+const iconBgStyle = computed(() => ({
+  backgroundColor: props.iconBg || 'var(--color-primary-soft)',
+}))
 
-const iconColorStyle = computed(() => {
-  if (!props.icon) return {}
-  return {
-    color: props.iconColor || 'var(--color-primary)',
-  }
+const iconColorStyle = computed(() => ({
+  color: props.iconColor || 'var(--color-primary)',
+}))
+
+const isSvgIcon = computed(() => {
+  if (!props.icon) return false
+  return Array.isArray(props.icon) || props.icon.startsWith('M') || props.icon.startsWith('m')
 })
 
 const toggleTrackStyle = computed(() => {
@@ -80,6 +79,7 @@ const toggleTrackStyle = computed(() => {
         <!-- Icon badge -->
         <div v-if="icon" class="mld-collapsible-card__icon-badge" :style="iconBgStyle">
           <svg
+            v-if="isSvgIcon"
             class="mld-collapsible-card__icon"
             :style="iconColorStyle"
             viewBox="0 0 24 24"
@@ -94,6 +94,7 @@ const toggleTrackStyle = computed(() => {
             </template>
             <path v-else :d="icon" />
           </svg>
+          <span v-else class="mld-collapsible-card__icon-text" :style="iconColorStyle">{{ icon }}</span>
         </div>
 
         <div class="mld-collapsible-card__titles">

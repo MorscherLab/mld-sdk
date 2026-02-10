@@ -20,7 +20,7 @@ An expandable card component with a clickable header. Supports icon badges, subt
 | `subtitle` | `string` | - | Optional subtitle below title |
 | `defaultOpen` | `boolean` | `false` | Start in expanded state |
 | `disabled` | `boolean` | `false` | Prevent toggling |
-| `icon` | `string` | - | SVG path content for icon badge |
+| `icon` | `string \| string[]` | - | SVG path data or text/emoji. Auto-detects SVG (starts with M/m or array), otherwise renders as text |
 | `iconColor` | `string` | `var(--color-primary)` | Icon stroke/fill color |
 | `iconBg` | `string` | `var(--color-primary-soft)` | Icon badge background color |
 | `showToggle` | `boolean` | `false` | Show toggle switch in header |
@@ -68,13 +68,24 @@ const enabled = ref(true)
     <p>Collapsible content goes here...</p>
   </CollapsibleCard>
 
-  <!-- With icon badge -->
+  <!-- With SVG icon badge -->
   <CollapsibleCard
     title="Settings"
     subtitle="Configure preferences"
     :icon="settingsIcon"
     icon-color="#3B82F6"
     icon-bg="rgba(59, 130, 246, 0.1)"
+  >
+    Content here...
+  </CollapsibleCard>
+
+  <!-- With emoji/text icon -->
+  <CollapsibleCard
+    title="Experiments"
+    subtitle="View all experiments"
+    icon="🧪"
+    icon-color="#10B981"
+    icon-bg="rgba(16, 185, 129, 0.1)"
   >
     Content here...
   </CollapsibleCard>

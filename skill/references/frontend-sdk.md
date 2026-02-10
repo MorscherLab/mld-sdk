@@ -926,28 +926,49 @@ const tabs: TabItem[] = [
   subtitle="Optional subtitle"
   :defaultOpen="false"
   :disabled="false"
+  icon="⚙️"
+  iconColor="#3B82F6"
+  iconBg="rgba(59, 130, 246, 0.1)"
 >
   <p>Expandable content</p>
 </CollapsibleCard>
 ```
 
+**Props:**
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | Required | Card header title |
+| `subtitle` | `string` | - | Optional subtitle below title |
+| `defaultOpen` | `boolean` | `false` | Start in expanded state |
+| `disabled` | `boolean` | `false` | Prevent toggling |
+| `icon` | `string \| string[]` | - | SVG path data or emoji/text. SVG paths are detected (start with M/m or array), otherwise rendered as text |
+| `iconColor` | `string` | `var(--color-primary)` | Icon stroke/fill color |
+| `iconBg` | `string` | `var(--color-primary-soft)` | Icon badge background |
+| `showToggle` | `boolean` | `false` | Show toggle switch in header |
+| `toggleValue` | `boolean` | `false` | Toggle state (v-model:toggle-value) |
+| `toggleColor` | `string` | - | Custom color for toggle when active |
+
+**Icon prop behavior:**
+- SVG path data (string starting with `M`/`m` or array of path strings) renders as `<svg>`
+- Text/emoji strings render as `<span>` with icon text styling
+- Examples: `icon="M12 2L2 7l10 5..."` (SVG), `icon="⚙️"` (emoji), `icon="A"` (text)
+
 ### AppLayout
 
 Fixed-viewport layout shell with topbar, sidebar, and flex main content area. The root uses `height: 100vh; overflow: hidden` — the page never scrolls. Only individual containers (sidebar, main content panels) scroll internally. The main slot is a flex column container with `overflow: hidden`, so consumers compose their own scrollable panels.
 
+The sidebar slot is a simple pass-through; visibility is controlled by `AppSidebar` itself (auto-hides when no panels match the active view).
+
 ```vue
-<AppLayout v-model:sidebar-collapsed="collapsed" floating>
+<AppLayout floating>
   <template #topbar>
     <AppTopBar plugin-name="My Plugin" title="Dashboard" variant="card" />
   </template>
-  <template #sidebar="{ collapsed, toggle }">
-    <AppSidebar
-      :items="navItems"
-      :active-id="activeId"
-      :collapsed="collapsed"
-      @select="handleNav"
-      @update:collapsed="toggle"
-    />
+  <template #sidebar>
+    <AppSidebar :panels="toolPanels" :active-view="activeTab">
+      <template #section-params>...</template>
+    </AppSidebar>
   </template>
   <router-view />
 </AppLayout>
@@ -957,10 +978,8 @@ Fixed-viewport layout shell with topbar, sidebar, and flex main content area. Th
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `sidebarCollapsed` | `boolean` | `false` | Sidebar collapse state (v-model:sidebar-collapsed) |
 | `sidebarPosition` | `'left'\|'right'` | `'left'` | Sidebar position |
-| `sidebarWidth` | `string` | `'auto'` | Expanded sidebar width ('auto' fits content) |
-| `sidebarCollapsedWidth` | `string` | `'auto'` | Collapsed sidebar width ('auto' fits content) |
+| `sidebarWidth` | `string` | `'auto'` | Sidebar width ('auto' fits content) |
 | `floating` | `boolean` | `false` | Floating card layout with gaps |
 
 **Slots:**
@@ -968,7 +987,7 @@ Fixed-viewport layout shell with topbar, sidebar, and flex main content area. Th
 | Slot | Scoped Props | Description |
 |------|-------------|-------------|
 | `#topbar` | - | Top bar content |
-| `#sidebar` | `{ collapsed: boolean, toggle: () => void }` | Sidebar content |
+| `#sidebar` | - | Sidebar content (AppSidebar controls its own visibility) |
 | `#default` | - | Main content area (transparent flex container in floating mode) |
 
 ### AppContainer
@@ -1116,61 +1135,60 @@ interface TopBarSettingsConfig {
 
 ### AppSidebar
 
-Navigation sidebar with collapsible sections, items mode and slot mode.
+Context-sensitive toolkit panel. Shows tool sections relevant to the active view. Sections are defined via the `panels` config (mapping view IDs to section arrays) and rendered as CollapsibleCards. Controls are provided through `#section-{sectionId}` slots.
+
+When the active view has no matching panels, the sidebar hides entirely.
 
 ```vue
-<!-- Items mode (recommended) -->
-<AppSidebar
-  :items="navItems"
-  :active-id="activeRoute"
-  v-model:collapsed="collapsed"
-  @select="handleNavigation"
-/>
-
-<!-- Slot mode (custom content) -->
-<AppSidebar v-model:collapsed="collapsed">
-  <custom-navigation />
+<AppSidebar :panels="toolPanels" :active-view="activeTab">
+  <template #section-parameters>
+    <BaseSlider v-model="threshold" label="Threshold" />
+  </template>
+  <template #section-display>
+    <BaseToggle v-model="showOutliers" label="Show outliers" />
+  </template>
+  <template #header>Plugin Tools</template>
 </AppSidebar>
+```
+
+```typescript
+import type { SidebarToolSection } from '@morscherlab/mld-sdk/types'
+
+const toolPanels: Record<string, SidebarToolSection[]> = {
+  analysis: [
+    { id: 'parameters', label: 'Parameters', icon: '⚙️' },
+    { id: 'display', label: 'Display Options', icon: '👁️', defaultOpen: false },
+  ],
+  results: [
+    { id: 'filters', label: 'Filters', icon: '🔍' },
+  ],
+}
 ```
 
 **Props:**
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `items` | `SidebarItem[]` | `[]` | Nav items (enables items mode) |
-| `activeId` | `string` | - | Currently active item ID |
-| `collapsed` | `boolean` | `false` | Collapse state (v-model:collapsed) |
+| `panels` | `Record<string, SidebarToolSection[]>` | `{}` | Map of view IDs to their tool sections |
+| `activeView` | `string` | `''` | Which view's panels to display |
 | `floating` | `boolean` | `true` | Floating (absolute) or static positioning |
-| `width` | `string` | `'240px'` | Expanded width |
-| `collapsedWidth` | `string` | `'64px'` | Collapsed width |
+| `width` | `string` | `'280px'` | Width when visible |
 | `side` | `'left'\|'right'` | `'left'` | Sidebar position |
 
-**Events:**
+**Slots:** `#header`, `#section-{sectionId}` (content for each section), `#footer`
 
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `select` | `SidebarItem` | Navigation item clicked |
-| `update:collapsed` | `boolean` | Collapse state changed |
-
-**Slots:** `#header`, `#default` (when no items), `#footer`, `#icon-{itemId}` (per-item icon override)
-
-**SidebarItem type:**
+**SidebarToolSection type:**
 
 ```typescript
-interface SidebarItem {
+interface SidebarToolSection {
   id: string
   label: string
-  icon?: string              // Emoji or text, override with #icon-{id} slot
-  to?: string                // vue-router path
-  href?: string              // External link
-  children?: SidebarItem[]   // Renders as CollapsibleCard section
-  badge?: string | number    // Badge indicator
-  disabled?: boolean
-  defaultOpen?: boolean      // Initial collapsed state for sections (default: true)
+  icon?: string       // SVG path data, emoji, or text
+  defaultOpen?: boolean  // Initial open state (default: true)
 }
 ```
 
-Items with `children` render as collapsible `CollapsibleCard` sections. When sidebar is collapsed, only icons are shown for parent items.
+**Visibility:** The sidebar auto-hides when `activeView` has no matching key in `panels`. The layout wrapper (`AppLayout`) detects `.mld-sidebar--hidden` via CSS `:has()` and removes the sidebar gap.
 
 ---
 

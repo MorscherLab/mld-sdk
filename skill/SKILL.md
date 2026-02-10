@@ -1,7 +1,7 @@
 ---
 name: mld-sdk-plugin
-version: 0.4.0
-sdk_version: 0.4.0
+version: 0.5.0
+sdk_version: 0.5.0
 description: |
   Build full-stack analysis plugins for MorscherLabDatabase platform using mld-sdk.
 
@@ -276,11 +276,11 @@ app.mount('#app')
 
 **Basic plugin layout (src/App.vue):**
 
-Use `AppLayout` + `AppTopBar` + `AppSidebar` for a standard plugin shell with topbar, collapsible sidebar, and main content area.
+Use `AppLayout` + `AppTopBar` + `AppSidebar` for a standard plugin shell with topbar, context-sensitive sidebar, and main content area.
 
 ```vue
 <template>
-  <AppLayout v-model:sidebar-collapsed="sidebarCollapsed" floating>
+  <AppLayout floating>
     <template #topbar>
       <AppTopBar
         plugin-name="My Plugin"
@@ -294,31 +294,31 @@ Use `AppLayout` + `AppTopBar` + `AppSidebar` for a standard plugin shell with to
         @tab-select="handleTabSelect"
       >
         <template #actions>
-          <!-- Standalone mode indicator -->
-          <BasePill v-if="!isIntegrated" variant="warning" size="sm">Standalone</BasePill>
-
-          <!-- Admin panel link (visible only to admins) -->
-          <BaseButton v-if="authStore.isAdmin" variant="ghost" size="sm" @click="router.push('/admin')">
-            Admin
-          </BaseButton>
-
           <ThemeToggle />
           <SettingsButton @click="showSettings = true" />
         </template>
       </AppTopBar>
     </template>
 
-    <template #sidebar="{ collapsed }">
-      <AppSidebar
-        :items="navItems"
-        :active-id="activeNavId"
-        :collapsed="collapsed"
-        @select="handleNavSelect"
-        @update:collapsed="sidebarCollapsed = $event"
-      />
+    <template #sidebar>
+      <AppSidebar :panels="toolPanels" :active-view="currentPageId">
+        <template #section-parameters>
+          <FormField label="Threshold">
+            <NumberInput v-model="threshold" :min="0" :max="100" />
+          </FormField>
+        </template>
+        <template #section-display>
+          <BaseCheckbox v-model="showOutliers" label="Show outliers" />
+        </template>
+        <template #section-filters>
+          <BaseSelect v-model="statusFilter" :options="statusOptions" placeholder="All statuses" />
+        </template>
+      </AppSidebar>
     </template>
 
-    <router-view />
+    <AppContainer scrollable>
+      <router-view />
+    </AppContainer>
 
     <!-- Settings modal with custom tabs + built-in appearance -->
     <SettingsModal
@@ -345,22 +345,13 @@ Use `AppLayout` + `AppTopBar` + `AppSidebar` for a standard plugin shell with to
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
-  AppLayout, AppTopBar, AppSidebar, ThemeToggle, SettingsButton,
-  SettingsModal, FormField, BaseInput, BaseButton, BasePill, NumberInput,
+  AppLayout, AppTopBar, AppSidebar, AppContainer, ThemeToggle, SettingsButton,
+  SettingsModal, FormField, BaseInput, BaseSelect, BaseCheckbox, NumberInput,
 } from '@morscherlab/mld-sdk/components'
-import { usePlatformContext } from '@morscherlab/mld-sdk/composables'
-import { useAuthStore } from '@morscherlab/mld-sdk/stores'
-import type { SidebarItem, TopBarPage, TopBarTab } from '@morscherlab/mld-sdk/types'
+import type { SidebarToolSection, TopBarPage, TopBarTab } from '@morscherlab/mld-sdk/types'
 
 const router = useRouter()
 const route = useRoute()
-const sidebarCollapsed = ref(false)
-
-// --- Platform context (standalone vs integrated) ---
-const { isIntegrated } = usePlatformContext()
-
-// --- Auth store (admin check) ---
-const authStore = useAuthStore()
 
 // --- Settings ---
 const showSettings = ref(false)
@@ -372,6 +363,7 @@ const maxResults = ref(100)
 const pages: TopBarPage[] = [
   { id: 'dashboard', label: 'Dashboard', to: '/' },
   { id: 'analysis', label: 'Analysis', to: '/analysis' },
+  { id: 'results', label: 'Results', to: '/results' },
 ]
 
 const currentPageId = computed(() => {
@@ -388,7 +380,7 @@ function handlePageSelect(page: TopBarPage) {
 // --- TopBar center tabs (optional) ---
 const tabs: TopBarTab[] = [
   { id: 'overview', label: 'Overview', to: '/analysis' },
-  { id: 'results', label: 'Results', to: '/analysis/results' },
+  { id: 'details', label: 'Details', to: '/analysis/details' },
 ]
 const currentTabId = computed(() => {
   return tabs.find(t => t.to === route.path)?.id ?? ''
@@ -397,53 +389,36 @@ function handleTabSelect(tab: TopBarTab) {
   if (tab.to) router.push(tab.to)
 }
 
-// --- Sidebar navigation with collapsible sections ---
-const navItems = computed<SidebarItem[]>(() => [
-  { id: 'home', label: 'Home', icon: '🏠', to: '/' },
-  {
-    id: 'data', label: 'Data', icon: '📊',
-    defaultOpen: true,
-    children: [
-      { id: 'experiments', label: 'Experiments', to: '/experiments' },
-      { id: 'samples', label: 'Samples', to: '/samples' },
-    ],
-  },
-  {
-    id: 'tools', label: 'Tools', icon: '🔧',
-    children: [
-      { id: 'plate-editor', label: 'Plate Editor', to: '/plate-editor' },
-      { id: 'calculator', label: 'Calculator', to: '/calculator' },
-    ],
-  },
-  // Admin section (only visible to admins)
-  ...(authStore.isAdmin ? [{
-    id: 'admin', label: 'Admin', icon: '🔑',
-    children: [
-      { id: 'users', label: 'Users', to: '/admin/users' },
-      { id: 'config', label: 'Configuration', to: '/admin/config' },
-    ],
-  }] : []),
-])
-
-const activeNavId = computed(() => {
-  const flatItems = navItems.value.flatMap(i => i.children ? [i, ...i.children] : [i])
-  return flatItems.find(i => i.to === route.path)?.id ?? ''
-})
-
-function handleNavSelect(item: SidebarItem) {
-  if (item.to) router.push(item.to)
+// --- Sidebar tool panels (per-view sections) ---
+const toolPanels: Record<string, SidebarToolSection[]> = {
+  analysis: [
+    { id: 'parameters', label: 'Parameters', icon: '⚙️' },
+    { id: 'display', label: 'Display', icon: '👁️', defaultOpen: false },
+  ],
+  results: [
+    { id: 'filters', label: 'Filters', icon: '🔍' },
+  ],
+  // dashboard has no panels → sidebar hides automatically
 }
+
+// --- Sidebar tool state ---
+const threshold = ref(50)
+const showOutliers = ref(false)
+const statusFilter = ref('')
+const statusOptions = [
+  { value: 'completed', label: 'Completed' },
+  { value: 'failed', label: 'Failed' },
+]
 </script>
 ```
 
 **Key layout concepts:**
 - `AppLayout` orchestrates topbar + sidebar + main with `floating` variant (cards with gaps)
 - `AppTopBar` supports breadcrumb navigation (`pluginName` > `title`), page dropdown, center tabs, and action slots
-- `AppSidebar` renders navigation from an `items` array with collapsible `CollapsibleCard` sections
-- Sidebar collapse is two-way bound via `v-model:sidebar-collapsed` on `AppLayout`
-- `BasePill` with `variant="warning"` shows a "Standalone" label when `!isIntegrated` (from `usePlatformContext`)
-- `BaseButton` with `v-if="authStore.isAdmin"` shows an Admin link only for admin users (from `useAuthStore`)
-- Admin sidebar section is conditionally included via computed `navItems` based on `authStore.isAdmin`
+- `AppSidebar` shows context-sensitive tool sections based on the active view via `panels` config
+- Sidebar auto-hides when the active view has no matching panels (e.g., dashboard page)
+- Section content is provided through `#section-{id}` named slots
+- `AppContainer scrollable` wraps main content for proper scrolling inside the fixed viewport
 - `ThemeToggle` toggles light/dark mode (uses `useTheme` composable internally)
 - `SettingsButton` is a gear icon button placed in `#actions` to open the settings modal
 - `SettingsModal` provides a tabbed modal with custom `#tab-{id}` slots plus a built-in Appearance tab (theme, color palette, table density) via `showAppearance`
@@ -490,6 +465,8 @@ packages = ["src/mld_plugin_example"]
 | Understand standalone vs integrated modes | [integration.md](references/integration.md) |
 | Set up PostMessage communication | [integration.md](references/integration.md) |
 | Get starter code templates | [quick-start-templates.md](references/quick-start-templates.md) |
+| Follow architecture patterns and UX conventions | [guideline.md](references/guideline.md) |
+| Debug a build, runtime, or deployment error | [troubleshooting.md](references/troubleshooting.md) |
 
 ---
 
@@ -689,18 +666,4 @@ When SDK components use semantic HTML elements (`<h3>`, `<h4>`, `<p>`, `<table>`
 
 ## Troubleshooting
 
-### Multiple Vue instances error
-**Cause:** SDK and plugin have separate Vue copies.
-**Fix:** Add `dedupe: ['vue', 'pinia', 'vue-router']` to vite.config.ts resolve options.
-
-### "Service not initialized" 503 error
-**Cause:** Router accessed before `initialize()` completed.
-**Fix:** Ensure service injection happens in `initialize()` method.
-
-### Frontend not served in standalone mode
-**Cause:** Frontend dist not included in wheel or path incorrect.
-**Fix:** Check `force-include` in pyproject.toml and verify `get_frontend_dir()` returns correct path.
-
-### Platform context methods fail in standalone
-**Cause:** Calling repository methods when `context=None`.
-**Fix:** Check `is_standalone` property before accessing platform services.
+See [troubleshooting.md](references/troubleshooting.md) for the full guide covering build/setup, runtime backend, runtime frontend, deployment, and performance issues.

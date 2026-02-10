@@ -471,24 +471,26 @@ app.mount('#app')
 ```vue
 <!-- src/App.vue -->
 <template>
-  <AppLayout floating v-model:sidebar-collapsed="collapsed">
+  <AppLayout floating>
     <template #topbar>
-      <AppTopBar title="My Analysis Plugin" variant="default">
-        <template #actions>
-          <ThemeToggle />
-        </template>
-      </AppTopBar>
+      <AppTopBar
+        plugin-name="My Analysis Plugin"
+        :title="currentPageTitle"
+        :pages="pages"
+        :current-page-id="currentPageId"
+        show-theme-toggle
+        @page-select="handlePageSelect"
+      />
     </template>
 
-    <template #sidebar="{ collapsed: isCollapsed }">
-      <AppSidebar
-        :floating="false"
-        :items="navItems"
-        :active-id="activeItem"
-        :collapsed="isCollapsed"
-        @select="(item) => { activeItem = item.id; if (item.to) router.push(item.to) }"
-        @update:collapsed="collapsed = $event"
-      />
+    <template #sidebar>
+      <AppSidebar :panels="toolPanels" :active-view="currentPageId">
+        <template #section-settings>
+          <FormField label="Threshold">
+            <NumberInput v-model="threshold" :min="0" :max="100" />
+          </FormField>
+        </template>
+      </AppSidebar>
     </template>
 
     <!-- Single card (simple pages) -->
@@ -507,26 +509,41 @@ app.mount('#app')
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import {
   AppLayout,
   AppTopBar,
   AppSidebar,
   AppContainer,
-  ThemeToggle,
+  FormField,
+  NumberInput,
   ToastNotification,
 } from '@morscherlab/mld-sdk/components'
-import type { SidebarItem } from '@morscherlab/mld-sdk/types'
+import type { SidebarToolSection, TopBarPage } from '@morscherlab/mld-sdk/types'
 
 const router = useRouter()
-const collapsed = ref(false)
-const activeItem = ref('home')
+const route = useRoute()
+const threshold = ref(50)
 
-const navItems: SidebarItem[] = [
+const pages: TopBarPage[] = [
   { id: 'home', label: 'Home', to: '/' },
   { id: 'analysis', label: 'Analysis', to: '/analysis' },
 ]
+
+const currentPageId = computed(() => pages.find(p => p.to === route.path)?.id ?? '')
+const currentPageTitle = computed(() => pages.find(p => p.id === currentPageId.value)?.label ?? '')
+
+function handlePageSelect(page: TopBarPage) {
+  if (page.to) router.push(page.to)
+}
+
+// Sidebar shows tool sections only on the analysis page
+const toolPanels: Record<string, SidebarToolSection[]> = {
+  analysis: [
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
+  ],
+}
 </script>
 ```
 

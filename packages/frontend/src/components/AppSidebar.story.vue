@@ -1,34 +1,37 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppSidebar from './AppSidebar.vue'
-import type { SidebarItem } from '../types'
+import BaseSlider from './BaseSlider.vue'
+import BaseSelect from './BaseSelect.vue'
+import BaseToggle from './BaseToggle.vue'
+import BaseButton from './BaseButton.vue'
+import type { SidebarToolSection } from '../types'
 
-const collapsed = ref(false)
-const activeId = ref('dashboard')
+const activeView = ref('analysis')
 
-const sampleItems: SidebarItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'D' },
-  { id: 'experiments', label: 'Experiments', icon: 'E', badge: 3 },
-  {
-    id: 'analysis',
-    label: 'Analysis',
-    icon: 'A',
-    defaultOpen: true,
-    children: [
-      { id: 'dose-response', label: 'Dose-Response' },
-      { id: 'quality-control', label: 'Quality Control' },
-      { id: 'statistics', label: 'Statistics', badge: 'new' },
-    ],
-  },
-  { id: 'settings', label: 'Settings', icon: 'S' },
-  { id: 'disabled-item', label: 'Archived', icon: 'X', disabled: true },
-]
-
-const sides: Array<'left' | 'right'> = ['left', 'right']
-
-function handleSelect(item: SidebarItem) {
-  activeId.value = item.id
+const panels: Record<string, SidebarToolSection[]> = {
+  analysis: [
+    { id: 'parameters', label: 'Parameters', icon: '⚙' },
+    { id: 'filters', label: 'Filters', icon: '🔍', defaultOpen: false },
+  ],
+  results: [
+    { id: 'display', label: 'Display Options', icon: '👁' },
+    { id: 'export', label: 'Export', icon: '📥' },
+  ],
 }
+
+const threshold = ref(50)
+const method = ref('linear')
+const methods = [
+  { value: 'linear', label: 'Linear' },
+  { value: 'quadratic', label: 'Quadratic' },
+  { value: 'logistic', label: 'Logistic' },
+]
+const showOutliers = ref(true)
+const logScale = ref(false)
+
+const views = ['analysis', 'results', 'settings']
+const sides: Array<'left' | 'right'> = ['left', 'right']
 </script>
 
 <template>
@@ -36,25 +39,58 @@ function handleSelect(item: SidebarItem) {
     <Variant title="Playground">
       <template #default="{ state }">
         <div style="padding: 2rem; height: 500px; position: relative;">
+          <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
+            <button
+              v-for="v in views"
+              :key="v"
+              :style="{
+                padding: '0.375rem 0.75rem',
+                borderRadius: '0.25rem',
+                border: '1px solid var(--border-color, #e5e7eb)',
+                background: state.activeView === v ? 'var(--color-primary, #3b82f6)' : 'var(--bg-card, #fff)',
+                color: state.activeView === v ? '#fff' : 'var(--text-primary, #111827)',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+              }"
+              @click="state.activeView = v"
+            >
+              {{ v }}
+            </button>
+          </div>
           <AppSidebar
-            :items="sampleItems"
-            :active-id="activeId"
-            :collapsed="state.collapsed"
+            :panels="panels"
+            :active-view="state.activeView"
             :floating="state.floating"
             :width="state.width"
-            :collapsed-width="state.collapsedWidth"
             :side="state.side"
-            @update:collapsed="state.collapsed = $event"
-            @select="handleSelect"
-          />
+          >
+            <template #section-parameters>
+              <BaseSlider v-model="threshold" label="Threshold" :min="0" :max="100" />
+              <BaseSelect v-model="method" label="Method" :options="methods" />
+            </template>
+            <template #section-filters>
+              <BaseToggle v-model="showOutliers" label="Exclude outliers" />
+            </template>
+            <template #section-display>
+              <BaseToggle v-model="showOutliers" label="Show outliers" />
+              <BaseToggle v-model="logScale" label="Log scale" />
+            </template>
+            <template #section-export>
+              <BaseButton size="sm" variant="secondary">Export CSV</BaseButton>
+              <BaseButton size="sm" variant="secondary">Export PNG</BaseButton>
+            </template>
+          </AppSidebar>
         </div>
       </template>
 
       <template #controls="{ state }">
-        <HstCheckbox v-model="state.collapsed" title="Collapsed" />
+        <HstSelect
+          v-model="state.activeView"
+          title="Active View"
+          :options="views.map(v => ({ label: v, value: v }))"
+        />
         <HstCheckbox v-model="state.floating" title="Floating" />
         <HstText v-model="state.width" title="Width" />
-        <HstText v-model="state.collapsedWidth" title="Collapsed Width" />
         <HstSelect
           v-model="state.side"
           title="Side"
@@ -63,40 +99,60 @@ function handleSelect(item: SidebarItem) {
       </template>
     </Variant>
 
-    <Variant title="With Navigation Items">
+    <Variant title="Toolkit with Sections">
       <div style="padding: 2rem; height: 500px; position: relative;">
         <AppSidebar
-          :items="sampleItems"
-          :active-id="activeId"
-          :collapsed="collapsed"
-          @update:collapsed="collapsed = $event"
-          @select="handleSelect"
-        />
+          :panels="panels"
+          active-view="analysis"
+        >
+          <template #section-parameters>
+            <BaseSlider v-model="threshold" label="Threshold" :min="0" :max="100" />
+            <BaseSelect v-model="method" label="Method" :options="methods" />
+          </template>
+          <template #section-filters>
+            <BaseToggle v-model="showOutliers" label="Exclude outliers" />
+          </template>
+        </AppSidebar>
       </div>
     </Variant>
 
-    <Variant title="Collapsed State">
+    <Variant title="Multi-View Panel Switching">
       <div style="padding: 2rem; height: 500px; position: relative;">
+        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
+          <button
+            v-for="v in views"
+            :key="v"
+            :style="{
+              padding: '0.375rem 0.75rem',
+              borderRadius: '0.25rem',
+              border: '1px solid var(--border-color, #e5e7eb)',
+              background: activeView === v ? 'var(--color-primary, #3b82f6)' : 'var(--bg-card, #fff)',
+              color: activeView === v ? '#fff' : 'var(--text-primary, #111827)',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+            }"
+            @click="activeView = v"
+          >
+            {{ v }}
+          </button>
+        </div>
         <AppSidebar
-          :items="sampleItems"
-          :active-id="activeId"
-          :collapsed="true"
-          @select="handleSelect"
-        />
-      </div>
-    </Variant>
-
-    <Variant title="Custom Slot Content">
-      <div style="padding: 2rem; height: 400px; position: relative;">
-        <AppSidebar :floating="true" width="220px">
-          <div style="padding: 1rem;">
-            <p style="margin: 0 0 1rem; font-weight: 600; color: var(--text-primary, #1e293b);">Custom Nav</p>
-            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-              <li style="padding: 0.5rem; border-radius: 0.375rem; background: var(--bg-hover, #f1f5f9); cursor: pointer;">Home</li>
-              <li style="padding: 0.5rem; border-radius: 0.375rem; cursor: pointer;">Reports</li>
-              <li style="padding: 0.5rem; border-radius: 0.375rem; cursor: pointer;">Archive</li>
-            </ul>
-          </div>
+          :panels="panels"
+          :active-view="activeView"
+        >
+          <template #section-parameters>
+            <BaseSlider v-model="threshold" label="Threshold" :min="0" :max="100" />
+          </template>
+          <template #section-filters>
+            <BaseToggle v-model="showOutliers" label="Exclude outliers" />
+          </template>
+          <template #section-display>
+            <BaseToggle v-model="showOutliers" label="Show outliers" />
+            <BaseToggle v-model="logScale" label="Log scale" />
+          </template>
+          <template #section-export>
+            <BaseButton size="sm" variant="secondary">Export CSV</BaseButton>
+          </template>
         </AppSidebar>
       </div>
     </Variant>
@@ -104,13 +160,42 @@ function handleSelect(item: SidebarItem) {
     <Variant title="Right Side">
       <div style="padding: 2rem; height: 500px; position: relative;">
         <AppSidebar
-          :items="sampleItems"
-          :active-id="activeId"
+          :panels="panels"
+          active-view="analysis"
           side="right"
-          :collapsed="collapsed"
-          @update:collapsed="collapsed = $event"
-          @select="handleSelect"
-        />
+        >
+          <template #section-parameters>
+            <BaseSlider v-model="threshold" label="Threshold" :min="0" :max="100" />
+          </template>
+          <template #section-filters>
+            <BaseToggle v-model="showOutliers" label="Exclude outliers" />
+          </template>
+        </AppSidebar>
+      </div>
+    </Variant>
+
+    <Variant title="With Header and Footer">
+      <div style="padding: 2rem; height: 500px; position: relative;">
+        <AppSidebar
+          :panels="panels"
+          active-view="analysis"
+        >
+          <template #header>
+            <span style="font-weight: 600; font-size: 0.875rem; color: var(--text-primary, #111827);">
+              Analysis Tools
+            </span>
+          </template>
+          <template #section-parameters>
+            <BaseSlider v-model="threshold" label="Threshold" :min="0" :max="100" />
+            <BaseSelect v-model="method" label="Method" :options="methods" />
+          </template>
+          <template #section-filters>
+            <BaseToggle v-model="showOutliers" label="Exclude outliers" />
+          </template>
+          <template #footer>
+            <BaseButton size="sm" variant="ghost" style="width: 100%;">Reset Defaults</BaseButton>
+          </template>
+        </AppSidebar>
       </div>
     </Variant>
   </Story>

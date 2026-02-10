@@ -20,12 +20,17 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .mld-topbar__right {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
 }
 
 .mld-topbar__tabs {

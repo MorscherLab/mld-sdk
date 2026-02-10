@@ -55,15 +55,10 @@ export interface FormFieldProps {
 }
 
 // Sidebar types
-export interface SidebarItem {
+export interface SidebarToolSection {
   id: string
   label: string
   icon?: string
-  to?: string
-  href?: string
-  children?: SidebarItem[]
-  badge?: string | number
-  disabled?: boolean
   defaultOpen?: boolean
 }
 
