@@ -58,8 +58,12 @@ export interface FormFieldProps {
 export interface SidebarToolSection {
   id: string
   label: string
-  icon?: string
+  subtitle?: string
+  icon?: string | string[]
+  iconColor?: string
+  iconBg?: string
   defaultOpen?: boolean
+  showToggle?: boolean
 }
 
 // Collapsible types

@@ -37,6 +37,8 @@ interface Props {
   width?: string
   /** Position sidebar on left or right side */
   side?: 'left' | 'right'
+  /** Toggle state map: sectionId → boolean */
+  toggleState?: Record<string, boolean>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -45,7 +47,12 @@ const props = withDefaults(defineProps<Props>(), {
   floating: true,
   width: '280px',
   side: 'left',
+  toggleState: () => ({}),
 })
+
+defineEmits<{
+  'update:toggle': [sectionId: string, value: boolean]
+}>()
 
 const activeSections = computed<SidebarToolSection[]>(() => {
   if (!props.activeView || !props.panels[props.activeView]) return []
@@ -78,19 +85,21 @@ const sidebarStyle = computed(() => ({
 
     <!-- Tool sections -->
     <div class="mld-sidebar__sections">
-      <div
+      <CollapsibleCard
         v-for="section in activeSections"
         :key="section.id"
-        class="mld-sidebar__section"
+        :title="section.label"
+        :subtitle="section.subtitle"
+        :icon="section.icon"
+        :icon-color="section.iconColor"
+        :icon-bg="section.iconBg"
+        :default-open="section.defaultOpen !== false"
+        :show-toggle="section.showToggle"
+        :toggle-value="toggleState[section.id] ?? false"
+        @update:toggle-value="$emit('update:toggle', section.id, $event)"
       >
-        <CollapsibleCard
-          :title="section.label"
-          :icon="section.icon"
-          :default-open="section.defaultOpen !== false"
-        >
-          <slot :name="`section-${section.id}`" />
-        </CollapsibleCard>
-      </div>
+        <slot :name="`section-${section.id}`" />
+      </CollapsibleCard>
     </div>
 
     <!-- Footer slot -->

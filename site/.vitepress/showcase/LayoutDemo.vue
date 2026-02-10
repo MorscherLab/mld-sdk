@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { AppLayout, AppSidebar, AppTopBar, AppContainer, type SidebarItem, type TopBarSettingsConfig } from '@morscherlab/mld-sdk'
+import { AppLayout, AppSidebar, AppTopBar, AppContainer, type SidebarToolSection, type TopBarSettingsConfig } from '@morscherlab/mld-sdk'
 
 const settingsConfig: TopBarSettingsConfig = {
   title: 'App Settings',
@@ -8,27 +8,28 @@ const settingsConfig: TopBarSettingsConfig = {
   showAppearance: true,
 }
 
-const sidebarItems: SidebarItem[] = [
-  { id: 'dashboard', label: 'Dashboard' },
-  {
-    id: 'experiments',
-    label: 'Experiments',
-    children: [
-      { id: 'exp-list', label: 'All Experiments' },
-      { id: 'exp-new', label: 'New Experiment' },
-    ],
-  },
-  { id: 'analysis', label: 'Analysis' },
-  { id: 'settings', label: 'Settings' },
-]
+const sidebarPanels: Record<string, SidebarToolSection[]> = {
+  dashboard: [
+    { id: 'overview', label: 'Overview', defaultOpen: true },
+    { id: 'recent', label: 'Recent Activity' },
+  ],
+  experiments: [
+    { id: 'exp-filters', label: 'Filters', defaultOpen: true },
+    { id: 'exp-actions', label: 'Actions' },
+  ],
+  analysis: [
+    { id: 'parameters', label: 'Parameters', defaultOpen: true },
+    { id: 'display', label: 'Display Options' },
+  ],
+  settings: [
+    { id: 'general', label: 'General', defaultOpen: true },
+  ],
+}
 
 const activeItem = ref('dashboard')
-const collapsed = ref(false)
 const sidebarPosition = ref<'left' | 'right'>('left')
 const activeItemBasic = ref('dashboard')
-const collapsedBasic = ref(false)
 const activeItemMulti = ref('dashboard')
-const collapsedMulti = ref(false)
 </script>
 
 <template>
@@ -42,7 +43,6 @@ const collapsedMulti = ref(false)
     <div class="h-[480px] border border-border rounded-mld overflow-hidden">
       <AppLayout
         floating
-        v-model:sidebar-collapsed="collapsed"
         :sidebar-position="sidebarPosition"
       >
         <template #topbar>
@@ -67,16 +67,35 @@ const collapsedMulti = ref(false)
           </AppTopBar>
         </template>
 
-        <template #sidebar="{ collapsed: isCollapsed }">
+        <template #sidebar>
           <AppSidebar
             :floating="false"
-            :items="sidebarItems"
-            :active-id="activeItem"
-            :collapsed="isCollapsed"
+            :panels="sidebarPanels"
+            :active-view="activeItem"
             :side="sidebarPosition"
-            @select="(item) => activeItem = item.id"
-            @update:collapsed="collapsed = $event"
-          />
+          >
+            <template #section-overview>
+              <p class="text-xs text-text-secondary">Dashboard overview tools</p>
+            </template>
+            <template #section-recent>
+              <p class="text-xs text-text-secondary">Recent activity feed</p>
+            </template>
+            <template #section-exp-filters>
+              <p class="text-xs text-text-secondary">Filter experiments</p>
+            </template>
+            <template #section-exp-actions>
+              <p class="text-xs text-text-secondary">Experiment actions</p>
+            </template>
+            <template #section-parameters>
+              <p class="text-xs text-text-secondary">Analysis parameters</p>
+            </template>
+            <template #section-display>
+              <p class="text-xs text-text-secondary">Display options</p>
+            </template>
+            <template #section-general>
+              <p class="text-xs text-text-secondary">General settings</p>
+            </template>
+          </AppSidebar>
         </template>
 
         <AppContainer scrollable>
@@ -93,10 +112,13 @@ const collapsedMulti = ref(false)
                 Toggle sidebar position ({{ sidebarPosition }})
               </button>
               <button
+                v-for="page in ['dashboard', 'experiments', 'analysis', 'settings']"
+                :key="page"
                 class="px-3 py-1 text-xs rounded border border-border hover:bg-bg-hover"
-                @click="collapsed = !collapsed"
+                :class="activeItem === page ? 'bg-mld-primary/10 text-mld-primary' : ''"
+                @click="activeItem = page"
               >
-                {{ collapsed ? 'Expand' : 'Collapse' }} sidebar
+                {{ page }}
               </button>
             </div>
           </div>
@@ -115,9 +137,7 @@ const collapsedMulti = ref(false)
     <div class="h-[480px] border border-border rounded-mld overflow-hidden">
       <AppLayout
         floating
-        v-model:sidebar-collapsed="collapsedMulti"
         sidebar-width="200px"
-        sidebar-collapsed-width="56px"
       >
         <template #topbar>
           <AppTopBar variant="default">
@@ -132,15 +152,34 @@ const collapsedMulti = ref(false)
           </AppTopBar>
         </template>
 
-        <template #sidebar="{ collapsed: isCollapsed }">
+        <template #sidebar>
           <AppSidebar
             :floating="false"
-            :items="sidebarItems"
-            :active-id="activeItemMulti"
-            :collapsed="isCollapsed"
-            @select="(item) => activeItemMulti = item.id"
-            @update:collapsed="collapsedMulti = $event"
-          />
+            :panels="sidebarPanels"
+            :active-view="activeItemMulti"
+          >
+            <template #section-overview>
+              <p class="text-xs text-text-secondary">Dashboard overview tools</p>
+            </template>
+            <template #section-recent>
+              <p class="text-xs text-text-secondary">Recent activity feed</p>
+            </template>
+            <template #section-exp-filters>
+              <p class="text-xs text-text-secondary">Filter experiments</p>
+            </template>
+            <template #section-exp-actions>
+              <p class="text-xs text-text-secondary">Experiment actions</p>
+            </template>
+            <template #section-parameters>
+              <p class="text-xs text-text-secondary">Analysis parameters</p>
+            </template>
+            <template #section-display>
+              <p class="text-xs text-text-secondary">Display options</p>
+            </template>
+            <template #section-general>
+              <p class="text-xs text-text-secondary">General settings</p>
+            </template>
+          </AppSidebar>
         </template>
 
         <!-- Multi-panel content: two side-by-side AppContainer cards -->
@@ -193,7 +232,7 @@ const collapsedMulti = ref(false)
       The sidebar auto-sizes to its content by default.
     </p>
     <div class="h-96 border border-border rounded-mld overflow-hidden">
-      <AppLayout v-model:sidebar-collapsed="collapsedBasic">
+      <AppLayout>
         <template #topbar>
           <AppTopBar variant="default">
             <template #logo>
@@ -207,15 +246,34 @@ const collapsedMulti = ref(false)
           </AppTopBar>
         </template>
 
-        <template #sidebar="{ collapsed: isCollapsed }">
+        <template #sidebar>
           <AppSidebar
             :floating="false"
-            :items="sidebarItems"
-            :active-id="activeItemBasic"
-            :collapsed="isCollapsed"
-            @select="(item) => activeItemBasic = item.id"
-            @update:collapsed="collapsedBasic = $event"
-          />
+            :panels="sidebarPanels"
+            :active-view="activeItemBasic"
+          >
+            <template #section-overview>
+              <p class="text-xs text-text-secondary">Dashboard overview tools</p>
+            </template>
+            <template #section-recent>
+              <p class="text-xs text-text-secondary">Recent activity feed</p>
+            </template>
+            <template #section-exp-filters>
+              <p class="text-xs text-text-secondary">Filter experiments</p>
+            </template>
+            <template #section-exp-actions>
+              <p class="text-xs text-text-secondary">Experiment actions</p>
+            </template>
+            <template #section-parameters>
+              <p class="text-xs text-text-secondary">Analysis parameters</p>
+            </template>
+            <template #section-display>
+              <p class="text-xs text-text-secondary">Display options</p>
+            </template>
+            <template #section-general>
+              <p class="text-xs text-text-secondary">General settings</p>
+            </template>
+          </AppSidebar>
         </template>
 
         <div class="p-6">

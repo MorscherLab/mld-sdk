@@ -19,26 +19,38 @@ import {
   Divider,
   StatusIndicator,
   ProgressBar,
-  type SidebarItem,
+  type SidebarToolSection,
 } from '@morscherlab/mld-sdk'
 
-const sidebarItems: SidebarItem[] = [
-  { id: 'dashboard', label: 'Dashboard' },
-  {
-    id: 'experiments-group',
-    label: 'Experiments',
-    children: [
-      { id: 'experiments', label: 'All Experiments' },
-      { id: 'new-experiment', label: 'New Experiment' },
-    ],
-  },
-  { id: 'analysis', label: 'Analysis' },
-  { id: 'compounds', label: 'Compounds' },
-  { id: 'settings', label: 'Settings' },
-]
+const sidebarPanels: Record<string, SidebarToolSection[]> = {
+  dashboard: [
+    { id: 'time-range', label: 'Time Range', defaultOpen: true },
+    { id: 'layout', label: 'Layout' },
+    { id: 'refresh', label: 'Auto-Refresh' },
+  ],
+  experiments: [
+    { id: 'status-filter', label: 'Status Filter', defaultOpen: true },
+    { id: 'sort', label: 'Sort & Order' },
+    { id: 'page-size', label: 'Page Size' },
+  ],
+  'new-experiment': [
+    { id: 'status-filter', label: 'Status Filter', defaultOpen: true },
+    { id: 'sort', label: 'Sort & Order' },
+    { id: 'page-size', label: 'Page Size' },
+  ],
+  analysis: [
+    { id: 'algorithm', label: 'Algorithm', defaultOpen: true },
+    { id: 'dimensions', label: 'Dimensions' },
+    { id: 'normalization', label: 'Normalization' },
+  ],
+  compounds: [
+    { id: 'search', label: 'Search', defaultOpen: true },
+    { id: 'source', label: 'Source' },
+    { id: 'display', label: 'Display' },
+  ],
+}
 
 const activePage = ref('dashboard')
-const collapsed = ref(false)
 
 // Dashboard settings
 const dashboardTimeRange = ref('7d')
@@ -160,7 +172,6 @@ function activityDot(type: string) {
   <div class="sidebar-panel-demo">
     <AppLayout
       floating
-      v-model:sidebar-collapsed="collapsed"
       sidebar-width="280px"
     >
       <template #topbar>
@@ -179,156 +190,163 @@ function activityDot(type: string) {
         </AppTopBar>
       </template>
 
-      <template #sidebar="{ collapsed: isCollapsed }">
+      <template #sidebar>
         <AppSidebar
           :floating="false"
-          :items="sidebarItems"
-          :active-id="activePage"
-          :collapsed="isCollapsed"
-          @select="(item) => activePage = item.id"
-          @update:collapsed="collapsed = $event"
+          :panels="sidebarPanels"
+          :active-view="activePage"
+          width="280px"
         >
-          <template #panel="{ activeId }">
-            <!-- Dashboard panel -->
-            <template v-if="activeId === 'dashboard'">
-              <p class="sidebar-panel-demo__section-title">Dashboard</p>
-              <BaseSelect
-                label="Time Range"
-                v-model="dashboardTimeRange"
-                :options="[
-                  { value: '24h', label: 'Last 24 hours' },
-                  { value: '7d', label: 'Last 7 days' },
-                  { value: '30d', label: 'Last 30 days' },
-                  { value: '90d', label: 'Last 90 days' },
-                ]"
-                size="sm"
-              />
-              <SegmentedControl
-                v-model="dashboardLayout"
-                :options="[
-                  { value: 'grid', label: 'Grid' },
-                  { value: 'list', label: 'List' },
-                ]"
-                size="sm"
-              />
-              <BaseToggle
-                label="Auto-refresh"
-                v-model="dashboardAutoRefresh"
-                size="sm"
-              />
-              <BaseSlider
-                v-if="dashboardAutoRefresh"
-                label="Interval (sec)"
-                v-model="dashboardRefreshInterval"
-                :min="5"
-                :max="120"
-                :step="5"
-                size="sm"
-              />
-            </template>
+          <template #header>
+            <span class="sidebar-panel-demo__section-title">Page Tools</span>
+          </template>
 
-            <!-- Experiments panel -->
-            <template v-if="activeId === 'experiments' || activeId === 'new-experiment'">
-              <p class="sidebar-panel-demo__section-title">Experiments</p>
-              <BaseSelect
-                label="Status Filter"
-                v-model="experimentStatus"
-                :options="[
-                  { value: 'all', label: 'All statuses' },
-                  { value: 'running', label: 'Running' },
-                  { value: 'completed', label: 'Completed' },
-                  { value: 'draft', label: 'Draft' },
-                ]"
-                size="sm"
-              />
-              <BaseSelect
-                label="Sort By"
-                v-model="experimentSort"
-                :options="[
-                  { value: 'newest', label: 'Newest first' },
-                  { value: 'oldest', label: 'Oldest first' },
-                  { value: 'name', label: 'Name A-Z' },
-                ]"
-                size="sm"
-              />
-              <BaseSlider
-                label="Page Size"
-                v-model="experimentPageSize"
-                :min="10"
-                :max="100"
-                :step="5"
-                size="sm"
-              />
-            </template>
+          <!-- Dashboard sections -->
+          <template #section-time-range>
+            <BaseSelect
+              label="Time Range"
+              v-model="dashboardTimeRange"
+              :options="[
+                { value: '24h', label: 'Last 24 hours' },
+                { value: '7d', label: 'Last 7 days' },
+                { value: '30d', label: 'Last 30 days' },
+                { value: '90d', label: 'Last 90 days' },
+              ]"
+              size="sm"
+            />
+          </template>
+          <template #section-layout>
+            <SegmentedControl
+              v-model="dashboardLayout"
+              :options="[
+                { value: 'grid', label: 'Grid' },
+                { value: 'list', label: 'List' },
+              ]"
+              size="sm"
+            />
+          </template>
+          <template #section-refresh>
+            <BaseToggle
+              label="Auto-refresh"
+              v-model="dashboardAutoRefresh"
+              size="sm"
+            />
+            <BaseSlider
+              v-if="dashboardAutoRefresh"
+              label="Interval (sec)"
+              v-model="dashboardRefreshInterval"
+              :min="5"
+              :max="120"
+              :step="5"
+              size="sm"
+            />
+          </template>
 
-            <!-- Analysis panel -->
-            <template v-if="activeId === 'analysis'">
-              <p class="sidebar-panel-demo__section-title">Analysis</p>
-              <BaseSelect
-                label="Algorithm"
-                v-model="analysisAlgorithm"
-                :options="[
-                  { value: 'pca', label: 'PCA' },
-                  { value: 'tsne', label: 't-SNE' },
-                  { value: 'umap', label: 'UMAP' },
-                  { value: 'hclust', label: 'Hierarchical Clustering' },
-                ]"
-                size="sm"
-              />
-              <BaseSlider
-                label="Dimensions"
-                v-model="analysisDimensions"
-                :min="2"
-                :max="5"
-                :step="1"
-                size="sm"
-              />
-              <BaseToggle
-                label="Normalize data"
-                v-model="analysisNormalize"
-                size="sm"
-              />
-              <BaseSlider
-                label="Confidence (%)"
-                v-model="analysisConfidence"
-                :min="80"
-                :max="99"
-                :step="1"
-                size="sm"
-              />
-            </template>
+          <!-- Experiments sections -->
+          <template #section-status-filter>
+            <BaseSelect
+              label="Status Filter"
+              v-model="experimentStatus"
+              :options="[
+                { value: 'all', label: 'All statuses' },
+                { value: 'running', label: 'Running' },
+                { value: 'completed', label: 'Completed' },
+                { value: 'draft', label: 'Draft' },
+              ]"
+              size="sm"
+            />
+          </template>
+          <template #section-sort>
+            <BaseSelect
+              label="Sort By"
+              v-model="experimentSort"
+              :options="[
+                { value: 'newest', label: 'Newest first' },
+                { value: 'oldest', label: 'Oldest first' },
+                { value: 'name', label: 'Name A-Z' },
+              ]"
+              size="sm"
+            />
+          </template>
+          <template #section-page-size>
+            <BaseSlider
+              label="Page Size"
+              v-model="experimentPageSize"
+              :min="10"
+              :max="100"
+              :step="5"
+              size="sm"
+            />
+          </template>
 
-            <!-- Compounds panel -->
-            <template v-if="activeId === 'compounds'">
-              <p class="sidebar-panel-demo__section-title">Compounds</p>
-              <BaseInput
-                label="Search"
-                v-model="compoundSearch"
-                placeholder="Filter compounds..."
-                size="sm"
-              />
-              <BaseSelect
-                label="Source"
-                v-model="compoundSource"
-                :options="[
-                  { value: 'all', label: 'All sources' },
-                  { value: 'internal', label: 'Internal library' },
-                  { value: 'external', label: 'External' },
-                  { value: 'custom', label: 'Custom uploads' },
-                ]"
-                size="sm"
-              />
-              <BaseToggle
-                label="Show structures"
-                v-model="compoundShowStructures"
-                size="sm"
-              />
-            </template>
+          <!-- Analysis sections -->
+          <template #section-algorithm>
+            <BaseSelect
+              label="Algorithm"
+              v-model="analysisAlgorithm"
+              :options="[
+                { value: 'pca', label: 'PCA' },
+                { value: 'tsne', label: 't-SNE' },
+                { value: 'umap', label: 'UMAP' },
+                { value: 'hclust', label: 'Hierarchical Clustering' },
+              ]"
+              size="sm"
+            />
+          </template>
+          <template #section-dimensions>
+            <BaseSlider
+              label="Dimensions"
+              v-model="analysisDimensions"
+              :min="2"
+              :max="5"
+              :step="1"
+              size="sm"
+            />
+          </template>
+          <template #section-normalization>
+            <BaseToggle
+              label="Normalize data"
+              v-model="analysisNormalize"
+              size="sm"
+            />
+            <BaseSlider
+              label="Confidence (%)"
+              v-model="analysisConfidence"
+              :min="80"
+              :max="99"
+              :step="1"
+              size="sm"
+            />
+          </template>
 
-            <!-- Settings: no panel -->
-            <template v-if="activeId === 'settings'">
-              <p class="sidebar-panel-demo__hint">No page-specific settings.</p>
-            </template>
+          <!-- Compounds sections -->
+          <template #section-search>
+            <BaseInput
+              label="Search"
+              v-model="compoundSearch"
+              placeholder="Filter compounds..."
+              size="sm"
+            />
+          </template>
+          <template #section-source>
+            <BaseSelect
+              label="Source"
+              v-model="compoundSource"
+              :options="[
+                { value: 'all', label: 'All sources' },
+                { value: 'internal', label: 'Internal library' },
+                { value: 'external', label: 'External' },
+                { value: 'custom', label: 'Custom uploads' },
+              ]"
+              size="sm"
+            />
+          </template>
+          <template #section-display>
+            <BaseToggle
+              label="Show structures"
+              v-model="compoundShowStructures"
+              size="sm"
+            />
           </template>
         </AppSidebar>
       </template>
