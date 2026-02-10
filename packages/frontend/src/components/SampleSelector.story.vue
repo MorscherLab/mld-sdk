@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import SampleSelector from './SampleSelector.vue'
 import type { SampleGroup } from '../types'
 

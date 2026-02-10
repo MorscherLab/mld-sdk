@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import ScientificNumber from './ScientificNumber.vue'
 
 type NumberNotation = 'auto' | 'scientific' | 'engineering' | 'compact'
 const notations: NumberNotation[] = ['auto', 'scientific', 'engineering', 'compact']
-
-const playgroundValue = ref(0.00042)
 </script>
 
 <template>

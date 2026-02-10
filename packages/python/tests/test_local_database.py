@@ -6,7 +6,6 @@ from sqlmodel import SQLModel, Field as SQLField
 from mld_sdk.local_database import (
     LocalDatabase,
     LocalDatabaseConfig,
-    KeyValueEntry,
 )
 from mld_sdk.models import PluginMetadata
 from mld_sdk.plugin import AnalysisPlugin

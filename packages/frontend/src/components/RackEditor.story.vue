@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
 import RackEditor from './RackEditor.vue'
 import type { Rack } from '../types'
 

@@ -301,7 +301,7 @@ describe('CollapsibleCard', () => {
       })
 
       const body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).toBe('none')
+      expect((body.element as HTMLElement).style.display).toBe('none')
       expect(wrapper.find('button').attributes('aria-expanded')).toBe('false')
     })
 
@@ -311,7 +311,7 @@ describe('CollapsibleCard', () => {
       })
 
       const body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).not.toBe('none')
+      expect((body.element as HTMLElement).style.display).not.toBe('none')
       expect(wrapper.find('button').attributes('aria-expanded')).toBe('true')
     })
 
@@ -321,15 +321,15 @@ describe('CollapsibleCard', () => {
       })
 
       let body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).toBe('none')
+      expect((body.element as HTMLElement).style.display).toBe('none')
 
       await wrapper.find('button').trigger('click')
       body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).not.toBe('none')
+      expect((body.element as HTMLElement).style.display).not.toBe('none')
 
       await wrapper.find('button').trigger('click')
       body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).toBe('none')
+      expect((body.element as HTMLElement).style.display).toBe('none')
     })
 
     it('should not toggle when disabled', async () => {
@@ -338,11 +338,11 @@ describe('CollapsibleCard', () => {
       })
 
       let body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).toBe('none')
+      expect((body.element as HTMLElement).style.display).toBe('none')
 
       await wrapper.find('button').trigger('click')
       body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).toBe('none')
+      expect((body.element as HTMLElement).style.display).toBe('none')
     })
 
     it('should apply disabled class and attribute', () => {
@@ -403,7 +403,7 @@ describe('CollapsibleCard', () => {
       // Click toggle should not expand/collapse the card
       await wrapper.find('.mld-collapsible-card__toggle').trigger('click')
       const body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).toBe('none')
+      expect((body.element as HTMLElement).style.display).toBe('none')
     })
 
     it('should apply custom toggle color when active', () => {
@@ -518,7 +518,7 @@ describe('CollapsibleCard', () => {
       expect(wrapper.find('.mld-collapsible-card__toggle').exists()).toBe(true)
 
       const body = wrapper.find('.mld-collapsible-card__body')
-      expect(body.element.style.display).not.toBe('none')
+      expect((body.element as HTMLElement).style.display).not.toBe('none')
     })
   })
 })

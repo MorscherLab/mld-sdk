@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import MoleculeInput from './MoleculeInput.vue'
 import type { MoleculeData } from './MoleculeInput.vue'
 
