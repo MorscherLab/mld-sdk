@@ -113,76 +113,7 @@ class TestLocalDatabaseLifecycle:
         ldb.close()  # should not raise
 
 
-# --- High-level key-value API ---
-
-
-class TestKeyValueAPI:
-    def test_set_and_get(self, db: LocalDatabase):
-        db.set("threshold", 0.05)
-        assert db.get("threshold") == 0.05
-
-    def test_get_missing_returns_default(self, db: LocalDatabase):
-        assert db.get("missing") is None
-        assert db.get("missing", default=42) == 42
-
-    def test_set_overwrites(self, db: LocalDatabase):
-        db.set("key", "v1")
-        db.set("key", "v2")
-        assert db.get("key") == "v2"
-
-    def test_complex_json_values(self, db: LocalDatabase):
-        data = {"nested": {"list": [1, 2, 3], "flag": True}}
-        db.set("config", data)
-        assert db.get("config") == data
-
-    def test_namespace_isolation(self, db: LocalDatabase):
-        db.set("key", "settings_val", namespace="settings")
-        db.set("key", "cache_val", namespace="cache")
-        assert db.get("key", namespace="settings") == "settings_val"
-        assert db.get("key", namespace="cache") == "cache_val"
-        assert db.get("key") is None  # default namespace
-
-    def test_delete_existing(self, db: LocalDatabase):
-        db.set("key", "value")
-        assert db.delete("key") is True
-        assert db.get("key") is None
-
-    def test_delete_missing(self, db: LocalDatabase):
-        assert db.delete("nonexistent") is False
-
-    def test_list_keys(self, db: LocalDatabase):
-        db.set("a", 1)
-        db.set("b", 2)
-        db.set("c", 3, namespace="other")
-        keys = db.list_keys()
-        assert sorted(keys) == ["a", "b"]
-
-    def test_get_all(self, db: LocalDatabase):
-        db.set("x", 10)
-        db.set("y", 20)
-        db.set("z", 30, namespace="other")
-        result = db.get_all()
-        assert result == {"x": 10, "y": 20}
-
-    def test_clear_namespace(self, db: LocalDatabase):
-        db.set("a", 1)
-        db.set("b", 2)
-        db.set("c", 3, namespace="other")
-        count = db.clear(namespace="default")
-        assert count == 2
-        assert db.get("a") is None
-        assert db.get("c", namespace="other") == 3
-
-    def test_clear_all(self, db: LocalDatabase):
-        db.set("a", 1)
-        db.set("b", 2, namespace="other")
-        count = db.clear()
-        assert count == 2
-        assert db.list_keys() == []
-        assert db.list_keys(namespace="other") == []
-
-
-# --- Low-level API (custom models) ---
+# --- Custom models ---
 
 
 class CustomReading(SQLModel, table=True):
@@ -219,21 +150,17 @@ class TestCustomModels:
 
         ldb.close()
 
-    def test_custom_model_with_kv(self, tmp_storage: Path):
-        """Custom models and built-in KV table coexist."""
+    def test_multiple_models(self, tmp_storage: Path):
+        """Multiple custom models can be initialized together."""
         config = LocalDatabaseConfig(storage_dir=tmp_storage)
         ldb = LocalDatabase("test-plugin", config)
         ldb.initialize(models=[CustomReading])
-
-        ldb.set("last_run", "2024-01-01")
 
         with ldb.get_session() as session:
             session.add(
                 CustomReading(experiment_id="exp-2", intensity=10.0, channel="B")
             )
             session.commit()
-
-        assert ldb.get("last_run") == "2024-01-01"
 
         with ldb.get_session() as session:
             from sqlmodel import select
@@ -277,8 +204,9 @@ class TestPluginIntegration:
         TestPlugin = self._make_plugin_class()
 
         class ConfiguredPlugin(TestPlugin):
-            def get_local_database_config(self):
-                return LocalDatabaseConfig(storage_dir=tmp_path / "plugin-data")
+            async def initialize(self, context=None):
+                self._context = context
+                self._setup_local_database(storage_dir=tmp_path / "plugin-data")
 
         plugin = ConfiguredPlugin()
         assert plugin.local_db is None
@@ -286,9 +214,7 @@ class TestPluginIntegration:
         await plugin.initialize()
         assert plugin.local_db is not None
         assert plugin.local_db.is_initialized
-
-        plugin.local_db.set("key", "value")
-        assert plugin.local_db.get("key") == "value"
+        assert plugin.local_db.db_path == tmp_path / "plugin-data" / "data.db"
 
         await plugin.shutdown()
         assert plugin.local_db is None
@@ -309,15 +235,12 @@ class TestPluginIntegration:
             def get_routers(self):
                 return []
 
-            def get_local_models(self):
+            def get_shared_models(self):
                 return [CustomReading]
-
-            def get_local_database_config(self):
-                return LocalDatabaseConfig(storage_dir=tmp_path / "model-data")
 
             async def initialize(self, context=None):
                 self._context = context
-                self._setup_local_database()
+                self._setup_local_database(storage_dir=tmp_path / "model-data")
 
             async def shutdown(self):
                 self._teardown_local_database()
@@ -343,18 +266,14 @@ class TestPluginIntegration:
         TestPlugin = self._make_plugin_class()
         plugin = TestPlugin()
         assert plugin.local_db is None
-        assert plugin.get_local_models() == []
-        assert plugin.get_local_database_config() is None
+        assert plugin.get_shared_models() == []
 
     @pytest.mark.asyncio
     async def test_setup_with_storage_dir_override(self, tmp_path: Path):
-        """_setup_local_database(storage_dir=...) should override the storage directory."""
+        """_setup_local_database(storage_dir=...) should use the provided directory."""
         TestPlugin = self._make_plugin_class()
 
         class ConfiguredPlugin(TestPlugin):
-            def get_local_database_config(self):
-                return LocalDatabaseConfig(storage_dir=tmp_path / "default-dir")
-
             async def initialize(self, context=None):
                 self._context = context
 
@@ -377,8 +296,9 @@ class TestPluginIntegration:
         TestPlugin = self._make_plugin_class()
 
         class ConfiguredPlugin(TestPlugin):
-            def get_local_database_config(self):
-                return LocalDatabaseConfig(storage_dir=tmp_path / "plugin-data")
+            async def initialize(self, context=None):
+                self._context = context
+                self._setup_local_database(storage_dir=tmp_path / "plugin-data")
 
         plugin = ConfiguredPlugin()
         await plugin.initialize()
@@ -387,7 +307,7 @@ class TestPluginIntegration:
         assert first_db is not None
         assert first_db.is_initialized
 
-        plugin._setup_local_database()
+        plugin._setup_local_database(storage_dir=tmp_path / "plugin-data")
 
         second_db = plugin.local_db
         assert second_db is first_db
@@ -396,19 +316,15 @@ class TestPluginIntegration:
         await plugin.shutdown()
 
     @pytest.mark.asyncio
-    async def test_setup_without_args_backward_compatible(self, tmp_path: Path):
-        """_setup_local_database() should work with no args (backward compatible)."""
+    async def test_setup_without_args_uses_default_path(self):
+        """_setup_local_database() with no args uses ~/.mld/plugins/<name>/data.db."""
         TestPlugin = self._make_plugin_class()
-
-        class ConfiguredPlugin(TestPlugin):
-            def get_local_database_config(self):
-                return LocalDatabaseConfig(storage_dir=tmp_path / "plugin-data")
-
-        plugin = ConfiguredPlugin()
+        plugin = TestPlugin()
         await plugin.initialize()
 
         assert plugin.local_db is not None
         assert plugin.local_db.is_initialized
-        assert plugin.local_db.db_path == tmp_path / "plugin-data" / "data.db"
+        expected = Path.home() / ".mld" / "plugins" / "integration-test" / "data.db"
+        assert plugin.local_db.db_path == expected
 
         await plugin.shutdown()
