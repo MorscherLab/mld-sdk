@@ -381,7 +381,7 @@ Repository for experiment data.
 | `create(name, experiment_type, ...)` | `Experiment` | Create experiment (EXPERIMENT_DESIGN only) |
 | `update(experiment_id, ...)` | `Experiment \| None` | Update experiment (EXPERIMENT_DESIGN only) |
 | `delete(experiment_id)` | `bool` | Delete experiment (EXPERIMENT_DESIGN only) |
-| `has_plugin_data(experiment_id)` | `bool` | Check for plugin data |
+| `has_design_data(experiment_id)` | `bool` | Check for design data |
 
 **Note:** ANALYSIS plugins have read-only access. Write operations raise `PermissionException`.
 
@@ -393,8 +393,8 @@ Repository for plugin-specific data and analysis results.
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `save_experiment_data(experiment_id, plugin_id, data, schema_version)` | `PluginExperimentData` | Save experiment data |
-| `get_experiment_data(experiment_id)` | `PluginExperimentData \| None` | Get experiment data |
+| `save_experiment_data(experiment_id, plugin_id, data, schema_version)` | `DesignData` | Save experiment data |
+| `get_experiment_data(experiment_id)` | `DesignData \| None` | Get experiment data |
 | `delete_experiment_data(experiment_id)` | `bool` | Delete experiment data |
 | `save_analysis_result(experiment_id, plugin_id, result)` | `PluginAnalysisResult` | Save analysis result |
 | `get_analysis_result(experiment_id, plugin_id)` | `PluginAnalysisResult \| None` | Get analysis result |
@@ -496,18 +496,23 @@ from mld_sdk import Experiment
 
 ---
 
-### PluginExperimentData
+### DesignData
+
+Experiment design data owned by an experiment design plugin.
 
 ```python
-from mld_sdk import PluginExperimentData
+from mld_sdk import DesignData
+
+# Backward compatibility alias:
+from mld_sdk import PluginExperimentData  # same as DesignData
 ```
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | `str` | Unique identifier |
-| `experiment_id` | `str` | Associated experiment |
+| `id` | `int` | Unique identifier |
+| `experiment_id` | `int` | Associated experiment |
 | `plugin_id` | `str` | Plugin identifier |
-| `data` | `dict[str, Any]` | Plugin-specific data |
+| `data` | `dict[str, Any]` | Plugin-defined experiment design data |
 | `schema_version` | `str` | Data schema version |
 | `created_at` | `datetime` | Creation timestamp |
 | `updated_at` | `datetime` | Last update timestamp |

@@ -7,7 +7,7 @@ to plugins via PlatformContext.
 
 Repository types correspond to plugin capabilities:
 - ExperimentRepository: Basic experiment access (read-only for ANALYSIS plugins)
-- PluginDataRepository: Plugin-specific data storage
+- PluginDataRepository: Design data and analysis result storage
 - UserRepository: User information
 """
 
@@ -38,8 +38,8 @@ class Experiment:
 
 
 @dataclass(slots=True)
-class PluginExperimentData:
-    """Plugin-specific experiment data."""
+class DesignData:
+    """Experiment design data owned by an experiment design plugin."""
 
     id: int
     experiment_id: int
@@ -48,6 +48,10 @@ class PluginExperimentData:
     schema_version: str
     created_at: datetime
     updated_at: datetime
+
+
+# Backward compatibility alias
+PluginExperimentData = DesignData
 
 
 @dataclass(slots=True)
@@ -161,8 +165,8 @@ class ExperimentRepository(Protocol):
         """
         ...
 
-    async def has_plugin_data(self, experiment_id: int) -> bool:
-        """Check if experiment has plugin data attached."""
+    async def has_design_data(self, experiment_id: int) -> bool:
+        """Check if experiment has design data attached."""
         ...
 
 
@@ -181,13 +185,13 @@ class PluginDataRepository(Protocol):
         plugin_id: str,
         data: dict[str, Any],
         schema_version: str = "1.0",
-    ) -> PluginExperimentData:
+    ) -> DesignData:
         """Save or update experiment data for a plugin."""
         ...
 
     async def get_experiment_data(
         self, experiment_id: int
-    ) -> Optional[PluginExperimentData]:
+    ) -> Optional[DesignData]:
         """Get experiment data for an experiment."""
         ...
 

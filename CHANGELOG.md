@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-02-11
+
+### Breaking Changes
+
+- **`ExperimentRepository.has_plugin_data()` renamed to `has_design_data()`** - Plugins calling `experiment_repo.has_plugin_data(id)` must update to `experiment_repo.has_design_data(id)`. This aligns the SDK with the platform's renamed database column.
+
+### Changed
+
+- **`PluginExperimentData` renamed to `DesignData`** - The data model for experiment design data is now `DesignData`, reflecting that it stores experiment design configuration (samples, plate layouts, parameters) written by EXPERIMENT_DESIGN plugins. A backward compatibility alias `PluginExperimentData = DesignData` is provided — existing code using `PluginExperimentData` will continue to work without changes.
+- **`PluginDataRepository` return types** - `save_experiment_data()` and `get_experiment_data()` now return `DesignData` instead of `PluginExperimentData` in type annotations. Runtime behavior is identical since `PluginExperimentData` is an alias for `DesignData`.
+- **Module docstring** - `PluginDataRepository` description updated from "Plugin-specific data storage" to "Design data and analysis result storage" to better describe its dual purpose.
+
+### Migration Guide
+
+See [Upgrading to 0.6.0](docs/upgrading-to-0.6.0.md) for details.
+
 ## [0.5.1] - 2026-02-11
 
 ### Changed

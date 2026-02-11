@@ -32,7 +32,8 @@ from mld_sdk.local_database import LocalDatabase, LocalDatabaseConfig
 from mld_sdk.repositories import (
     # Data models
     Experiment,
-    PluginExperimentData,
+    DesignData,
+    PluginExperimentData,  # backward compatibility alias for DesignData
     PluginAnalysisResult,
     User,
     UserPluginRole,
@@ -76,7 +77,8 @@ __all__ = [
     "LocalDatabaseConfig",
     # Data models
     "Experiment",
-    "PluginExperimentData",
+    "DesignData",
+    "PluginExperimentData",  # backward compatibility alias
     "PluginAnalysisResult",
     "User",
     "UserPluginRole",

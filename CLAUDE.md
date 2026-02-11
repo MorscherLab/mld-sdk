@@ -58,7 +58,7 @@ Tests run automatically on push to main and PRs. Release workflow triggers on `v
 - All ID fields are `int` (not `str`)
 - Plugin-scoped roles via `require_plugin_role()` dependency
 
-**Repository protocols:** `ExperimentRepository`, `PluginDataRepository`, `UserRepository`, `PluginRoleRepository`
+**Repository protocols:** `ExperimentRepository`, `PluginDataRepository` (design data + analysis results), `UserRepository`, `PluginRoleRepository`
 
 ### Frontend SDK
 
@@ -159,7 +159,7 @@ if (!auth.isAuthenticated.value) {
 
 ## Version Coordination
 
-Both packages share the same version number. Current: 0.5.1
+Both packages share the same version number. Current: 0.6.0
 
 ## Documentation Sync
 
