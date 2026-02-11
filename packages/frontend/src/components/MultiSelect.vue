@@ -91,12 +91,14 @@ const selectedLabels = computed(() => {
         <svg
           v-if="isSelected(option.value)"
           class="mld-multi-select__chip-check"
+          viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          <path d="M20 6 9 17l-5-5" />
         </svg>
       </button>
     </div>

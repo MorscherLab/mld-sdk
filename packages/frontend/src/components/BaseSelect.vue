@@ -55,8 +55,8 @@ function handleChange(event: Event) {
       </option>
     </select>
     <div class="mld-select__icon">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="m6 9 6 6 6-6" />
       </svg>
     </div>
   </div>

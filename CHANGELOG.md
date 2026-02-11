@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-02-11
+
+### Changed
+
+- **Icon migration** - Replaced all inline Heroicons SVG paths with Lucide equivalents across 25 frontend components. Standardized to `stroke-width="2"`, `stroke-linecap="round"`, `stroke-linejoin="round"`. No npm dependency added -- pure inline SVG swap.
+- **SampleHierarchyTree** - Refactored icon system from single-path strings to `IconElement[]` arrays to support multi-element Lucide icons (circles, rects, multiple paths)
+- **EmptyState** - Default icon changed from single `iconPath` string to multi-element Lucide `message-square-text`; custom `iconPath` prop still supported
+
+### Fixed
+
+- **WellPlate story** - Playground variant now has `initState` with sensible defaults (96-well, multiple selection, md size) -- previously all controls were undefined on first render
+- **SampleSelector story** - Auto Group button now works in Playground -- added `handleAutoGroup` handler that creates groups from sample name prefixes at the selected level
+
 ## [0.5.0] - 2026-02-10
 
 ### Breaking Changes

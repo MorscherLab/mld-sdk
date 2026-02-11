@@ -19,33 +19,31 @@ const { isDark, toggleTheme } = useTheme()
     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
     @click="toggleTheme"
   >
+    <!-- Lucide sun -->
     <svg
       v-if="isDark"
       :class="`mld-theme-toggle__icon--${size}`"
+      viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      viewBox="0 0 24 24"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-      />
+      <circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
     </svg>
+    <!-- Lucide moon -->
     <svg
       v-else
       :class="`mld-theme-toggle__icon--${size}`"
+      viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      viewBox="0 0 24 24"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-      />
+      <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
     </svg>
   </button>
 </template>

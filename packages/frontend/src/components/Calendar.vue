@@ -293,16 +293,16 @@ function nextMonth() {
   <div class="mld-calendar">
     <div v-if="showNavigation" class="mld-calendar__header">
       <button type="button" class="mld-calendar__nav-btn" aria-label="Previous month" @click="prevMonth">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6" />
         </svg>
       </button>
       <slot name="header" :month="currentMonth" :year="currentYear" :prev-month="prevMonth" :next-month="nextMonth">
         <span class="mld-calendar__title">{{ monthLabel }}</span>
       </slot>
       <button type="button" class="mld-calendar__nav-btn" aria-label="Next month" @click="nextMonth">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6" />
         </svg>
       </button>
     </div>

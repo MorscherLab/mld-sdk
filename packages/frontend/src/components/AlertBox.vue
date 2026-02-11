@@ -15,13 +15,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   dismiss: []
 }>()
-
-const iconPaths: Record<AlertType, string> = {
-  success: 'M5 13l4 4L19 7',
-  error: 'M6 18L18 6M6 6l12 12',
-  warning: 'M12 9v2m0 4h.01M12 3l9.196 16H2.804L12 3z',
-  info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-}
 </script>
 
 <template>
@@ -30,14 +23,21 @@ const iconPaths: Record<AlertType, string> = {
     :class="`mld-alert--${props.type}`"
     role="alert"
   >
-    <svg
-      class="mld-alert__icon"
-      :class="`mld-alert__icon--${props.type}`"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="iconPaths[props.type]" />
+    <!-- Lucide circle-check -->
+    <svg v-if="props.type === 'success'" class="mld-alert__icon mld-alert__icon--success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" />
+    </svg>
+    <!-- Lucide circle-x -->
+    <svg v-else-if="props.type === 'error'" class="mld-alert__icon mld-alert__icon--error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+    </svg>
+    <!-- Lucide triangle-alert -->
+    <svg v-else-if="props.type === 'warning'" class="mld-alert__icon mld-alert__icon--warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" />
+    </svg>
+    <!-- Lucide info -->
+    <svg v-else class="mld-alert__icon mld-alert__icon--info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
     </svg>
 
     <div class="mld-alert__content">
@@ -56,8 +56,8 @@ const iconPaths: Record<AlertType, string> = {
       aria-label="Dismiss"
       @click="emit('dismiss')"
     >
-      <svg class="mld-alert__dismiss-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      <svg class="mld-alert__dismiss-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6 6 18" /><path d="m6 6 12 12" />
       </svg>
     </button>
   </div>

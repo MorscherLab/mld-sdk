@@ -245,8 +245,8 @@ const wrapperStyle = computed(() => {
     <!-- Search header -->
     <div v-if="searchable" class="mld-dataframe__header">
       <div class="mld-dataframe__search-wrapper">
-        <svg class="mld-dataframe__search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <svg class="mld-dataframe__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.34-4.34" />
         </svg>
         <input
           v-model="searchQuery"
@@ -301,12 +301,14 @@ const wrapperStyle = computed(() => {
                         'mld-dataframe__sort-icon--desc': activeSort?.key === col.key && activeSort?.direction === 'desc',
                       },
                     ]"
+                    viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
                   >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l5 5 5-5M7 8l5-5 5 5" />
+                    <path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" />
                   </svg>
                 </div>
               </slot>
@@ -358,8 +360,8 @@ const wrapperStyle = computed(() => {
       <!-- Empty state -->
       <div v-if="paginatedData.length === 0 && !loading" class="mld-dataframe__empty">
         <slot name="empty">
-          <svg class="mld-dataframe__empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+          <svg class="mld-dataframe__empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
           </svg>
           <p class="mld-dataframe__empty-text">{{ emptyText }}</p>
         </slot>
@@ -390,8 +392,8 @@ const wrapperStyle = computed(() => {
             :disabled="pagination.page <= 1"
             @click="handlePageChange(pagination.page - 1)"
           >
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
             </svg>
           </button>
           <span class="mld-dataframe__page-number">{{ pagination.page }} / {{ totalPages }}</span>
@@ -401,8 +403,8 @@ const wrapperStyle = computed(() => {
             :disabled="pagination.page >= totalPages"
             @click="handlePageChange(pagination.page + 1)"
           >
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
             </svg>
           </button>
         </div>

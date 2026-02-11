@@ -17,7 +17,12 @@ const emit = defineEmits<{
   action: []
 }>()
 
-const defaultIconPath = 'M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z'
+const defaultIconPaths = [
+  'M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z',
+  'M7 11h10',
+  'M7 15h6',
+  'M7 7h8',
+]
 </script>
 
 <template>
@@ -28,9 +33,18 @@ const defaultIconPath = 'M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1
           class="mld-empty-state__icon"
           :class="`mld-empty-state__icon--${color}`"
           viewBox="0 0 24 24"
-          fill="currentColor"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          <path :d="iconPath || defaultIconPath" />
+          <template v-if="iconPath">
+            <path :d="iconPath" />
+          </template>
+          <template v-else>
+            <path v-for="(d, i) in defaultIconPaths" :key="i" :d="d" />
+          </template>
         </svg>
       </slot>
     </div>

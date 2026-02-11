@@ -84,8 +84,8 @@ function increment() {
       ]"
       @click="decrement"
     >
-      <svg class="mld-number-input__button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+      <svg class="mld-number-input__button-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M5 12h14" />
       </svg>
     </button>
 
@@ -116,8 +116,8 @@ function increment() {
       ]"
       @click="increment"
     >
-      <svg class="mld-number-input__button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      <svg class="mld-number-input__button-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M5 12h14" /><path d="M12 5v14" />
       </svg>
     </button>
   </div>

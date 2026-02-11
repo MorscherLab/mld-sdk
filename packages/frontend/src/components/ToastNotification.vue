@@ -4,13 +4,6 @@ import type { Toast } from '../types'
 
 const { toasts, dismiss } = useToast()
 
-const iconPaths: Record<Toast['type'], string> = {
-  success: 'M5 13l4 4L19 7',
-  error: 'M6 18L18 6M6 6l12 12',
-  warning: 'M12 9v2m0 4h.01M12 3l9.196 16H2.804L12 3z',
-  info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-}
-
 const accentColors: Record<Toast['type'], string> = {
   success: '#10B981',
   error: '#EF4444',
@@ -33,14 +26,21 @@ const accentColors: Record<Toast['type'], string> = {
           role="alert"
           @click="dismiss(toast.id)"
         >
-          <svg
-            class="mld-toast__icon"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            :style="{ color: accentColors[toast.type] }"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="iconPaths[toast.type]" />
+          <!-- Lucide circle-check -->
+          <svg v-if="toast.type === 'success'" class="mld-toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="{ color: accentColors[toast.type] }">
+            <circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" />
+          </svg>
+          <!-- Lucide circle-x -->
+          <svg v-else-if="toast.type === 'error'" class="mld-toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="{ color: accentColors[toast.type] }">
+            <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+          </svg>
+          <!-- Lucide triangle-alert -->
+          <svg v-else-if="toast.type === 'warning'" class="mld-toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="{ color: accentColors[toast.type] }">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" />
+          </svg>
+          <!-- Lucide info -->
+          <svg v-else class="mld-toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="{ color: accentColors[toast.type] }">
+            <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
           </svg>
           <span class="mld-toast__message">{{ toast.message }}</span>
         </div>

@@ -4,7 +4,7 @@ import FileUploader from './FileUploader.vue'
 const sizes = ['sm', 'md', 'lg'] as const
 
 function handleUpload(files: File[]) {
-  console.log('Files uploaded:', files.map(f => f.name))
+  console.log('Files uploaded:', files.map(f => `${f.name} (${f.size} bytes)`))
 }
 
 function handleError(message: string) {
@@ -55,7 +55,7 @@ function handleError(message: string) {
     <Variant title="Sizes">
       <div style="padding: 2rem; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
         <div v-for="size in sizes" :key="size">
-          <p style="margin: 0 0 0.5rem; font-size: 0.75rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; letter-spacing: 0.05em;">
+          <p style="margin: 0 0 0.5rem; font-size: 0.6875rem; font-weight: 500; color: var(--text-muted, #94a3b8); text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Fira Code', monospace;">
             {{ size }}
           </p>
           <FileUploader :size="size" @upload="handleUpload" />
@@ -63,11 +63,12 @@ function handleError(message: string) {
       </div>
     </Variant>
 
-    <Variant title="CSV Files Only">
+    <Variant title="Scientific Data (CSV/TSV)">
       <div style="padding: 2rem; max-width: 500px; margin: 0 auto;">
         <FileUploader
-          accept=".csv,.tsv,.txt"
-          :max-size="5242880"
+          accept=".csv,.tsv,.txt,.xlsx"
+          multiple
+          :max-size="52428800"
           @upload="handleUpload"
           @error="handleError"
         />

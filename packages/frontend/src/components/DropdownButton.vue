@@ -119,12 +119,14 @@ onUnmounted(() => {
       <span class="mld-dropdown-button__label">{{ selectedLabel }}</span>
       <svg
         :class="['mld-dropdown-button__chevron', { 'mld-dropdown-button__chevron--open': isOpen }]"
+        viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        <path d="m6 9 6 6 6-6" />
       </svg>
     </button>
 
@@ -158,12 +160,14 @@ onUnmounted(() => {
           <svg
             v-if="option.value === modelValue"
             class="mld-dropdown-button__option-check"
+            viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <path d="M20 6 9 17l-5-5" />
           </svg>
         </li>
       </ul>

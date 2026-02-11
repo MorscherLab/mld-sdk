@@ -16,6 +16,11 @@ const mockGroups: SampleGroup[] = [
   { name: 'Vehicle', color: '#F59E0B', samples: ['Vehicle_Rep1', 'Vehicle_Rep2', 'Vehicle_Rep3'] },
 ]
 
+const DEFAULT_COLORS = [
+  '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+  '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1',
+]
+
 function initState() {
   return {
     samples: mockSamples,
@@ -25,6 +30,27 @@ function initState() {
     enableAutoGroup: true,
     enableMetadataGroup: true,
   }
+}
+
+function handleAutoGroup(level: number, state: { samples: string[]; groups: SampleGroup[] }) {
+  const prefixGroups: Record<string, string[]> = {}
+
+  for (const sample of state.samples) {
+    const parts = sample.split(/[_\-.]/)
+    const prefix = parts.slice(0, level).join('_')
+    if (!prefixGroups[prefix]) {
+      prefixGroups[prefix] = []
+    }
+    prefixGroups[prefix].push(sample)
+  }
+
+  state.groups = Object.entries(prefixGroups)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, samples], i) => ({
+      name,
+      color: DEFAULT_COLORS[i % DEFAULT_COLORS.length],
+      samples,
+    }))
 }
 </script>
 
@@ -40,6 +66,7 @@ function initState() {
             :enable-grouping="state.enableGrouping"
             :enable-auto-group="state.enableAutoGroup"
             :enable-metadata-group="state.enableMetadataGroup"
+            @auto-group="(level: number) => handleAutoGroup(level, state)"
           />
         </div>
       </template>

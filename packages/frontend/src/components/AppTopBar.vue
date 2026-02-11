@@ -215,7 +215,7 @@ onUnmounted(() => {
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <polyline points="6 9 12 15 18 9" />
+              <path d="m6 9 6 6 6-6" />
             </svg>
           </button>
           <span v-else class="mld-topbar-plugin-name--static">{{ pluginName }}</span>
@@ -233,7 +233,7 @@ onUnmounted(() => {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <polyline points="9 18 15 12 9 6" />
+            <path d="m9 18 6-6-6-6" />
           </svg>
 
           <!-- Current page title -->
@@ -311,7 +311,7 @@ onUnmounted(() => {
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <polyline points="6 9 12 15 18 9" />
+                <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
 
@@ -416,9 +416,8 @@ onUnmounted(() => {
           aria-label="Open settings"
           @click="settingsOpen = true"
         >
-          <svg class="mld-topbar__settings-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <svg class="mld-topbar__settings-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" /><circle cx="12" cy="12" r="3" />
           </svg>
         </button>
         <!-- Admin link -->
@@ -429,8 +428,8 @@ onUnmounted(() => {
           aria-label="Admin Dashboard"
           @click="emit('admin-click')"
         >
-          <svg class="mld-topbar__admin-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          <svg class="mld-topbar__admin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" />
           </svg>
         </router-link>
         <!-- Profile button -->

@@ -65,11 +65,26 @@ const heatmapWells = generateHeatmapWells(96)
 const mockWells6 = generateMockWells(6)
 
 const rectSelected = ref<string[]>([])
+
+function initState() {
+  return {
+    format: 96 as WellPlateFormat,
+    selectionMode: 'multiple' as WellPlateSelectionMode,
+    size: 'md' as WellPlateSize,
+    wellShape: 'rounded' as WellShape,
+    showLabels: true,
+    showWellIds: false,
+    showSampleTypeIndicator: true,
+    showLegend: false,
+    disabled: false,
+    readonly: false,
+  }
+}
 </script>
 
 <template>
   <Story title="Lab/WellPlate">
-    <Variant title="Playground">
+    <Variant title="Playground" :init-state="initState">
       <template #default="{ state }">
         <div style="padding: 2rem;">
           <WellPlate
