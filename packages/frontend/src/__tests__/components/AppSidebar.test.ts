@@ -105,8 +105,8 @@ describe('AppSidebar', () => {
         props: { panels: samplePanels, activeView: 'analysis' },
         global: { components: { CollapsibleCard } },
       })
-      const sections = wrapper.findAll('.mld-sidebar__section')
-      expect(sections).toHaveLength(2)
+      const cards = wrapper.findAllComponents(CollapsibleCard)
+      expect(cards).toHaveLength(2)
     })
 
     it('should render CollapsibleCard for each section', () => {
